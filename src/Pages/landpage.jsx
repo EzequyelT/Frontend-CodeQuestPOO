@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import HeaderLandPage from "../Components/Header/HeaderLandPage";
 import logo from "../Assets/Section1.jpg";
 import videoAbertura from "../Assets/Abertura.mp4";
@@ -73,7 +74,7 @@ export default function Landpage() {
   useEffect(() => {
     const handleScroll = () => {
       setScrollY(window.scrollY);
-      
+
       // Detecta elementos visíveis
       const elements = document.querySelectorAll('[data-scroll-reveal]');
       elements.forEach(el => {
@@ -115,14 +116,15 @@ export default function Landpage() {
   return (
     <>
       <style jsx>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Pirata+One&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400..900&display=swap');
+
 
         * {
           --scroll: ${scrollY}px;
         }
 
         .rpg-title {
-          font-family: 'Pirata One', cursive;
+          font-family: 'Cinzel Decorative', cursive;
           text-shadow: 
             3px 3px 0px #00ff88,
             6px 6px 0px rgba(0, 255, 136, 0.3),
@@ -364,9 +366,9 @@ export default function Landpage() {
         >
           <source src={videoAbertura} type="video/mp4" />
         </video>
-        <div className="absolute inset-0 bg-black/10" style={{ width: '100vw', height: '100vh', marginLeft: 'calc(-50vw + 50%)' }}></div>
-        
-       
+        <div className="absolute inset-0 bg-black/15" style={{ width: '100vw', height: '100vh', marginLeft: 'calc(-50vw + 50%)' }}></div>
+
+
       </section>
 
       {/* Seção História */}
@@ -409,10 +411,10 @@ export default function Landpage() {
 
       {/* Seção Imagem Heróis */}
       <section
-        className="relative w-full h-screen bg-center bg-cover"
+        className="relative w-full h-screen bg-center bg-cover border-4"
         style={{ backgroundImage: `url(${herois})` }}
       >
-        <div className="absolute inset-0 bg-black/10"></div>
+        <div className="absolute inset-0 bg-black/10 border-4" ></div>
         <div className="relative z-10 flex items-center justify-center h-full"></div>
       </section>
 
@@ -505,8 +507,8 @@ export default function Landpage() {
       {/* Seção Call to Action */}
       <section className="relative w-full py-32 px-6 bg-gradient-to-b from-black via-emerald-950/30 to-black overflow-hidden">
         <div className="absolute inset-0 opacity-20">
-          <div className="absolute top-1/2 left-1/4 w-96 h-96 bg-emerald-500 rounded-full blur-3xl"></div>
-          <div className="absolute top-1/2 right-1/4 w-96 h-96 bg-cyan-500 rounded-full blur-3xl"></div>
+          <div className="absolute top-1/2 left-1/4 w-96 h-96  rounded-full blur-3xl"></div>
+          <div className="absolute top-1/2 right-1/4 w-96 h-96  rounded-full blur-3xl"></div>
         </div>
 
         <div id="cta" data-scroll-reveal className={`scroll-reveal relative z-10 max-w-4xl mx-auto text-center space-y-8 ${visibleElements['cta'] ? 'visible' : ''}`}>
@@ -564,9 +566,8 @@ export default function Landpage() {
                   onClick={() => toggleFlip(hero.id)}
                 >
                   <div
-                    className={`relative w-full h-full transition-transform duration-700 transform-style-3d cursor-pointer ${
-                      flippedCards[hero.id] ? 'rotate-y-180' : ''
-                    }`}
+                    className={`relative w-full h-full transition-transform duration-700 transform-style-3d cursor-pointer ${flippedCards[hero.id] ? 'rotate-y-180' : ''
+                      }`}
                   >
                     {/* Frente do Card */}
                     <div className="absolute inset-0 backface-hidden card-vintage overflow-hidden shadow-2xl">
@@ -575,7 +576,7 @@ export default function Landpage() {
                       <div className="card-corner card-corner-tr"></div>
                       <div className="card-corner card-corner-bl"></div>
                       <div className="card-corner card-corner-br"></div>
-                      
+
                       {/* Imagem do herói */}
                       <div className="hero-image-container mt-4 mx-4 rounded-lg">
                         <img
@@ -583,7 +584,7 @@ export default function Landpage() {
                           alt={hero.name}
                         />
                       </div>
-                      
+
                       {/* Nome do herói */}
                       <div className="p-6 text-center">
                         <h3 className="text-3xl font-bold text-white mb-2 tracking-wider" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.8)' }}>
@@ -602,7 +603,7 @@ export default function Landpage() {
                       <div className="card-corner card-corner-tr"></div>
                       <div className="card-corner card-corner-bl"></div>
                       <div className="card-corner card-corner-br"></div>
-                      
+
                       <div>
                         <h3 className="text-3xl font-bold text-white mb-2 text-center tracking-wider" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.8)' }}>
                           {hero.name}
@@ -655,35 +656,66 @@ export default function Landpage() {
             </div>
 
             {/* Navegação */}
-            <div className="flex items-center justify-center gap-6">
-              <button
-                onClick={handlePrev}
-                disabled={currentIndex === 0}
-                className="px-8 py-3 bg-emerald-500 text-white font-bold rounded-full hover:bg-emerald-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105"
-              >
-                ← Anterior
-              </button>
+            <div className="flex items-center justify-center gap-6 ">
+            {/* BOTÃO ESQUERDA */}
+  <button
+    onClick={handlePrev}
+    disabled={currentIndex === 0}
+    className="
+      w-14 h-14
+      flex items-center justify-center
+      bg-white
+      text-emerald-500
+      rounded-full
+      border-2 border-emerald-500
+      transition-all
+      hover:bg-emerald-500
+      hover:text-white
+      hover:scale-105
+      active:scale-95
+      disabled:opacity-50
+      disabled:cursor-not-allowed
+    "
+  >
+    <FaArrowLeft size={24} />
+  </button>
 
-              <div className="flex gap-2">
-                {Array.from({ length: Math.ceil(heroes.length / 3) }).map((_, i) => (
-                  <div
-                    key={i}
-                    className={`w-3 h-3 rounded-full transition-all ${
-                      Math.floor(currentIndex / 3) === i
-                        ? 'bg-emerald-400 w-8'
-                        : 'bg-gray-600'
-                    }`}
-                  ></div>
-                ))}
-              </div>
+              <div className="flex items-center gap-2">
+    {Array.from({ length: Math.ceil(heroes.length / 3) }).map((_, i) => (
+      <div
+        key={i}
+        className={`
+          h-3 rounded-full transition-all
+          ${Math.floor(currentIndex / 3) === i
+            ? "bg-emerald-400 w-8"
+            : "bg-gray-600 w-3"}
+        `}
+      />
+    ))}
+  </div>
 
               <button
                 onClick={handleNext}
                 disabled={currentIndex + 3 >= heroes.length}
-                className="px-8 py-3 bg-emerald-500 text-white font-bold rounded-full hover:bg-emerald-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105"
+                className="
+      w-14 h-14
+      flex items-center justify-center
+      bg-white
+      text-emerald-500
+      rounded-full
+      border-2 border-emerald-500
+      transition-all
+      hover:bg-emerald-500
+      hover:text-white
+      hover:scale-105
+      active:scale-95
+      disabled:opacity-50
+      disabled:cursor-not-allowed
+    "
               >
-                Próximo →
+                <FaArrowRight size={24} />
               </button>
+
             </div>
           </div>
         </div>
