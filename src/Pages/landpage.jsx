@@ -7,75 +7,33 @@ import herois from "../Assets/Herois.jpg";
 import evoluir from "../Assets/Evoluir.jpg";
 import explorar from "../Assets/Explorar.jpg";
 import aprender from "../Assets/Aprender.jpg";
-import aurelia from "../Assets/Aurelia.png";
-import bromm from "../Assets/Bromm.png";
-import eldrin from "../Assets/Eldrin.png";
-import lyra from "../Assets/Lyra.png";
-import tharok from "../Assets/Tharok.png";
-import vaelgrim from "../Assets/Vaelgrim.png";
-
-const heroes = [
-  {
-    id: 1,
-    name: "Aurelia",
-    image: aurelia,
-    title: "A Guardiã da Luz",
-    description: "Mestra em encapsulamento, protege dados com barreiras mágicas.",
-    stats: { power: 85, wisdom: 90, agility: 75 }
-  },
-  {
-    id: 2,
-    name: "Bromm",
-    image: bromm,
-    title: "O Guerreiro Inabalável",
-    description: "Especialista em herança, carrega a força dos ancestrais.",
-    stats: { power: 95, wisdom: 70, agility: 60 }
-  },
-  {
-    id: 3,
-    name: "Eldrin",
-    image: eldrin,
-    title: "O Sábio Ancião",
-    description: "Mestre do polimorfismo, adapta-se a qualquer desafio.",
-    stats: { power: 70, wisdom: 95, agility: 65 }
-  },
-  {
-    id: 4,
-    name: "Lyra",
-    image: lyra,
-    title: "A Arqueira Veloz",
-    description: "Especialista em abstração, vê além do código superficial.",
-    stats: { power: 75, wisdom: 80, agility: 95 }
-  },
-  {
-    id: 5,
-    name: "Tharok",
-    image: tharok,
-    title: "O Bárbaro Selvagem",
-    description: "Domina classes e objetos com força bruta e precisão.",
-    stats: { power: 90, wisdom: 65, agility: 70 }
-  },
-  {
-    id: 6,
-    name: "Vaelgrim",
-    image: vaelgrim,
-    title: "O Feiticeiro das Sombras",
-    description: "Mestre em interfaces, conecta o mundo visível ao invisível.",
-    stats: { power: 80, wisdom: 85, agility: 80 }
-  }
-];
+import bgSection4 from "../Assets/bgSection4.jpg";
+import heroes from "../data/heroesData";
+import "../css/landpage.css";
 
 export default function Landpage() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [flippedCards, setFlippedCards] = useState({});
   const [visibleElements, setVisibleElements] = useState({});
   const [scrollY, setScrollY] = useState(0);
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrollY(window.scrollY);
+      const y = window.scrollY;
+      setScrollY(y);
+      document.documentElement.style.setProperty('--scroll', `${y}px`);
+    };
 
-      // Detecta elementos visíveis
+    window.addEventListener('scroll', handleScroll);
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Scroll reveal effect
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
       const elements = document.querySelectorAll('[data-scroll-reveal]');
       elements.forEach(el => {
         const rect = el.getBoundingClientRect();
@@ -94,12 +52,29 @@ export default function Landpage() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Auto-play carousel
+  useEffect(() => {
+    if (!isAutoPlaying) return;
+
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => {
+        const next = prev + 3;
+        return next >= heroes.length ? 0 : next;
+      });
+      setFlippedCards({});
+    }, 5000); // Muda a cada 5 segundos
+
+    return () => clearInterval(interval);
+  }, [isAutoPlaying]);
+
   const handleNext = () => {
+    setIsAutoPlaying(false);
     setCurrentIndex((prev) => (prev + 3 >= heroes.length ? 0 : prev + 3));
     setFlippedCards({});
   };
 
   const handlePrev = () => {
+    setIsAutoPlaying(false);
     setCurrentIndex((prev) => (prev - 3 < 0 ? Math.max(0, heroes.length - 3) : prev - 3));
     setFlippedCards({});
   };
@@ -115,241 +90,8 @@ export default function Landpage() {
 
   return (
     <>
-      <style jsx>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400..900&display=swap');
 
-
-        * {
-          --scroll: ${scrollY}px;
-        }
-
-        .rpg-title {
-          font-family: 'Cinzel Decorative', cursive;
-          text-shadow: 
-            3px 3px 0px #00ff88,
-            6px 6px 0px rgba(0, 255, 136, 0.3),
-            -1px -1px 0px rgba(0, 255, 136, 0.5);
-          letter-spacing: 3px;
-        }
-
-        .rpg-heading {
-          font-family: 'Cinzel', serif;
-          font-weight: 900;
-          text-transform: uppercase;
-          letter-spacing: 2px;
-          text-shadow: 
-            2px 2px 0px rgba(0, 0, 0, 0.8),
-            0px 0px 20px rgba(16, 185, 129, 0.5);
-        }
-
-        .rpg-border {
-          border: 3px solid;
-          border-image: linear-gradient(135deg, #10b981, #06b6d4) 1;
-          box-shadow: 
-            inset 0 0 20px rgba(16, 185, 129, 0.1),
-            0 0 20px rgba(16, 185, 129, 0.2);
-        }
-
-        .scroll-reveal {
-          opacity: 0;
-          transform: translateY(40px);
-          transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-
-        .scroll-reveal.visible {
-          opacity: 1;
-          transform: translateY(0);
-        }
-
-        .float-animation {
-          animation: float 3s ease-in-out infinite;
-        }
-
-        @keyframes float {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-20px); }
-        }
-
-        .glow-animation {
-          animation: glow 2s ease-in-out infinite;
-        }
-
-        @keyframes glow {
-          0%, 100% { 
-            box-shadow: 0 0 10px rgba(16, 185, 129, 0.3),
-                        inset 0 0 10px rgba(16, 185, 129, 0.1);
-          }
-          50% { 
-            box-shadow: 0 0 30px rgba(16, 185, 129, 0.6),
-                        inset 0 0 20px rgba(16, 185, 129, 0.3);
-          }
-        }
-
-        .parallax {
-          transform: translateY(calc(var(--scroll) * 0.5px));
-        }
-
-        .shine-effect {
-          position: relative;
-          overflow: hidden;
-        }
-
-        .shine-effect::after {
-          content: '';
-          position: absolute;
-          top: -50%;
-          left: -50%;
-          width: 200%;
-          height: 200%;
-          background: linear-gradient(
-            45deg,
-            transparent 20%,
-            rgba(255, 255, 255, 0.1) 50%,
-            transparent 80%
-          );
-          animation: shine 3s infinite;
-        }
-
-        @keyframes shine {
-          0% { transform: translateX(-100%) translateY(-100%); }
-          100% { transform: translateX(100%) translateY(100%); }
-        }
-
-        .pulse-border {
-          animation: pulse-border 2s ease-in-out infinite;
-        }
-
-        @keyframes pulse-border {
-          0%, 100% { 
-            border-color: #10b981;
-            box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
-          }
-          50% { 
-            border-color: #06b6d4;
-            box-shadow: 0 0 20px rgba(6, 182, 212, 0.6);
-          }
-        }
-
-        .game-button {
-          font-family: 'Cinzel', serif;
-          position: relative;
-          font-weight: 700;
-          text-transform: uppercase;
-          letter-spacing: 2px;
-          border: 2px solid #10b981;
-          overflow: hidden;
-        }
-
-        .game-button::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: -100%;
-          width: 100%;
-          height: 100%;
-          background: #10b981;
-          z-index: -1;
-          transition: left 0.3s ease;
-        }
-
-        .game-button:hover::before {
-          left: 0;
-        }
-
-        .card-border-glow {
-          border: 2px solid #10b981;
-          box-shadow: 
-            0 0 10px rgba(16, 185, 129, 0.3),
-            inset 0 0 10px rgba(16, 185, 129, 0.1);
-        }
-
-        .perspective-1000 {
-          perspective: 1000px;
-        }
-        .transform-style-3d {
-          transform-style: preserve-3d;
-        }
-        .backface-hidden {
-          backface-visibility: hidden;
-        }
-        .rotate-y-180 {
-          transform: rotateY(180deg);
-        }
-        
-        .card-vintage {
-          position: relative;
-          background: linear-gradient(145deg, #3d2415 0%, #2a1810 100%);
-          border-radius: 20px;
-          border: 2px solid #10b981;
-          box-shadow: 
-            0 8px 16px rgba(0, 0, 0, 0.6),
-            inset 0 1px 0 rgba(255, 255, 255, 0.1),
-            0 0 20px rgba(16, 185, 129, 0.2);
-        }
-        
-        .card-vintage::before {
-          content: '';
-          position: absolute;
-          inset: 8px;
-          border: 3px solid #5a3a2a;
-          border-radius: 16px;
-          pointer-events: none;
-        }
-        
-        .card-corner {
-          position: absolute;
-          width: 40px;
-          height: 40px;
-          background: #2a1810;
-          clip-path: polygon(0 0, 100% 0, 100% 100%);
-        }
-        
-        .card-corner-tl {
-          top: 0;
-          left: 0;
-          border-radius: 20px 0 0 0;
-        }
-        
-        .card-corner-tr {
-          top: 0;
-          right: 0;
-          border-radius: 0 20px 0 0;
-          transform: rotate(90deg);
-        }
-        
-        .card-corner-bl {
-          bottom: 0;
-          left: 0;
-          border-radius: 0 0 0 20px;
-          transform: rotate(-90deg);
-        }
-        
-        .card-corner-br {
-          bottom: 0;
-          right: 0;
-          border-radius: 0 0 20px 0;
-          transform: rotate(180deg);
-        }
-        
-        .hero-image-container {
-          width: 100%;
-          height: 280px;
-          overflow: hidden;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          background: radial-gradient(circle, #1a1a1a 0%, #000000 100%);
-        }
-        
-        .hero-image-container img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          object-position: center;
-        }
-      `}</style>
-
-      <div className=" w-full overflow-x-hidden">
+      <div className="w-full overflow-x-hidden">
         <HeaderLandPage />
       </div>
 
@@ -367,54 +109,120 @@ export default function Landpage() {
           <source src={videoAbertura} type="video/mp4" />
         </video>
         <div className="absolute inset-0 bg-black/15" style={{ width: '100vw', height: '100vh', marginLeft: 'calc(-50vw + 50%)' }}></div>
-
-
       </section>
 
+      <div className="ornamental-divider bg-gradient-to-b from-black via-gray-900 to-black">
+        <div className="ornamental-icon">
+          <span className="text-2xl">⚔️</span>
+        </div>
+      </div>
+
+
       {/* Seção História */}
-      <section className="relative w-full py-24 px-6 flex items-center justify-center bg-gradient-to-b from-black  to-black overflow-hidden">
-        <div id="historia" data-scroll-reveal className={`scroll-reveal max-w-4xl mx-auto text-center ${visibleElements['historia'] ? 'visible' : ''}`}>
-          <div className="flex items-center justify-center mb-12 gap-4">
+      <section className="relative w-full py-20 px-6 flex items-center justify-center bg-gradient-to-b from-black  to-black overflow-hidden">
+        {/* Elementos flutuantes de fundo */}
+        <div className="absolute inset-0 overflow-hidden opacity-30">
+          <div className="floating-element top-20 left-10 text-9xl ">📜</div>
+          <div className="floating-element top-40 right-20 text-8xl" style={{ animationDelay: '2s' }}>🗡️</div>
+          <div className="floating-element bottom-32 left-1/4 text-7xl" style={{ animationDelay: '4s' }}>🛡️</div>
+          <div className="floating-element bottom-20 right-1/3 text-8xl" style={{ animationDelay: '6s' }}>📖</div>
+          <div className="floating-element top-1/3 right-10 text-6xl" style={{ animationDelay: '8s' }}>⚡</div>
+        </div>
+
+        {/* Partículas animadas */}
+        <div className="particles">
+          {[...Array(30)].map((_, i) => (
+            <div
+              key={i}
+              className="particle"
+              style={{
+                left: `${Math.random() * 100}%`,
+                animationDelay: `${Math.random() * 10}s`,
+                animationDuration: `${10 + Math.random() * 10}s`
+              }}
+            />
+          ))}
+        </div>
+
+        {/* Ornamentos laterais */}
+        <div className="absolute left-10 top-1/2 -translate-y-1/2 hidden xl:block">
+          <div className="scroll-ornament"></div>
+        </div>
+
+
+        <div id="historia" data-scroll-reveal className={`scroll-reveal max-w-5xl mx-auto text-center relative z-10 ${visibleElements['historia'] ? 'visible' : ''}`}>
+          {/* Título com decoração */}
+          <div className="flex items-center justify-center mb-16 gap-4">
             <div className="flex-1 h-1 bg-gradient-to-r from-transparent via-emerald-400 to-transparent"></div>
-            <div className="flex items-center gap-3">
-              <div className="w-3 h-3 rounded-full bg-emerald-400 glow-animation"></div>
-              <h2 className="rpg-heading text-5xl md:text-6xl text-emerald-400">
-                História
-              </h2>
-              <div className="w-3 h-3 rounded-full bg-emerald-400 glow-animation"></div>
+            <div className="flex items-center gap-4">
+              <div className="w-4 h-4 rounded-full bg-emerald-400 glow-animation"></div>
+              <div className="relative">
+                <h2 className="rpg-heading text-5xl md:text-7xl text-emerald-400">
+                  História
+                </h2>
+              </div>
+              <div className="w-4 h-4 rounded-full bg-emerald-400 glow-animation"></div>
             </div>
             <div className="flex-1 h-1 bg-gradient-to-r from-transparent via-emerald-400 to-transparent"></div>
           </div>
 
-          <div className="rpg-border p-8 bg-black/40 backdrop-blur-sm">
-            <p className="text-gray-200 text-lg md:text-xl leading-relaxed font-light">
-              Há muito tempo, num vale rodeado por grandes montanhas, existia um reino onde o
-              conhecimento era a maior fonte de poder. Esse reino era protegido pelos
-              <span className="text-emerald-400 font-bold"> Guardians do Código</span>, mestres da Programação Orientada a Objectos.
-              <br /><br />
-              Com o passar do tempo, o conhecimento foi sendo esquecido… e desse esquecimento
-              nasceu o <span className="text-red-400 font-bold">Dragão do Caos</span>, uma criatura que se alimenta de erros e código mal
-              estruturado.
-              <br /><br />
-              Agora, o reino está em perigo.
-              <br />
-              Novos heróis foram chamados.
-              <br /><br />
-              <span className="text-cyan-300 font-bold text-lg">Tu és um deles.</span>
-              <br />
-              Explora diferentes regiões, aprende os princípios da POO, enfrenta desafios e
-              derrota o dragão para restaurar o conhecimento e salvar o reino.
-            </p>
+          {/* Frame da história com decorações */}
+          <div className="story-frame">
+            {/* Cantos decorativos */}
+
+            {/* Conteúdo da história */}
+            <div className="relative z-10">
+              <p className="rpg-text text-gray-200 text-lg md:text-xl leading-relaxed font-light">
+                <span className="text-8xl text-amber-400 float-left mr-2 mb-20 leading-none relative -top-8">
+                  H
+                </span>
+                á muito tempo, num vale rodeado por grandes montanhas, existia um reino onde o
+                conhecimento era a maior fonte de poder. Esse reino era protegido pelos
+                <span className="text-emerald-400 font-bold"> Guardians do Código</span>, mestres da Programação Orientada a Objectos.
+                <br /><br />
+                Com o passar do tempo, o conhecimento foi sendo esquecido… e desse esquecimento
+                nasceu o <span className="text-red-400 font-bold">Dragão do Caos 🐉</span>, uma criatura que se alimenta de erros e código mal
+                estruturado.
+                <br /><br />
+                <span className="inline-block px-4 py-2 bg-red-900/30 border-l-4 border-red-400 rounded">
+                  Agora, o reino está em perigo.
+                </span>
+                <br />
+                <span className="inline-block px-4 py-2 bg-amber-900/30 border-l-4 border-amber-400 rounded mt-2">
+                  Novos heróis foram chamados.
+                </span>
+                <br /><br />
+                <span className="text-cyan-300 font-bold text-2xl inline-block px-6 py-3 bg-cyan-900/30 rounded-lg border-2 border-cyan-400/50 shadow-lg shadow-cyan-500/20">
+                  ⚡ Tu és um deles. ⚡
+                </span>
+                <br /><br />
+                Explora diferentes regiões, aprende os princípios da POO, enfrenta desafios e
+                derrota o dragão para restaurar o conhecimento e salvar o reino.
+              </p>
+
+              {/* Citação decorativa */}
+              <div className="mt-8 pt-8 border-t border-emerald-400/30">
+                <p className="text-emerald-300 italic text-lg">
+                  "O código bem estruturado é a espada que derrota o caos"
+                </p>
+                <p className="text-gray-400 text-sm mt-2">— Antigo provérbio dos Guardians</p>
+              </div>
+            </div>
           </div>
+
+          {/* Indicador de scroll */}
+
         </div>
       </section>
 
+
+
       {/* Seção Imagem Heróis */}
       <section
-        className="relative w-full h-screen bg-center bg-cover border-4"
+        className="relative w-full h-screen bg-center bg-cover"
         style={{ backgroundImage: `url(${herois})` }}
       >
-        <div className="absolute inset-0 bg-black/10 border-4" ></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/30"></div>
         <div className="relative z-10 flex items-center justify-center h-full"></div>
       </section>
 
@@ -433,25 +241,25 @@ export default function Landpage() {
             <div className="flex-1 h-1 bg-gradient-to-r from-transparent via-emerald-400 to-transparent"></div>
           </div>
 
-          <p className="text-gray-300 text-lg md:text-xl text-center mb-20 font-light">
+          <p className="rpg-text text-gray-300 text-lg md:text-xl text-center mb-20 font-light">
             Um mundo cheio de <span className="text-emerald-400 font-bold">desafios</span>, <span className="text-cyan-300 font-bold">recompensas</span> e <span className="text-emerald-400 font-bold">conhecimento</span> à tua espera.
           </p>
 
           <div className="space-y-20">
             {/* Explorar */}
             <div id="explorar" data-scroll-reveal className={`scroll-reveal flex flex-col md:flex-row items-center gap-8 group ${visibleElements['explorar'] ? 'visible' : ''}`}>
-              <div className="w-full md:w-1/2 overflow-hidden rounded-2xl shine-effect card-border-glow">
+              <div className="w-full md:w-1/2 overflow-hidden rounded-2xl shine-effect card-border-glow ">
                 <img
                   src={explorar}
                   alt="Explorar"
                   className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
                 />
               </div>
-              <div className="w-full md:w-1/2 space-y-4">
-                <h3 className="rpg-heading text-4xl md:text-5xl text-emerald-400">
+              <div className="w-full md:w-1/2 space-y-4 ">
+                <h3 className="rpg-heading text-4xl md:text-5xl text-emerald-400 ">
                   Explorar
                 </h3>
-                <p className="text-gray-300 text-lg leading-relaxed font-light">
+                <p className="rpg-text text-gray-300 text-lg leading-relaxed font-light">
                   Percorre diferentes <span className="text-cyan-300">mapas do reino</span>, desbloqueia novas áreas e descobre
                   conceitos fundamentais da Programação Orientada a Objectos à medida que
                   avanças na tua aventura épica.
@@ -472,7 +280,7 @@ export default function Landpage() {
                 <h3 className="rpg-heading text-4xl md:text-5xl text-cyan-400">
                   Evoluir
                 </h3>
-                <p className="text-gray-300 text-lg leading-relaxed font-light">
+                <p className="rpg-text text-gray-300 text-lg leading-relaxed font-light">
                   Ganha <span className="text-yellow-400">XP</span>, <span className="text-yellow-300">coins</span> e recompensas, melhora as tuas habilidades
                   e acompanha o teu progresso enquanto te tornas um verdadeiro
                   <span className="text-emerald-400 font-bold"> Guardião do Código</span>.
@@ -493,7 +301,7 @@ export default function Landpage() {
                 <h3 className="rpg-heading text-4xl md:text-5xl text-emerald-400">
                   Aprender
                 </h3>
-                <p className="text-gray-300 text-lg leading-relaxed font-light">
+                <p className="rpg-text text-gray-300 text-lg leading-relaxed font-light">
                   Aprende <span className="text-cyan-300">Programação Orientada a Objectos (POO)</span> de forma prática,
                   divertida e descomplicada, com exercícios interactivos e desafios
                   que te ajudam a pensar como um verdadeiro programador.
@@ -505,14 +313,26 @@ export default function Landpage() {
       </section>
 
       {/* Seção Call to Action */}
-      <section className="relative w-full py-32 px-6 bg-gradient-to-b from-black via-emerald-950/30 to-black overflow-hidden">
+      <section
+        className="relative w-full py-80 px-10 overflow-hidden"
+        style={{
+          backgroundImage: `url(${bgSection4})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        }}
+      >
+        {/* Overlay escuro para melhor legibilidade */}
+        <div className="absolute inset-0 bg-black/40"></div>
+
+        {/* Efeito de brilho adicional */}
         <div className="absolute inset-0 opacity-20">
-          <div className="absolute top-1/2 left-1/4 w-96 h-96  rounded-full blur-3xl"></div>
-          <div className="absolute top-1/2 right-1/4 w-96 h-96  rounded-full blur-3xl"></div>
+          <div className="absolute top-1/2 left-1/4 w-96 h-96 bg-emerald-500 rounded-full blur-3xl"></div>
+          <div className="absolute top-1/2 right-1/4 w-96 h-96 bg-cyan-500 rounded-full blur-3xl"></div>
         </div>
 
         <div id="cta" data-scroll-reveal className={`scroll-reveal relative z-10 max-w-4xl mx-auto text-center space-y-8 ${visibleElements['cta'] ? 'visible' : ''}`}>
-          <h2 className="rpg-heading text-6xl md:text-7xl text-emerald-400">
+          <h2 className="rpg-heading text-6xl md:text-7xl text-emerald-400 float-animation">
             Explora este Mundo
           </h2>
 
@@ -520,13 +340,13 @@ export default function Landpage() {
             A tua jornada começa agora.
           </p>
 
-          <p className="text-gray-300 text-xl md:text-2xl font-light">
+          <p className="rpg-text text-gray-300 text-xl md:text-2xl font-light">
             Estás pronto para te tornares um <span className="text-emerald-400 font-bold">Guardião do Código</span>?
           </p>
 
           <div className="pt-8">
             <button className="game-button px-12 py-5 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white text-xl rounded-full hover:scale-110 hover:shadow-2xl hover:shadow-emerald-500/70 transition-all duration-300">
-              <span className="relative z-10">Testa Agora</span>
+              <span className="relative z-10">Comece essa aventura agora!</span>
             </button>
           </div>
 
@@ -538,23 +358,37 @@ export default function Landpage() {
         </div>
       </section>
 
-      {/* Seção Escolha o Herói - Carousel */}
-      <section className="relative w-full py-24 px-6 bg-gradient-to-b from-black via-gray-900 to-black">
-        <div className="max-w-7xl mx-auto">
+      {/* Seção Escolha o Herói - Carousel Automático */}
+      <section className="relative w-full py-24 px-6 bg-gradient-to-b from-black via-gray-900 to-black overflow-hidden">
+        <div className="particles">
+          {[...Array(15)].map((_, i) => (
+            <div
+              key={i}
+              className="particle"
+              style={{
+                left: `${Math.random() * 100}%`,
+                animationDelay: `${Math.random() * 10}s`,
+                animationDuration: `${15 + Math.random() * 10}s`
+              }}
+            />
+          ))}
+        </div>
+
+        <div className="max-w-7xl mx-auto relative z-10">
           <div className="flex items-center justify-center mb-8 gap-4">
             <div className="flex-1 h-px bg-gradient-to-r from-transparent via-emerald-400 to-transparent"></div>
             <div className="flex items-center gap-3">
-              <div className="w-2 h-2 rounded-full bg-emerald-400"></div>
-              <h2 className="text-4xl md:text-5xl font-bold text-white tracking-wider text-center">
+              <div className="w-2 h-2 rounded-full bg-emerald-400 glow-animation"></div>
+              <h2 className="rpg-heading text-4xl md:text-5xl text-white tracking-wider text-center">
                 Escolhe o Teu Herói
               </h2>
-              <div className="w-2 h-2 rounded-full bg-emerald-400"></div>
+              <div className="w-2 h-2 rounded-full bg-emerald-400 glow-animation"></div>
             </div>
             <div className="flex-1 h-px bg-gradient-to-r from-transparent via-emerald-400 to-transparent"></div>
           </div>
 
-          <p className="text-gray-300 text-lg md:text-xl text-center mb-16 font-light">
-            O mal avança e só os verdadeiros Guardiões do Código podem travá-lo. Escolhe o teu herói e começa a aventura.
+          <p className="rpg-text text-gray-300 text-lg md:text-xl text-center mb-16 font-light">
+            O mal avança e só os verdadeiros <span className="text-emerald-400 font-bold">Guardiões do Código</span> podem travá-lo. Escolhe o teu herói e começa a aventura.
           </p>
 
           <div className="relative">
@@ -562,23 +396,20 @@ export default function Landpage() {
               {visibleHeroes.map((hero) => (
                 <div
                   key={hero.id}
-                  className="perspective-1000 h-[500px]"
+                  className="card-flip-container"
                   onClick={() => toggleFlip(hero.id)}
                 >
-                  <div
-                    className={`relative w-full h-full transition-transform duration-700 transform-style-3d cursor-pointer ${flippedCards[hero.id] ? 'rotate-y-180' : ''
-                      }`}
-                  >
+                  <div className={`card-flip-inner ${flippedCards[hero.id] ? 'flipped' : ''}`}>
                     {/* Frente do Card */}
-                    <div className="absolute inset-0 backface-hidden card-vintage overflow-hidden shadow-2xl">
-                      {/* Cantos rasgados */}
+                    <div className="card-face card-vintage cursor-pointer hover:shadow-2xl hover:shadow-emerald-500/20 transition-all duration-300">
+                      {/* Cantos decorativos */}
                       <div className="card-corner card-corner-tl"></div>
                       <div className="card-corner card-corner-tr"></div>
                       <div className="card-corner card-corner-bl"></div>
                       <div className="card-corner card-corner-br"></div>
 
                       {/* Imagem do herói */}
-                      <div className="hero-image-container mt-4 mx-4 rounded-lg">
+                      <div className="hero-image-container">
                         <img
                           src={hero.image}
                           alt={hero.name}
@@ -587,135 +418,157 @@ export default function Landpage() {
 
                       {/* Nome do herói */}
                       <div className="p-6 text-center">
-                        <h3 className="text-3xl font-bold text-white mb-2 tracking-wider" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.8)' }}>
+                        <h3 className="rpg-heading text-3xl text-white mb-2 tracking-wider" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.8)' }}>
                           {hero.name}
                         </h3>
-                        <p className="text-amber-400 text-sm font-semibold">
-                          Clica para ver detalhes
+                        <p className="text-amber-400 text-sm font-semibold tracking-wide">
+                          ⚔️ Clica para ver detalhes ⚔️
                         </p>
                       </div>
                     </div>
 
                     {/* Verso do Card */}
-                    <div className="absolute inset-0 backface-hidden rotate-y-180 card-vintage overflow-hidden shadow-2xl p-6 flex flex-col justify-between">
-                      {/* Cantos rasgados */}
+                    <div className="card-face card-back card-vintage cursor-pointer">
+                      {/* Cantos decorativos */}
                       <div className="card-corner card-corner-tl"></div>
                       <div className="card-corner card-corner-tr"></div>
                       <div className="card-corner card-corner-bl"></div>
                       <div className="card-corner card-corner-br"></div>
 
-                      <div>
-                        <h3 className="text-3xl font-bold text-white mb-2 text-center tracking-wider" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.8)' }}>
-                          {hero.name}
-                        </h3>
-                        <p className="text-amber-400 text-xl mb-4 text-center font-semibold">
-                          {hero.title}
-                        </p>
-                        <p className="text-gray-200 text-base leading-relaxed mb-6 px-2">
-                          {hero.description}
+                      <div className="p-6 h-full flex flex-col justify-between">
+                        <div>
+                          <h3 className="rpg-heading text-3xl text-white mb-2 text-center tracking-wider" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.8)' }}>
+                            {hero.name}
+                          </h3>
+                          <p className="text-amber-400 text-xl mb-4 text-center font-semibold">
+                            {hero.title}
+                          </p>
+                          <p className="rpg-text text-gray-200 text-base leading-relaxed mb-6 px-2">
+                            {hero.description}
+                          </p>
+                        </div>
+
+                        <div className="space-y-3 px-2">
+                          <div className="flex justify-between items-center">
+                            <span className="text-white font-semibold">⚔️ Poder</span>
+                            <div className="w-2/3 bg-gray-800 rounded-full h-3 border border-gray-600">
+                              <div
+                                className="stat-bar bg-gradient-to-r from-red-600 to-red-500 h-full rounded-full shadow-lg"
+                                style={{ width: `${hero.stats.power}%` }}
+                              ></div>
+                            </div>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-white font-semibold">📚 Sabedoria</span>
+                            <div className="w-2/3 bg-gray-800 rounded-full h-3 border border-gray-600">
+                              <div
+                                className="stat-bar bg-gradient-to-r from-blue-600 to-blue-500 h-full rounded-full shadow-lg"
+                                style={{ width: `${hero.stats.wisdom}%` }}
+                              ></div>
+                            </div>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-white font-semibold">⚡ Agilidade</span>
+                            <div className="w-2/3 bg-gray-800 rounded-full h-3 border border-gray-600">
+                              <div
+                                className="stat-bar bg-gradient-to-r from-green-600 to-green-500 h-full rounded-full shadow-lg"
+                                style={{ width: `${hero.stats.agility}%` }}
+                              ></div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <p className="text-amber-400 text-sm text-center mt-4 font-semibold">
+                          🔄 Clica para voltar
                         </p>
                       </div>
-
-                      <div className="space-y-3 px-2">
-                        <div className="flex justify-between items-center">
-                          <span className="text-white font-semibold">Poder</span>
-                          <div className="w-2/3 bg-gray-800 rounded-full h-3 border border-gray-600">
-                            <div
-                              className="bg-gradient-to-r from-red-600 to-red-500 h-full rounded-full transition-all duration-1000 shadow-lg"
-                              style={{ width: `${hero.stats.power}%` }}
-                            ></div>
-                          </div>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-white font-semibold">Sabedoria</span>
-                          <div className="w-2/3 bg-gray-800 rounded-full h-3 border border-gray-600">
-                            <div
-                              className="bg-gradient-to-r from-blue-600 to-blue-500 h-full rounded-full transition-all duration-1000 shadow-lg"
-                              style={{ width: `${hero.stats.wisdom}%` }}
-                            ></div>
-                          </div>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-white font-semibold">Agilidade</span>
-                          <div className="w-2/3 bg-gray-800 rounded-full h-3 border border-gray-600">
-                            <div
-                              className="bg-gradient-to-r from-green-600 to-green-500 h-full rounded-full transition-all duration-1000 shadow-lg"
-                              style={{ width: `${hero.stats.agility}%` }}
-                            ></div>
-                          </div>
-                        </div>
-                      </div>
-
-                      <p className="text-amber-400 text-sm text-center mt-4 font-semibold">
-                        Clica para voltar
-                      </p>
                     </div>
                   </div>
                 </div>
               ))}
             </div>
 
-            {/* Navegação */}
-            <div className="flex items-center justify-center gap-6 ">
-            {/* BOTÃO ESQUERDA */}
-  <button
-    onClick={handlePrev}
-    disabled={currentIndex === 0}
-    className="
-      w-14 h-14
-      flex items-center justify-center
-      bg-white
-      text-emerald-500
-      rounded-full
-      border-2 border-emerald-500
-      transition-all
-      hover:bg-emerald-500
-      hover:text-white
-      hover:scale-105
-      active:scale-95
-      disabled:opacity-50
-      disabled:cursor-not-allowed
-    "
-  >
-    <FaArrowLeft size={24} />
-  </button>
+            {/* Navegação e indicadores */}
+            <div className="flex items-center justify-center gap-6">
+              {/* Botão Esquerda */}
+              <button
+                onClick={handlePrev}
+                disabled={currentIndex === 0}
+                className="
+                  w-14 h-14
+                  flex items-center justify-center
+                  bg-gradient-to-br from-emerald-400 to-emerald-600
+                  text-white
+                  rounded-full
+                  border-2 border-emerald-300
+                  shadow-lg shadow-emerald-500/50
+                  transition-all duration-300
+                  hover:scale-110
+                  hover:shadow-2xl
+                  hover:shadow-emerald-500/70
+                  active:scale-95
+                  disabled:opacity-30
+                  disabled:cursor-not-allowed
+                  disabled:hover:scale-100
+                "
+              >
+                <FaArrowLeft size={20} />
+              </button>
 
-              <div className="flex items-center gap-2">
-    {Array.from({ length: Math.ceil(heroes.length / 3) }).map((_, i) => (
-      <div
-        key={i}
-        className={`
-          h-3 rounded-full transition-all
-          ${Math.floor(currentIndex / 3) === i
-            ? "bg-emerald-400 w-8"
-            : "bg-gray-600 w-3"}
-        `}
-      />
-    ))}
-  </div>
+              {/* Indicadores */}
+              <div className="flex items-center gap-3">
+                {Array.from({ length: Math.ceil(heroes.length / 3) }).map((_, i) => (
+                  <div
+                    key={i}
+                    onClick={() => {
+                      setIsAutoPlaying(false);
+                      setCurrentIndex(i * 3);
+                      setFlippedCards({});
+                    }}
+                    className={`
+                      carousel-indicator h-3 rounded-full transition-all duration-300
+                      ${Math.floor(currentIndex / 3) === i
+                        ? "bg-gradient-to-r from-emerald-400 to-emerald-600 w-8 shadow-lg shadow-emerald-500/50"
+                        : "bg-gray-600 w-3 hover:bg-gray-500"}
+                    `}
+                  />
+                ))}
+              </div>
 
+              {/* Botão Direita */}
               <button
                 onClick={handleNext}
                 disabled={currentIndex + 3 >= heroes.length}
                 className="
-      w-14 h-14
-      flex items-center justify-center
-      bg-white
-      text-emerald-500
-      rounded-full
-      border-2 border-emerald-500
-      transition-all
-      hover:bg-emerald-500
-      hover:text-white
-      hover:scale-105
-      active:scale-95
-      disabled:opacity-50
-      disabled:cursor-not-allowed
-    "
+                  w-14 h-14
+                  flex items-center justify-center
+                  bg-gradient-to-br from-emerald-400 to-emerald-600
+                  text-white
+                  rounded-full
+                  border-2 border-emerald-300
+                  shadow-lg shadow-emerald-500/50
+                  transition-all duration-300
+                  hover:scale-110
+                  hover:shadow-2xl
+                  hover:shadow-emerald-500/70
+                  active:scale-95
+                  disabled:opacity-30
+                  disabled:cursor-not-allowed
+                  disabled:hover:scale-100
+                "
               >
-                <FaArrowRight size={24} />
+                <FaArrowRight size={20} />
               </button>
+            </div>
 
+            {/* Indicador de Auto-play */}
+            <div className="text-center mt-6">
+              <button
+                onClick={() => setIsAutoPlaying(!isAutoPlaying)}
+                className="text-gray-400 hover:text-emerald-400 transition-colors text-sm font-semibold"
+              >
+                {isAutoPlaying ? '⏸️ Pausar rotação' : '▶️ Iniciar rotação'}
+              </button>
             </div>
           </div>
         </div>

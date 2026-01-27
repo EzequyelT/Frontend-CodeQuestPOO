@@ -1,10 +1,13 @@
 @import "tailwindcss";
 @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&display=swap');
 
-html, body, #root {
+html,
+body,
+#root {
   margin: 0;
   padding: 0;
   width: 100%;
   min-height: 100%;
-  background-color: rgb(0, 0, 0);
+  background-color: rgba(11, 15, 13, 0.8);
+
 }

@@ -1,11 +1,11 @@
-import aurelia from "../Assets/Aurelia.jpg"
-import bromm from "../Assets/Bromm.jpg"
-import eldrin from "../Assets/Eldrin.jpg"
-import lyra from "../Assets/Lyra.jpg"
-import tharok from "../Assets/Tharok.jpg"
-import vaelgrim from "../Assets/Vaelgrim.jpg"
+import aurelia from "../Assets/Aurelia.png";
+import bromm from "../Assets/Bromm.png";
+import eldrin from "../Assets/Eldrin.png";
+import lyra from "../Assets/Lyra.png";
+import tharok from "../Assets/Tharok.png";
+import vaelgrim from "../Assets/Vaelgrim.png";
 
-export const heroes = [
+const heroes = [
   {
     id: 1,
     name: "Aurelia",
@@ -55,3 +55,5 @@ export const heroes = [
     stats: { power: 80, wisdom: 85, agility: 80 }
   }
 ];
+
+export default heroes;
