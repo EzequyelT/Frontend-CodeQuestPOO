@@ -3,12 +3,13 @@ import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import HeaderLandPage from "../Components/Header/HeaderLandPage";
 import logo from "../Assets/Section1.jpg";
 import videoAbertura from "../Assets/Abertura.mp4";
-import herois from "../Assets/Herois.jpg";
+import herois from "../Assets/Herois.png";
 import evoluir from "../Assets/Evoluir.jpg";
 import explorar from "../Assets/Explorar.jpg";
 import aprender from "../Assets/Aprender.jpg";
 import bgSection4 from "../Assets/bgSection4.jpg";
 import heroes from "../data/heroesData";
+import historiaBg from "../Assets/BgHistoria.png";
 import "../css/landpage.css";
 
 export default function Landpage() {
@@ -109,121 +110,117 @@ export default function Landpage() {
           <source src={videoAbertura} type="video/mp4" />
         </video>
         <div className="absolute inset-0 bg-black/15" style={{ width: '100vw', height: '100vh', marginLeft: 'calc(-50vw + 50%)' }}></div>
+
       </section>
 
-      <div className="ornamental-divider bg-gradient-to-b from-black via-gray-900 to-black">
-        <div className="ornamental-icon">
-          <span className="text-2xl">⚔️</span>
-        </div>
-      </div>
 
-
-      {/* Seção História */}
-      <section className="relative w-full py-20 px-6 flex items-center justify-center bg-gradient-to-b from-black  to-black overflow-hidden">
-        {/* Elementos flutuantes de fundo */}
-        <div className="absolute inset-0 overflow-hidden opacity-30">
-          <div className="floating-element top-20 left-10 text-9xl ">📜</div>
-          <div className="floating-element top-40 right-20 text-8xl" style={{ animationDelay: '2s' }}>🗡️</div>
-          <div className="floating-element bottom-32 left-1/4 text-7xl" style={{ animationDelay: '4s' }}>🛡️</div>
-          <div className="floating-element bottom-20 right-1/3 text-8xl" style={{ animationDelay: '6s' }}>📖</div>
-          <div className="floating-element top-1/3 right-10 text-6xl" style={{ animationDelay: '8s' }}>⚡</div>
-        </div>
-
-        {/* Partículas animadas */}
+      <section className="relative w-full py-18 px-8 flex items-center justify-center bg-black overflow-hidden">
+        {/* Background com pergaminho */}
+        <div className="absolute inset-0 bg-gradient-to-b bg-gradient-to-t from-black/50 via-black/5 to-black" />
         <div className="particles">
-          {[...Array(30)].map((_, i) => (
+          {[...Array(15)].map((_, i) => (
             <div
               key={i}
               className="particle"
               style={{
                 left: `${Math.random() * 100}%`,
                 animationDelay: `${Math.random() * 10}s`,
-                animationDuration: `${10 + Math.random() * 10}s`
+                animationDuration: `${15 + Math.random() * 10}s`
               }}
             />
           ))}
         </div>
-
-        {/* Ornamentos laterais */}
-        <div className="absolute left-10 top-1/2 -translate-y-1/2 hidden xl:block">
-          <div className="scroll-ornament"></div>
-        </div>
-
-
-        <div id="historia" data-scroll-reveal className={`scroll-reveal max-w-5xl mx-auto text-center relative z-10 ${visibleElements['historia'] ? 'visible' : ''}`}>
-          {/* Título com decoração */}
-          <div className="flex items-center justify-center mb-16 gap-4">
-            <div className="flex-1 h-1 bg-gradient-to-r from-transparent via-emerald-400 to-transparent"></div>
-            <div className="flex items-center gap-4">
-              <div className="w-4 h-4 rounded-full bg-emerald-400 glow-animation"></div>
-              <div className="relative">
-                <h2 className="rpg-heading text-5xl md:text-7xl text-emerald-400">
-                  História
-                </h2>
-              </div>
-              <div className="w-4 h-4 rounded-full bg-emerald-400 glow-animation"></div>
+        <div
+          className="relative w-full max-w-7xl mx-auto"
+          style={{
+            backgroundImage: `url(${historiaBg})`,
+            backgroundSize: '100% 100%',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition: 'center',
+            minHeight: '1000px',
+            padding: '100px 120px'
+          }}
+        >
+          <div
+            id="historia"
+            data-scroll-reveal
+            className={`scroll-reveal text-center relative z-10 ${visibleElements['historia'] ? 'visible' : ''}`}
+          >
+            {/* Título simples */}
+            <div className="mb-8">
+              <h2 className="rpg-heading text-6xl md:text-7xl  text-yellow-400 text-center animate-pulse">
+                História
+              </h2>
             </div>
-            <div className="flex-1 h-1 bg-gradient-to-r from-transparent via-emerald-400 to-transparent"></div>
-          </div>
-
-          {/* Frame da história com decorações */}
-          <div className="story-frame">
-            {/* Cantos decorativos */}
 
             {/* Conteúdo da história */}
-            <div className="relative z-10">
-              <p className="rpg-text text-gray-200 text-lg md:text-xl leading-relaxed font-light">
-                <span className="text-8xl text-amber-400 float-left mr-2 mb-20 leading-none relative -top-8">
+            <div className="relative z-10 max-w-3xl ml-33 mt-15">
+              <p className="rpg-text text-black text-sm md:text-base leading-relaxed font-light">
+                <span className="font-serif font-semibold">
                   H
                 </span>
                 á muito tempo, num vale rodeado por grandes montanhas, existia um reino onde o
                 conhecimento era a maior fonte de poder. Esse reino era protegido pelos
-                <span className="text-emerald-400 font-bold"> Guardians do Código</span>, mestres da Programação Orientada a Objectos.
+                <span className="text-black font-bold"> Guardians do Código</span>, mestres da Programação Orientada a Objectos.
                 <br /><br />
+
                 Com o passar do tempo, o conhecimento foi sendo esquecido… e desse esquecimento
-                nasceu o <span className="text-red-400 font-bold">Dragão do Caos 🐉</span>, uma criatura que se alimenta de erros e código mal
+                nasceu o <span className="text-red-600 font-semibold">Dragão do Caos</span>, uma criatura que se alimenta de erros e código mal
                 estruturado.
                 <br /><br />
-                <span className="inline-block px-4 py-2 bg-red-900/30 border-l-4 border-red-400 rounded">
+
+                <span className="inline-block px-3 py-1.5 bg-red-100 border-l-4 border-red-600 rounded text-xs md:text-sm">
                   Agora, o reino está em perigo.
                 </span>
                 <br />
-                <span className="inline-block px-4 py-2 bg-amber-900/30 border-l-4 border-amber-400 rounded mt-2">
+
+                <span className="inline-block px-3 py-1.5 bg-amber-100 border-l-4 border-amber-600 rounded mt-1 text-xs md:text-sm">
                   Novos heróis foram chamados.
                 </span>
                 <br /><br />
-                <span className="text-cyan-300 font-bold text-2xl inline-block px-6 py-3 bg-cyan-900/30 rounded-lg border-2 border-cyan-400/50 shadow-lg shadow-cyan-500/20">
+
+                <span className="text-cyan-700 font-semibold text-sm md:text-base inline-block px-4 py-2 bg-cyan-100 rounded-lg border border-cyan-600 shadow">
                   ⚡ Tu és um deles. ⚡
                 </span>
                 <br /><br />
+
                 Explora diferentes regiões, aprende os princípios da POO, enfrenta desafios e
                 derrota o dragão para restaurar o conhecimento e salvar o reino.
               </p>
 
               {/* Citação decorativa */}
-              <div className="mt-8 pt-8 border-t border-emerald-400/30">
-                <p className="text-emerald-300 italic text-lg">
+              <div className="mt-4 pt-4 border-t border-amber-600/30">
+                <p className="text-black font-bold italic text-sm md:text-base font-medium">
                   "O código bem estruturado é a espada que derrota o caos"
                 </p>
-                <p className="text-gray-400 text-sm mt-2">— Antigo provérbio dos Guardians</p>
+                <p className="text-gray-800 text-xs mt-1">
+                  — Antigo provérbio dos Guardians
+                </p>
               </div>
             </div>
+
           </div>
-
-          {/* Indicador de scroll */}
-
         </div>
       </section>
 
-
-
       {/* Seção Imagem Heróis */}
       <section
-        className="relative w-full h-screen bg-center bg-cover"
-        style={{ backgroundImage: `url(${herois})` }}
+        className="relative w-full py-40 px-10 overflow-hidden"
+        style={{
+          backgroundImage: `url(${herois})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        }}
       >
-        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/30"></div>
-        <div className="relative z-10 flex items-center justify-center h-full"></div>
+        {/* Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/30" />
+
+        {/* Conteúdo */}
+        <div className="relative z-10 flex items-center justify-center min-h-screen">
+
+        </div>
+        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/5 to-black" />
       </section>
 
       {/* Seção Recursos de Jogo */}
@@ -248,7 +245,7 @@ export default function Landpage() {
           <div className="space-y-20">
             {/* Explorar */}
             <div id="explorar" data-scroll-reveal className={`scroll-reveal flex flex-col md:flex-row items-center gap-8 group ${visibleElements['explorar'] ? 'visible' : ''}`}>
-              <div className="w-full md:w-1/2 overflow-hidden rounded-2xl shine-effect card-border-glow ">
+              <div className="w-full md:w-1/2 overflow-hidden rounded-2xl shine-effect card-border-glow">
                 <img
                   src={explorar}
                   alt="Explorar"
@@ -322,8 +319,10 @@ export default function Landpage() {
           backgroundRepeat: 'no-repeat'
         }}
       >
-        {/* Overlay escuro para melhor legibilidade */}
-        <div className="absolute inset-0 bg-black/40"></div>
+        {/*gradiante para o top e bottom */}
+        <div className="absolute inset-0 bg-gradient-to-b bg-gradient-to-t from-black/50 via-black/5 to-black" />
+        <div className="absolute inset-0 bg-gradient-to-b bg-gradient-to-b from-black/50 via-black/5 to-black" />
+
 
         {/* Efeito de brilho adicional */}
         <div className="absolute inset-0 opacity-20">

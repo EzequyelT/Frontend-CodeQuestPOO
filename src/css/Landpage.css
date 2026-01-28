@@ -326,9 +326,9 @@
 
    .particle {
        position: absolute;
-       width: 20px;
-       height: 15px;
-       background: #08855b;
+       width: 10px;
+       height: 5px;
+       background: #e07d0b;
        border-radius: 50%;
        animation: float-particle 10s infinite;
        opacity: 0.5;
