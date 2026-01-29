@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
+import { FaArrowLeft, FaArrowRight, FaGamepad, FaStar, FaTrophy } from "react-icons/fa";
 import HeaderLandPage from "../Components/Header/HeaderLandPage";
 import logo from "../Assets/Section1.jpg";
 import videoAbertura from "../Assets/Abertura.mp4";
@@ -7,9 +7,10 @@ import herois from "../Assets/Herois.png";
 import evoluir from "../Assets/Evoluir.jpg";
 import explorar from "../Assets/Explorar.jpg";
 import aprender from "../Assets/Aprender.jpg";
-import bgSection4 from "../Assets/bgSection4.jpg";
 import heroes from "../data/heroesData";
 import historiaBg from "../Assets/BgHistoria.png";
+import FinalBg from "../Assets/FinalBg.jpg";
+import Footer from "../Components/footer/FooterLandPage";
 import "../css/landpage.css";
 
 export default function Landpage() {
@@ -63,7 +64,7 @@ export default function Landpage() {
         return next >= heroes.length ? 0 : next;
       });
       setFlippedCards({});
-    }, 5000); // Muda a cada 5 segundos
+    }, 5000);
 
     return () => clearInterval(interval);
   }, [isAutoPlaying]);
@@ -91,13 +92,12 @@ export default function Landpage() {
 
   return (
     <>
-
       <div className="w-full overflow-x-hidden">
         <HeaderLandPage />
       </div>
 
-      {/* Seção de Vídeo */}
-      <section className="relative w-full h-screen flex items-center justify-center overflow-hidden">
+      {/* Seção de Vídeo - MELHORADA (ajustada para usar py/px e altura definida) */}
+      <section id="video" className="relative w-full py-110 px-130 flex items-center justify-center overflow-hidden" style={{ minHeight: '60vh' }}>
         <video
           autoPlay
           loop
@@ -105,17 +105,14 @@ export default function Landpage() {
           playsInline
           poster={logo}
           className="absolute inset-0 w-full h-full object-cover"
-          style={{ width: '100vw', height: '100vh', marginLeft: 'calc(-50vw + 50%)', marginTop: '0' }}
         >
           <source src={videoAbertura} type="video/mp4" />
         </video>
-        <div className="absolute inset-0 bg-black/15" style={{ width: '100vw', height: '100vh', marginLeft: 'calc(-50vw + 50%)' }}></div>
-
+        <div className="absolute inset-0 bg-black/20"></div>
       </section>
 
-
-      <section className="relative w-full py-18 px-8 flex items-center justify-center bg-black overflow-hidden">
-        {/* Background com pergaminho */}
+      {/* Seção História - MANTIDA CONFORME PEDIDO */}
+      <section id="historia" className="relative w-full py-20 px-8 flex items-center justify-center bg-black overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b bg-gradient-to-t from-black/50 via-black/5 to-black" />
         <div className="particles">
           {[...Array(15)].map((_, i) => (
@@ -138,7 +135,7 @@ export default function Landpage() {
             backgroundRepeat: 'no-repeat',
             backgroundPosition: 'center',
             minHeight: '1000px',
-            padding: '100px 120px'
+            padding: '10px 20px'
           }}
         >
           <div
@@ -146,19 +143,15 @@ export default function Landpage() {
             data-scroll-reveal
             className={`scroll-reveal text-center relative z-10 ${visibleElements['historia'] ? 'visible' : ''}`}
           >
-            {/* Título simples */}
             <div className="mb-8">
-              <h2 className="rpg-heading text-6xl md:text-7xl  text-yellow-400 text-center animate-pulse">
+              <h2 className="rpg-heading text-6xl md:text-7xl text-yellow-400 text-center animate-pulse mt-20">
                 História
               </h2>
             </div>
 
-            {/* Conteúdo da história */}
-            <div className="relative z-10 max-w-3xl ml-33 mt-15">
+            <div className="relative z-10 max-w-3xl ml-60 mt-15">
               <p className="rpg-text text-black text-sm md:text-base leading-relaxed font-light">
-                <span className="font-serif font-semibold">
-                  H
-                </span>
+                <span className="font-serif font-semibold text-2xl">H</span>
                 á muito tempo, num vale rodeado por grandes montanhas, existia um reino onde o
                 conhecimento era a maior fonte de poder. Esse reino era protegido pelos
                 <span className="text-black font-bold"> Guardians do Código</span>, mestres da Programação Orientada a Objectos.
@@ -188,7 +181,6 @@ export default function Landpage() {
                 derrota o dragão para restaurar o conhecimento e salvar o reino.
               </p>
 
-              {/* Citação decorativa */}
               <div className="mt-4 pt-4 border-t border-amber-600/30">
                 <p className="text-black font-bold italic text-sm md:text-base font-medium">
                   "O código bem estruturado é a espada que derrota o caos"
@@ -198,7 +190,6 @@ export default function Landpage() {
                 </p>
               </div>
             </div>
-
           </div>
         </div>
       </section>
@@ -213,152 +204,184 @@ export default function Landpage() {
           backgroundRepeat: 'no-repeat'
         }}
       >
-        {/* Overlay */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/30" />
-
-        {/* Conteúdo */}
-        <div className="relative z-10 flex items-center justify-center min-h-screen">
-
-        </div>
+        <div className="relative z-10 flex items-center justify-center min-h-screen"></div>
         <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/5 to-black" />
       </section>
 
-      {/* Seção Recursos de Jogo */}
-      <section className="relative w-full py-24 px-6 bg-gradient-to-b from-black via-slate-950 to-black overflow-hidden">
+      {/* Seção Recursos de Jogo - MELHORADA COM BRANCO */}
+      <section id="recursos" className="relative w-full py-24 px-6 bg-gradient-to-b from-black via-slate-950 to-black overflow-hidden">
         <div className="max-w-7xl mx-auto">
+          {/* Título melhorado */}
           <div className="flex items-center justify-center mb-16 gap-4">
-            <div className="flex-1 h-1 bg-gradient-to-r from-transparent via-emerald-400 to-transparent"></div>
+            <div className="flex-1 h-1 bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
             <div className="flex items-center gap-3">
-              <div className="w-3 h-3 rounded-full bg-cyan-400 glow-animation"></div>
-              <h2 className="rpg-heading text-5xl md:text-6xl text-cyan-400">
+              <FaStar className="text-emerald-400 text-2xl animate-pulse" />
+              <h2 className="rpg-heading text-5xl md:text-6xl text-white">
                 Recursos de Jogo
               </h2>
-              <div className="w-3 h-3 rounded-full bg-cyan-400 glow-animation"></div>
+              <FaStar className="text-emerald-400 text-2xl animate-pulse" />
             </div>
-            <div className="flex-1 h-1 bg-gradient-to-r from-transparent via-emerald-400 to-transparent"></div>
+            <div className="flex-1 h-1 bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
           </div>
 
           <p className="rpg-text text-gray-300 text-lg md:text-xl text-center mb-20 font-light">
-            Um mundo cheio de <span className="text-emerald-400 font-bold">desafios</span>, <span className="text-cyan-300 font-bold">recompensas</span> e <span className="text-emerald-400 font-bold">conhecimento</span> à tua espera.
+            Um mundo cheio de <span className="text-white font-bold">desafios</span>, <span className="text-emerald-400 font-bold">recompensas</span> e <span className="text-white font-bold">conhecimento</span> à tua espera.
           </p>
 
           <div className="space-y-20">
-            {/* Explorar */}
+            {/* Explorar - MELHORADO */}
             <div id="explorar" data-scroll-reveal className={`scroll-reveal flex flex-col md:flex-row items-center gap-8 group ${visibleElements['explorar'] ? 'visible' : ''}`}>
-              <div className="w-full md:w-1/2 overflow-hidden rounded-2xl shine-effect card-border-glow">
+              <div className="w-full md:w-1/2 overflow-hidden rounded-2xl shine-effect card-border-glow-white">
                 <img
                   src={explorar}
                   alt="Explorar"
                   className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
                 />
               </div>
-              <div className="w-full md:w-1/2 space-y-4 ">
-                <h3 className="rpg-heading text-4xl md:text-5xl text-emerald-400 ">
-                  Explorar
-                </h3>
+              <div className="w-full md:w-1/2 space-y-6">
+                <div className="flex items-center gap-3">
+                  <div className="w-1 h-12 bg-gradient-to-b from-emerald-400 to-white"></div>
+                  <h3 className="rpg-heading text-4xl md:text-5xl text-white">
+                    Explorar
+                  </h3>
+                </div>
                 <p className="rpg-text text-gray-300 text-lg leading-relaxed font-light">
-                  Percorre diferentes <span className="text-cyan-300">mapas do reino</span>, desbloqueia novas áreas e descobre
+                  Percorre diferentes <span className="text-white font-semibold">mapas do reino</span>, desbloqueia novas áreas e descobre
                   conceitos fundamentais da Programação Orientada a Objectos à medida que
                   avanças na tua aventura épica.
                 </p>
+                <div className="flex gap-3 pt-4">
+                  <span className="px-4 py-2 bg-emerald-500/20 border border-emerald-500/50 rounded-full text-emerald-400 text-sm font-semibold">
+                    Mapas Únicos
+                  </span>
+                  <span className="px-4 py-2 bg-white/10 border border-white/30 rounded-full text-white text-sm font-semibold">
+                    Desafios POO
+                  </span>
+                </div>
               </div>
             </div>
 
-            {/* Evoluir */}
+            {/* Evoluir - MELHORADO */}
             <div id="evoluir" data-scroll-reveal className={`scroll-reveal flex flex-col md:flex-row-reverse items-center gap-8 group ${visibleElements['evoluir'] ? 'visible' : ''}`}>
-              <div className="w-full md:w-1/2 overflow-hidden rounded-2xl shine-effect card-border-glow">
+              <div className="w-full md:w-1/2 overflow-hidden rounded-2xl shine-effect card-border-glow-white">
                 <img
                   src={evoluir}
                   alt="Evoluir"
                   className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
                 />
               </div>
-              <div className="w-full md:w-1/2 space-y-4">
-                <h3 className="rpg-heading text-4xl md:text-5xl text-cyan-400">
-                  Evoluir
-                </h3>
-                <p className="rpg-text text-gray-300 text-lg leading-relaxed font-light">
-                  Ganha <span className="text-yellow-400">XP</span>, <span className="text-yellow-300">coins</span> e recompensas, melhora as tuas habilidades
+              <div className="w-full md:w-1/2 space-y-6">
+                <div className="flex items-center gap-3 justify-end md:justify-start">
+                  <h3 className="rpg-heading text-4xl md:text-5xl text-white">
+                    Evoluir
+                  </h3>
+                  <div className="w-1 h-12 bg-gradient-to-b from-white to-emerald-400"></div>
+                </div>
+                <p className="rpg-text text-gray-300 text-lg leading-relaxed font-light md:text-right">
+                  Ganha <span className="text-yellow-400 font-semibold">XP</span>, <span className="text-yellow-300 font-semibold">coins</span> e recompensas, melhora as tuas habilidades
                   e acompanha o teu progresso enquanto te tornas um verdadeiro
-                  <span className="text-emerald-400 font-bold"> Guardião do Código</span>.
+                  <span className="text-white font-bold"> Guardião do Código</span>.
                 </p>
+                <div className="flex gap-3 pt-4 justify-end md:justify-start">
+                  <span className="px-4 py-2 bg-yellow-500/20 border border-yellow-500/50 rounded-full text-yellow-400 text-sm font-semibold">
+                    Sistema XP
+                  </span>
+                  <span className="px-4 py-2 bg-white/10 border border-white/30 rounded-full text-white text-sm font-semibold">
+                    Recompensas
+                  </span>
+                </div>
               </div>
             </div>
 
-            {/* Aprender */}
+            {/* Aprender - MELHORADO */}
             <div id="aprender" data-scroll-reveal className={`scroll-reveal flex flex-col md:flex-row items-center gap-8 group ${visibleElements['aprender'] ? 'visible' : ''}`}>
-              <div className="w-full md:w-1/2 overflow-hidden rounded-2xl shine-effect card-border-glow">
+              <div className="w-full md:w-1/2 overflow-hidden rounded-2xl shine-effect card-border-glow-white">
                 <img
                   src={aprender}
                   alt="Aprender"
                   className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
                 />
               </div>
-              <div className="w-full md:w-1/2 space-y-4">
-                <h3 className="rpg-heading text-4xl md:text-5xl text-emerald-400">
-                  Aprender
-                </h3>
+              <div className="w-full md:w-1/2 space-y-6">
+                <div className="flex items-center gap-3">
+                  <div className="w-1 h-12 bg-gradient-to-b from-emerald-400 to-white"></div>
+                  <h3 className="rpg-heading text-4xl md:text-5xl text-white">
+                    Aprender
+                  </h3>
+                </div>
                 <p className="rpg-text text-gray-300 text-lg leading-relaxed font-light">
-                  Aprende <span className="text-cyan-300">Programação Orientada a Objectos (POO)</span> de forma prática,
+                  Aprende <span className="text-white font-semibold">Programação Orientada a Objectos (POO)</span> de forma prática,
                   divertida e descomplicada, com exercícios interactivos e desafios
                   que te ajudam a pensar como um verdadeiro programador.
                 </p>
+                <div className="flex gap-3 pt-4">
+                  <span className="px-4 py-2 bg-emerald-500/20 border border-emerald-500/50 rounded-full text-emerald-400 text-sm font-semibold">
+                    POO Prática
+                  </span>
+                  <span className="px-4 py-2 bg-white/10 border border-white/30 rounded-full text-white text-sm font-semibold">
+                    Interativo
+                  </span>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Seção Call to Action */}
+      {/* Seção Call to Action - MELHORADA COM BRANCO */}
       <section
-        className="relative w-full py-80 px-10 overflow-hidden"
+        className="relative w-full py-70 px-50 overflow-hidden"
         style={{
-          backgroundImage: `url(${bgSection4})`,
+          backgroundImage: `url(${FinalBg})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat'
         }}
       >
-        {/*gradiante para o top e bottom */}
         <div className="absolute inset-0 bg-gradient-to-b bg-gradient-to-t from-black/50 via-black/5 to-black" />
         <div className="absolute inset-0 bg-gradient-to-b bg-gradient-to-b from-black/50 via-black/5 to-black" />
 
-
-        {/* Efeito de brilho adicional */}
+        {/* Efeito de brilho melhorado */}
         <div className="absolute inset-0 opacity-20">
           <div className="absolute top-1/2 left-1/4 w-96 h-96 bg-emerald-500 rounded-full blur-3xl"></div>
-          <div className="absolute top-1/2 right-1/4 w-96 h-96 bg-cyan-500 rounded-full blur-3xl"></div>
+          <div className="absolute top-1/2 right-1/4 w-96 h-96 bg-white rounded-full blur-3xl"></div>
         </div>
 
         <div id="cta" data-scroll-reveal className={`scroll-reveal relative z-10 max-w-4xl mx-auto text-center space-y-8 ${visibleElements['cta'] ? 'visible' : ''}`}>
-          <h2 className="rpg-heading text-6xl md:text-7xl text-emerald-400 float-animation">
+         
+          
+          <h2 className="rpg-heading text-6xl md:text-7xl text-white float-animation drop-shadow-2xl">
             Explora este Mundo
           </h2>
 
-          <p className="rpg-heading text-2xl md:text-3xl text-cyan-300">
+          <p className="rpg-heading text-2xl md:text-3xl text-emerald-400">
             A tua jornada começa agora.
           </p>
 
-          <p className="rpg-text text-gray-300 text-xl md:text-2xl font-light">
-            Estás pronto para te tornares um <span className="text-emerald-400 font-bold">Guardião do Código</span>?
+          <p className="rpg-text text-gray-200 text-xl md:text-2xl font-light">
+            Estás pronto para te tornares um <span className="text-white font-bold">Guardião do Código</span>?
           </p>
 
           <div className="pt-8">
-            <button className="game-button px-12 py-5 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white text-xl rounded-full hover:scale-110 hover:shadow-2xl hover:shadow-emerald-500/70 transition-all duration-300">
-              <span className="relative z-10">Comece essa aventura agora!</span>
+            <button className="game-button px-12 py-5 bg-gradient-to-r from-white via-gray-100 to-white text-black text-xl font-bold rounded-full hover:scale-110 hover:shadow-2xl hover:shadow-white/70 transition-all duration-300 border-2 border-emerald-400">
+              <span className="relative z-10 flex items-center justify-center gap-3">
+                <FaGamepad className="text-2xl" />
+                Comece essa aventura agora!
+              </span>
             </button>
           </div>
 
           <div className="flex items-center justify-center gap-3 pt-8">
-            <div className="w-3 h-3 rounded-full bg-emerald-400 animate-pulse"></div>
-            <div className="w-3 h-3 rounded-full bg-cyan-400 animate-pulse delay-75"></div>
-            <div className="w-3 h-3 rounded-full bg-emerald-400 animate-pulse delay-150"></div>
+            <div className="w-3 h-3 rounded-full bg-white animate-pulse"></div>
+            <div className="w-3 h-3 rounded-full bg-emerald-400 animate-pulse delay-75"></div>
+            <div className="w-3 h-3 rounded-full bg-white animate-pulse delay-150"></div>
           </div>
         </div>
       </section>
 
-      {/* Seção Escolha o Herói - Carousel Automático */}
-      <section className="relative w-full py-24 px-6 bg-gradient-to-b from-black via-gray-900 to-black overflow-hidden">
+      {/* Seção Escolha o Herói - MELHORADA COM BRANCO */}
+      <section id="herois" className="relative w-full py-24 px-6 bg-gradient-to-b from-black via-gray-900 to-black overflow-hidden">
         <div className="particles">
           {[...Array(15)].map((_, i) => (
             <div
@@ -374,20 +397,21 @@ export default function Landpage() {
         </div>
 
         <div className="max-w-7xl mx-auto relative z-10">
+          {/* Título melhorado */}
           <div className="flex items-center justify-center mb-8 gap-4">
-            <div className="flex-1 h-px bg-gradient-to-r from-transparent via-emerald-400 to-transparent"></div>
+            <div className="flex-1 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
             <div className="flex items-center gap-3">
-              <div className="w-2 h-2 rounded-full bg-emerald-400 glow-animation"></div>
+              <div className="w-2 h-2 rounded-full bg-white glow-animation-white"></div>
               <h2 className="rpg-heading text-4xl md:text-5xl text-white tracking-wider text-center">
                 Escolhe o Teu Herói
               </h2>
-              <div className="w-2 h-2 rounded-full bg-emerald-400 glow-animation"></div>
+              <div className="w-2 h-2 rounded-full bg-white glow-animation-white"></div>
             </div>
-            <div className="flex-1 h-px bg-gradient-to-r from-transparent via-emerald-400 to-transparent"></div>
+            <div className="flex-1 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
           </div>
 
           <p className="rpg-text text-gray-300 text-lg md:text-xl text-center mb-16 font-light">
-            O mal avança e só os verdadeiros <span className="text-emerald-400 font-bold">Guardiões do Código</span> podem travá-lo. Escolhe o teu herói e começa a aventura.
+            O mal avança e só os verdadeiros <span className="text-white font-bold">Guardiões do Código</span> podem travá-lo. Escolhe o teu herói e começa a aventura.
           </p>
 
           <div className="relative">
@@ -400,14 +424,12 @@ export default function Landpage() {
                 >
                   <div className={`card-flip-inner ${flippedCards[hero.id] ? 'flipped' : ''}`}>
                     {/* Frente do Card */}
-                    <div className="card-face card-vintage cursor-pointer hover:shadow-2xl hover:shadow-emerald-500/20 transition-all duration-300">
-                      {/* Cantos decorativos */}
+                    <div className="card-face card-vintage cursor-pointer hover:shadow-2xl hover:shadow-white/20 transition-all duration-300">
                       <div className="card-corner card-corner-tl"></div>
                       <div className="card-corner card-corner-tr"></div>
                       <div className="card-corner card-corner-bl"></div>
                       <div className="card-corner card-corner-br"></div>
 
-                      {/* Imagem do herói */}
                       <div className="hero-image-container">
                         <img
                           src={hero.image}
@@ -415,7 +437,6 @@ export default function Landpage() {
                         />
                       </div>
 
-                      {/* Nome do herói */}
                       <div className="p-6 text-center">
                         <h3 className="rpg-heading text-3xl text-white mb-2 tracking-wider" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.8)' }}>
                           {hero.name}
@@ -428,7 +449,6 @@ export default function Landpage() {
 
                     {/* Verso do Card */}
                     <div className="card-face card-back card-vintage cursor-pointer">
-                      {/* Cantos decorativos */}
                       <div className="card-corner card-corner-tl"></div>
                       <div className="card-corner card-corner-tr"></div>
                       <div className="card-corner card-corner-bl"></div>
@@ -487,24 +507,23 @@ export default function Landpage() {
               ))}
             </div>
 
-            {/* Navegação e indicadores */}
+            {/* Navegação melhorada */}
             <div className="flex items-center justify-center gap-6">
-              {/* Botão Esquerda */}
               <button
                 onClick={handlePrev}
                 disabled={currentIndex === 0}
                 className="
                   w-14 h-14
                   flex items-center justify-center
-                  bg-gradient-to-br from-emerald-400 to-emerald-600
-                  text-white
+                  bg-gradient-to-br from-white to-gray-200
+                  text-black
                   rounded-full
-                  border-2 border-emerald-300
-                  shadow-lg shadow-emerald-500/50
+                  border-2 border-emerald-400
+                  shadow-lg shadow-white/30
                   transition-all duration-300
                   hover:scale-110
                   hover:shadow-2xl
-                  hover:shadow-emerald-500/70
+                  hover:shadow-white/50
                   active:scale-95
                   disabled:opacity-30
                   disabled:cursor-not-allowed
@@ -514,7 +533,6 @@ export default function Landpage() {
                 <FaArrowLeft size={20} />
               </button>
 
-              {/* Indicadores */}
               <div className="flex items-center gap-3">
                 {Array.from({ length: Math.ceil(heroes.length / 3) }).map((_, i) => (
                   <div
@@ -527,29 +545,28 @@ export default function Landpage() {
                     className={`
                       carousel-indicator h-3 rounded-full transition-all duration-300
                       ${Math.floor(currentIndex / 3) === i
-                        ? "bg-gradient-to-r from-emerald-400 to-emerald-600 w-8 shadow-lg shadow-emerald-500/50"
+                        ? "bg-gradient-to-r from-white to-gray-200 w-8 shadow-lg shadow-white/50"
                         : "bg-gray-600 w-3 hover:bg-gray-500"}
                     `}
                   />
                 ))}
               </div>
 
-              {/* Botão Direita */}
               <button
                 onClick={handleNext}
                 disabled={currentIndex + 3 >= heroes.length}
                 className="
                   w-14 h-14
                   flex items-center justify-center
-                  bg-gradient-to-br from-emerald-400 to-emerald-600
-                  text-white
+                  bg-gradient-to-br from-white to-gray-200
+                  text-black
                   rounded-full
-                  border-2 border-emerald-300
-                  shadow-lg shadow-emerald-500/50
+                  border-2 border-emerald-400
+                  shadow-lg shadow-white/30
                   transition-all duration-300
                   hover:scale-110
                   hover:shadow-2xl
-                  hover:shadow-emerald-500/70
+                  hover:shadow-white/50
                   active:scale-95
                   disabled:opacity-30
                   disabled:cursor-not-allowed
@@ -560,11 +577,10 @@ export default function Landpage() {
               </button>
             </div>
 
-            {/* Indicador de Auto-play */}
             <div className="text-center mt-6">
               <button
                 onClick={() => setIsAutoPlaying(!isAutoPlaying)}
-                className="text-gray-400 hover:text-emerald-400 transition-colors text-sm font-semibold"
+                className="text-gray-400 hover:text-white transition-colors text-sm font-semibold"
               >
                 {isAutoPlaying ? '⏸️ Pausar rotação' : '▶️ Iniciar rotação'}
               </button>
@@ -572,6 +588,8 @@ export default function Landpage() {
           </div>
         </div>
       </section>
+
+      <Footer />
     </>
   );
 }
