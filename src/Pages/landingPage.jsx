@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { FaArrowLeft, FaArrowRight, FaGamepad, FaStar, FaTrophy } from "react-icons/fa";
 import { useNavigate } from "react-router-dom"
-import HeaderLandPage from "../Components/Header/HeaderLandPage";
+import HeaderLandingPage from "../Components/Header/HeaderLandingPage";
 import logo from "../Assets/Section1.jpg";
 import videoAbertura from "../Assets/landpage/Abertura.mp4";
 import herois from "../Assets/landpage/Herois.png";
@@ -14,7 +14,7 @@ import FinalBg from "../Assets/landpage/FinalBg.jpg";
 import Footer from "../Components/footer/FooterLandPage";
 import "../css/landingPage.css";
 
-export default function Landpage() {
+export default function Landingpage() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [flippedCards, setFlippedCards] = useState({});
   const [visibleElements, setVisibleElements] = useState({});
@@ -95,7 +95,7 @@ export default function Landpage() {
   return (
     <>
       <div className="w-full overflow-x-hidden">
-        <HeaderLandPage />
+        <HeaderLandingPage />
       </div>
 
       {/* Seção de Vídeo - MELHORADA (ajustada para usar py/px e altura definida) */}

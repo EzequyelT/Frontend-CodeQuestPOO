@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 import Landingpage from './Pages/landingPage'
 import GameTest from './Pages/gameTest'
+import { DashBoard } from './Pages/dashBoard'
 import Desafio1GameTest from "./Components/GameTest/desafio1"
 import Desafio2GameTest from "./Components/GameTest/desafio2"
 import DesafioFinal from "./Components/GameTest/desafioFinal"
@@ -18,7 +19,8 @@ function App() {
           <Route path="/Desafio1GameTest" element={<Desafio1GameTest />} />
           <Route path="/Desafio2GameTest" element={<Desafio2GameTest />} />
           <Route path="/DesafioFinalGameTest" element={<DesafioFinal />} />
-            <Route path="*" element={<h1>Página não encontrada</h1>} />
+          <Route path="/Dashboard" element={<DashBoard />} />
+          <Route path="*" element={<h1>Página não encontrada</h1>} />
         </Routes>
       </BrowserRouter>
     </>

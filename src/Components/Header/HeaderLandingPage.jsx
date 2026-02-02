@@ -1,9 +1,12 @@
 import { useState } from 'react';
 import { FaChevronDown, FaGamepad, FaUserPlus } from 'react-icons/fa';
 import logo from '../../Assets/logo.png';
+import { useNavigate } from "react-router-dom"
 
-export default function HeaderLandPage() {
+
+export default function HeaderLandingPage() {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const navigate = useNavigate()
 
     const scrollToSection = (id) => {
         const el = document.getElementById(id);
@@ -91,7 +94,7 @@ export default function HeaderLandPage() {
                         </button>
 
                         {/* Criar Conta Button */}
-                        <button className="relative group overflow-hidden px-6 py-2.5 rounded-full font-medium text-white bg-gradient-to-r from-white/10 to-white/5 border border-white/30 hover:border-white/50 hover:from-white/15 hover:to-white/10 transition-all duration-300 backdrop-blur-sm hover:shadow-lg hover:shadow-white/10">
+                        <button onClick={() => navigate('/Dashboard')} className="relative group overflow-hidden px-6 py-2.5 rounded-full font-medium text-white bg-gradient-to-r from-white/10 to-white/5 border border-white/30 hover:border-white/50 hover:from-white/15 hover:to-white/10 transition-all duration-300 backdrop-blur-sm hover:shadow-lg hover:shadow-white/10">
                             <span className="relative z-10 flex items-center gap-2">
                                 <FaUserPlus />
                                 Criar Conta

@@ -12,21 +12,21 @@ export default function GameTest() {
         {
             id: 1,
             name: "Início da Jornada",
-            position: { top: '90%', left: '58%' }, // Início do caminho (parte inferior)
+            position: { top: '90%', left: '60%' }, // Início do caminho (parte inferior)
             size: 'small',
             showArrow: true
         },
         {
             id: 2,
             name: "Caminho da Floresta",
-            position: { top: '65%', left: '61%' }, // Meio do caminho (curva)
+            position: { top: '65%', left: '66%' }, // Meio do caminho (curva)
             size: 'medium',
             showArrow: false
         },
         {
             id: 3,
             name: "Portal da Caverna",
-            position: { top: '47%', left: '68%' }, // Perto da caverna iluminada
+            position: { top: '47%', left: '72%' }, // Perto da caverna iluminada
             size: 'large',
             showArrow: false
         }
@@ -116,7 +116,7 @@ export default function GameTest() {
                                     animation: 'pulse 2s infinite'
                                 }}
                             >
-                                <span className="drop-shadow-lg">{stage.id}</span>
+                               
                             </button>
                         </div>
                     ))}
