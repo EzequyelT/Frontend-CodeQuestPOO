@@ -106,7 +106,7 @@ const Footer = () => {
 
                 {/* Bottom Footer */}
                 <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-gray-500 text-sm">
-                    <p>Copyright 2023</p>
+                    <p>Copyright 2025</p>
                     <div className="flex gap-6">
                         <a href="#" className="hover:text-emerald-400 transition-colors duration-300">
                             Privacy Policy
