@@ -23,7 +23,6 @@ export default function HeaderLandingPage() {
         <header className="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-transparent">
             <nav className="w-full px-6 py-4">
                 <div className="flex items-center justify-between max-w-full">
-                    {/* Logo */}
                     <div className="flex items-center flex-shrink-0">
                         <img
                             src={logo}
@@ -68,7 +67,6 @@ export default function HeaderLandingPage() {
                             )}
                         </div>
 
-                        {/* História Button */}
                         <button
                             onClick={() => scrollToSection('historia')}
                             className="relative text-white/90 hover:text-white px-5 py-2.5 rounded-full border border-transparent hover:border-white/20 hover:bg-white/10 transition-all duration-300 font-medium text-lg group overflow-hidden"
@@ -77,7 +75,6 @@ export default function HeaderLandingPage() {
                             <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/0 via-emerald-500/10 to-emerald-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                         </button>
 
-                        {/* Jogue Agora Button */}
                         <button
                             onClick={() => scrollToSection('cta')}
                             className="relative text-white/90 hover:text-white px-5 py-2.5 rounded-full border border-transparent hover:border-white/20 hover:bg-white/10 transition-all duration-300 font-medium text-lg group overflow-hidden"
@@ -86,14 +83,11 @@ export default function HeaderLandingPage() {
                         </button>
                     </div>
 
-                    {/* Auth Buttons */}
                     <div className="flex items-center space-x-3 flex-shrink-0 mr-4">
-                        {/* Login Button - Invisível */}
-                        <button className="text-white/90 hover:text-white bg-transparent px-6 py-2.5 rounded-full hover:bg-white/10 transition-all duration-300 font-medium">
+                        <button  onClick={() => navigate('/Login')} className="text-white/90 hover:text-white bg-transparent px-6 py-2.5 rounded-full hover:bg-white/10 transition-all duration-300 font-medium">
                             Login
                         </button>
 
-                        {/* Criar Conta Button */}
                         <button onClick={() => navigate('/Dashboard')} className="relative group overflow-hidden px-6 py-2.5 rounded-full font-medium text-white bg-gradient-to-r from-white/10 to-white/5 border border-white/30 hover:border-white/50 hover:from-white/15 hover:to-white/10 transition-all duration-300 backdrop-blur-sm hover:shadow-lg hover:shadow-white/10">
                             <span className="relative z-10 flex items-center gap-2">
                                 <FaUserPlus />
