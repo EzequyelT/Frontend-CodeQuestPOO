@@ -10,7 +10,7 @@ import explorar from "../Assets/landpage/Explorar.jpg";
 import aprender from "../Assets/landpage/Aprender.jpg";
 import heroes from "../data/heroesData";
 import historiaBg from "../Assets/landpage/BgHistoria.png";
-import FinalBg from "../Assets/landpage/FinalBg.jpg";
+import FinalBg from "../Assets/landpage/FinalBg.png";
 import Footer from "../Components/footer/FooterLandPage";
 import "../css/landingPage.css";
 
@@ -321,7 +321,7 @@ export default function Landingpage() {
 
       {/* Seção Call to Action - MELHORADA COM BRANCO */}
       <section
-        className="relative w-full py-70 px-50 overflow-hidden"
+        className="relative w-full py-70 px-60 overflow-hidden"
         style={{
           backgroundImage: `url(${FinalBg})`,
           backgroundSize: 'cover',
@@ -329,8 +329,8 @@ export default function Landingpage() {
           backgroundRepeat: 'no-repeat'
         }}
       >
-        <div className="absolute inset-0 bg-gradient-to-b bg-gradient-to-t from-black/50 via-black/5 to-black" />
-        <div className="absolute inset-0 bg-gradient-to-b bg-gradient-to-b from-black/50 via-black/5 to-black" />
+        <div className="absolute inset-0 bg-gradient-to-b bg-gradient-to-t from-black/20 via-black/4 to-black" />
+        <div className="absolute inset-0 bg-gradient-to-b bg-gradient-to-b from-black/20  via-black/5 to-black" />
 
         {/* Efeito de brilho melhorado */}
         <div className="absolute inset-0 opacity-20">
