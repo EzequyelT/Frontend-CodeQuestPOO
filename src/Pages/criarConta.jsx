@@ -4,6 +4,7 @@ import logo from '../Assets/logo.png';
 import Bg from '../Assets/Login/BgLogin.jpg';
 import HeroSection from '../Assets/Login/Hero.png';
 import { useNavigate } from "react-router-dom";
+import { registerUser } from '../Services/alunos/alunoService';
 
 // Componente Toast
 const Toast = ({ message, type, onClose }) => {
@@ -11,11 +12,10 @@ const Toast = ({ message, type, onClose }) => {
 
   return (
     <div className="fixed top-4 right-4 z-50 animate-slide-in">
-      <div className={`flex items-center gap-3 min-w-[320px] max-w-md p-4 rounded-lg shadow-2xl backdrop-blur-sm border ${
-        isSuccess
-          ? 'bg-emerald-500/90 border-emerald-400/50'
-          : 'bg-red-500/90 border-red-400/50'
-      }`}>
+      <div className={`flex items-center gap-3 min-w-[320px] max-w-md p-4 rounded-lg shadow-2xl backdrop-blur-sm border ${isSuccess
+        ? 'bg-emerald-500/90 border-emerald-400/50'
+        : 'bg-red-500/90 border-red-400/50'
+        }`}>
         <div className="flex-shrink-0">
           {isSuccess ? (
             <CheckCircle className="w-6 h-6 text-white" />
@@ -73,11 +73,10 @@ const AvatarModal = ({ onSelect, onClose }) => {
             <button
               key={avatar.id}
               onClick={() => setSelectedAvatar(avatar)}
-              className={`relative p-4 rounded-xl transition-all ${
-                selectedAvatar?.id === avatar.id
-                  ? 'bg-cyan-500/20 border-2 border-cyan-500 scale-105'
-                  : 'bg-slate-700/50 border-2 border-slate-600 hover:border-slate-500 hover:scale-105'
-              }`}
+              className={`relative p-4 rounded-xl transition-all ${selectedAvatar?.id === avatar.id
+                ? 'bg-cyan-500/20 border-2 border-cyan-500 scale-105'
+                : 'bg-slate-700/50 border-2 border-slate-600 hover:border-slate-500 hover:scale-105'
+                }`}
             >
               <img
                 src={avatar.url}
@@ -146,7 +145,7 @@ export default function CriarConta() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Validações
     if (formData.password !== formData.confirmPassword) {
       showToast('As passwords não coincidem!', 'error');
@@ -160,24 +159,38 @@ export default function CriarConta() {
 
     setLoading(true);
     try {
-      // Aqui você faria a chamada para sua API de registro
-      // const response = await registerUser(formData);
-      
-      // Simulando sucesso
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      showToast('Conta criada com sucesso!', 'success');
-      
-      // Mostrar modal de avatar após 1 segundo
+      const dataToSend = {
+        nome: formData.username,
+        email: formData.email,
+        password: formData.password,
+        numero: formData.numero,
+        turma: formData.turma,
+        escola: formData.escola,
+        ano: parseInt(formData.ano.replace(/[^\d]/g, '')), // remove º se existir
+        ano_letivo: '2025/2026',
+        avatar_id: null,
+        heroi_id: null,
+        data_registo: new Date().toISOString(),
+        ativo: true
+      };
+
+      const response = await registerUser(dataToSend);
+
+      showToast(response.message || 'Conta criada com sucesso!', 'success');
+
+      // Abrir modal de avatar após 1 segundo
       setTimeout(() => {
         setShowAvatarModal(true);
       }, 1000);
-      
+
     } catch (err) {
-      console.error('Register error:', err);
+      console.error('Erro ao criar conta:', err);
+      console.error('Detalhes do erro:', err.response?.data);
+
       const msg = err.response?.data?.message || 'Erro ao criar conta. Tente novamente.';
       showToast(msg, 'error');
     } finally {
+      console.log('Formulário submetido:', formData);
       setLoading(false);
     }
   };
@@ -186,7 +199,7 @@ export default function CriarConta() {
     // Salvar avatar selecionado
     localStorage.setItem('user_avatar', JSON.stringify(avatar));
     setShowAvatarModal(false);
-    
+
     // Redirecionar para dashboard
     setTimeout(() => {
       navigate('/Dashboard');
