@@ -1,26 +1,95 @@
 import React, { useState } from 'react';
-import { Lock, User, Eye, EyeOff } from 'lucide-react';
+import { Lock, User, Eye, EyeOff, CheckCircle, XCircle, X } from 'lucide-react';
 import logo from '../Assets/logo.png';
 import Bg from '../Assets/Login/BgLogin.jpg';
 import HeroSection from '../Assets/Login/Hero.png';
+import { useNavigate } from "react-router-dom";
+import { login as authLogin, saveToken } from "../Services/auth/authService";
+
+// Componente de Notificação Toast
+const Toast = ({ message, type, onClose }) => {
+  const isSuccess = type === 'success';
+  
+  return (
+    <div className="fixed top-4 right-4 z-50 animate-slide-in">
+      <div className={`flex items-center gap-3 min-w-[320px] max-w-md p-4 rounded-lg shadow-2xl backdrop-blur-sm border ${
+        isSuccess 
+          ? 'bg-emerald-500/90 border-emerald-400/50' 
+          : 'bg-red-500/90 border-red-400/50'
+      }`}>
+        {/* Icon */}
+        <div className="flex-shrink-0">
+          {isSuccess ? (
+            <CheckCircle className="w-6 h-6 text-white" />
+          ) : (
+            <XCircle className="w-6 h-6 text-white" />
+          )}
+        </div>
+        
+        {/* Message */}
+        <div className="flex-1">
+          <p className="text-white font-medium text-sm">{message}</p>
+        </div>
+        
+        {/* Close Button */}
+        <button
+          onClick={onClose}
+          className="flex-shrink-0 text-white/80 hover:text-white transition-colors"
+        >
+          <X className="w-5 h-5" />
+        </button>
+      </div>
+    </div>
+  );
+};
 
 export default function Login() {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [toast, setToast] = useState(null);
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  // Função para mostrar toast
+  const showToast = (message, type = 'error') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 5000); // Auto-close após 5 segundos
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Login attempt:', { username, password });
+    setLoading(true);
+    try {
+      const { token, user } = await authLogin(email, password);
+      saveToken(token);
+      localStorage.setItem('cq_user', JSON.stringify(user));
+      showToast('Login efetuado com sucesso!', 'success');
+      setTimeout(() => navigate('/Dashboard'), 1500);
+    } catch (err) {
+      console.error('Login error:', err);
+      const msg = err.response?.data?.message || 'Erro ao efetuar login. Verifique suas credenciais.';
+      showToast(msg, 'error');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleCreateAccount = () => {
-    console.log('Redirect to create account');
-    // Aqui você pode adicionar a navegação para a página de registro
+    navigate("/CriarConta");
   };
 
   return (
     <>
+      {/* Toast Notification */}
+      {toast && (
+        <Toast 
+          message={toast.message} 
+          type={toast.type} 
+          onClose={() => setToast(null)} 
+        />
+      )}
+
       {/* Background Image */}
       <img src={Bg} alt="Background" className="fixed inset-0 bg-gradient-to-br from-black/300 via-slate-900/60 to-black/300 z-10" />
 
@@ -29,7 +98,7 @@ export default function Login() {
 
       <div className="min-h-screen flex relative z-20">
         {/* Left Side - Login Form */}
-        <div className="w-full lg:w-1/2 flex items-center justify-center p-8 mb-20">
+        <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
           <div className="w-full max-w-md">
             {/* Logo/Brand */}
             <div className="text-center mb-8">
@@ -46,18 +115,18 @@ export default function Login() {
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-5">
-                {/* Username Input */}
+                {/* Email Input */}
                 <div>
                   <label className="block text-slate-300 text-sm font-medium mb-2">
-                    Utilizador
+                    Email
                   </label>
                   <div className="relative">
                     <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                     <input
-                      type="text"
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
-                      placeholder="João Silva"
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="seu@exemplo.com"
                       required
                       className="w-full bg-slate-900/50 border border-slate-700 rounded-lg py-3 pl-11 pr-4 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all hover:border-slate-600"
                     />
@@ -107,10 +176,11 @@ export default function Login() {
                 {/* Login Button */}
                 <button
                   type="submit"
-                  className="w-full bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-semibold py-3.5 rounded-lg hover:from-cyan-600 hover:to-blue-600 transition-all shadow-lg shadow-cyan-500/50 hover:shadow-cyan-500/70 flex items-center justify-center gap-2 mt-6"
+                  disabled={loading}
+                  className="w-full bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-semibold py-3.5 rounded-lg hover:from-cyan-600 hover:to-blue-600 transition-all shadow-lg shadow-cyan-500/50 hover:shadow-cyan-500/70 flex items-center justify-center gap-2 mt-6 disabled:opacity-60 disabled:cursor-not-allowed"
                 >
                   <Lock className="w-5 h-5" />
-                  Entrar
+                  {loading ? 'Entrando...' : 'Entrar'}
                 </button>
               </form>
 
@@ -139,19 +209,13 @@ export default function Login() {
           </div>
         </div>
 
-        {/* Right Side - Image Area (Placeholder) */}
+        {/* Right Side - Hero Section */}
         <div className="hidden lg:flex lg:w-1/2 items-center justify-center p-8 relative">
-          {/* Hero Image Container */}
           <div className="relative z-10 flex items-center justify-center">
-            {/* Geometric shapes BEHIND the image */}
+            {/* Geometric shapes */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              {/* Main large square - cyan/blue */}
               <div className="absolute w-[450px] h-[450px] bg-gradient-to-br from-cyan-500/40 to-blue-500/40 rounded-[3rem] rotate-12 -z-10"></div>
-
-              {/* Secondary square - shifted */}
               <div className="absolute w-[370px] h-[370px] bg-gradient-to-br from-blue-600/30 to-cyan-600/30 rounded-[2.5rem] -rotate-12 translate-x-12 translate-y-8 -z-20"></div>
-
-              {/* Accent squares */}
               <div className="absolute w-32 h-32 bg-cyan-400/50 rounded-2xl rotate-45 -left-16 -top-16 -z-10"></div>
               <div className="absolute w-24 h-24 bg-blue-400/50 rounded-xl -rotate-45 -right-12 -bottom-12 -z-10"></div>
             </div>
@@ -165,6 +229,24 @@ export default function Login() {
           </div>
         </div>
       </div>
+
+      {/* CSS para animação */}
+      <style jsx>{`
+        @keyframes slide-in {
+          from {
+            transform: translateX(100%);
+            opacity: 0;
+          }
+          to {
+            transform: translateX(0);
+            opacity: 1;
+          }
+        }
+        
+        .animate-slide-in {
+          animation: slide-in 0.3s ease-out;
+        }
+      `}</style>
     </>
   );
 }

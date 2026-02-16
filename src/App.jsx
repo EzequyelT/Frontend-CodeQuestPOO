@@ -6,6 +6,7 @@ import Desafio1GameTest from "./Components/GameTest/desafio1"
 import Desafio2GameTest from "./Components/GameTest/desafio2"
 import DesafioFinal from "./Components/GameTest/desafioFinal"
 import Login from "./Pages/login"
+import CriarConta from "./Pages/criarConta"
 import './App.css'
 
 
@@ -22,6 +23,7 @@ function App() {
           <Route path="/DesafioFinalGameTest" element={<DesafioFinal />} />
           <Route path="/Dashboard" element={<DashBoard />} />
           <Route path="/Login" element={<Login />} />
+          <Route path="/CriarConta" element={<CriarConta />} />
           <Route path="*" element={<h1>Página não encontrada</h1>} />
         </Routes>
       </BrowserRouter>
