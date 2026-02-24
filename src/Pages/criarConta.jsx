@@ -163,17 +163,13 @@ export default function CriarConta() {
         nome: formData.username,
         email: formData.email,
         password: formData.password,
-        numero: formData.numero,
-        turma: formData.turma,
-        escola: formData.escola,
-        ano: parseInt(formData.ano.replace(/[^\d]/g, '')), // remove º se existir
-        ano_letivo: '2025/2026',
-        avatar_id: null,
-        heroi_id: null,
-        data_registo: new Date().toISOString(),
-        ativo: true
+        numero: formData.numero || null,
+        turma: formData.turma || null,
+        escola: formData.escola || null,
+        ano: parseInt(formData.ano.replace(/[^\d]/g, '')) || null, // só números
+        ano_letivo: '2025/2026', // ou pegar do form
+        avatar_id: null // se não tiver avatar ainda
       };
-
       const response = await registerUser(dataToSend);
 
       showToast(response.message || 'Conta criada com sucesso!', 'success');
