@@ -21,7 +21,7 @@ export default function HeaderLandingPage() {
 
     return (
         <header className="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-transparent">
-            <nav className="w-full px-6 py-4">
+            <nav className="relative w-full px-6 py-4">
                 <div className="flex items-center justify-between max-w-full">
                     <div className="flex items-center flex-shrink-0">
                         <img
@@ -32,7 +32,7 @@ export default function HeaderLandingPage() {
                     </div>
 
                     {/* Navigation */}
-                    <div className="hidden md:flex items-center space-x-6 flex-grow justify-center ml-15">
+                    <div className="hidden md:flex items-center space-x-8 absolute left-1/2 transform -translate-x-1/2">
                         {/* Dropdown Customizado */}
                         <div className="relative group">
                             <button
@@ -84,14 +84,9 @@ export default function HeaderLandingPage() {
                     </div>
 
                     <div className="flex items-center space-x-3 flex-shrink-0 mr-4">
-                        <button  onClick={() => navigate('/Login')} className="text-white/90 hover:text-white bg-transparent px-6 py-2.5 rounded-full hover:bg-white/10 transition-all duration-300 font-medium">
-                            Login
-                        </button>
-
-                        <button onClick={() => navigate('/CriarConta')} className="relative group overflow-hidden px-6 py-2.5 rounded-full font-medium text-white bg-gradient-to-r from-white/10 to-white/5 border border-white/30 hover:border-white/50 hover:from-white/15 hover:to-white/10 transition-all duration-300 backdrop-blur-sm hover:shadow-lg hover:shadow-white/10">
-                            <span className="relative z-10 flex items-center gap-2">
-                                <FaUserPlus />
-                                Criar Conta
+                        <button onClick={() => navigate('/Login')} className="relative group overflow-hidden px-6 py-2.5 rounded-full font-medium text-white bg-gradient-to-r from-white/10 to-white/5 border border-white/30 hover:border-white/50 hover:from-white/15 hover:to-white/10 transition-all duration-300 backdrop-blur-sm hover:shadow-lg hover:shadow-white/10">
+                            <span className="relative z-10">
+                                Login
                             </span>
                             <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/0 via-emerald-500/20 to-emerald-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                         </button>
