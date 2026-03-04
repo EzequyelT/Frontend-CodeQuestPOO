@@ -68,7 +68,7 @@ export default function Login() {
       setTimeout(() => navigate('/Dashboard'), 1500);
     } catch (err) {
       console.error('Login error:', err);
-      const msg = err.response?.data?.message || 'Erro ao efetuar login. Verifique suas credenciais.';
+      const msg = err.response?.data?.message || 'Erro ao efetuar login. Verifica as tuas credenciais.';
       showToast(msg, 'error');
     } finally {
       setLoading(false);
@@ -110,7 +110,7 @@ export default function Login() {
               <div className="mb-8">
                 <h2 className="text-3xl font-bold text-white mb-2">Bem-vindo de Volta</h2>
                 <p className="text-slate-400 text-sm">
-                  Entre com suas credenciais para aceder sua conta
+                  Entra com as tuas credenciais para aceder à conta
                 </p>
               </div>
 
@@ -126,7 +126,7 @@ export default function Login() {
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      placeholder="seu@exemplo.com"
+                      placeholder="nome@exemplo.com"
                       required
                       className="w-full bg-slate-900/50 border border-slate-700 rounded-lg py-3 pl-11 pr-4 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all hover:border-slate-600"
                     />
@@ -136,7 +136,7 @@ export default function Login() {
                 {/* Password Input */}
                 <div>
                   <label className="block text-slate-300 text-sm font-medium mb-2">
-                    Password
+                    Palavra-passe
                   </label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
@@ -144,7 +144,7 @@ export default function Login() {
                       type={showPassword ? "text" : "password"}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      placeholder="Digite sua password"
+                      placeholder="Escreve a tua palavra-passe"
                       required
                       className="w-full bg-slate-900/50 border border-slate-700 rounded-lg py-3 pl-11 pr-12 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all hover:border-slate-600"
                     />
@@ -169,7 +169,7 @@ export default function Login() {
                     Lembrar-me
                   </label>
                   <a href="#" className="text-cyan-500 hover:text-cyan-400 transition-colors">
-                    Esqueceu a password?
+                    Esqueceste-te da palavra-passe?
                   </a>
                 </div>
 

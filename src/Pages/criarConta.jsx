@@ -227,7 +227,7 @@ export default function CriarConta() {
                 </div>
                 <p className="text-slate-400 text-xs leading-relaxed">
                   {step === 1
-                    ? 'Entre com suas credenciais'
+                    ? 'Entre com as tuas credenciais'
                     : step === 2
                     ? 'Informações da escola'
                     : 'Revise os dados'
@@ -284,7 +284,7 @@ export default function CriarConta() {
                       name="email"
                       value={formData.email}
                       onChange={handleChange}
-                      placeholder="seu@email.com"
+                      placeholder="nome@gmail.com"
                       required
                     />
 
@@ -325,7 +325,7 @@ export default function CriarConta() {
                           value={formData.confirmPassword}
                           onChange={handleChange}
                           required
-                          placeholder="Repita sua password"
+                          placeholder="Repete a palavra-passe"
                           className="w-full px-4 py-2.5 text-sm pl-11 pr-12 bg-gradient-to-br from-slate-900/60 to-slate-800/40 border border-slate-700/50 rounded-xl text-white placeholder-slate-500/70 transition-all duration-300 focus:outline-none hover:border-slate-600/70 hover:bg-slate-900/70 focus:border-cyan-400/80 focus:ring-2 focus:ring-cyan-400/30 focus:bg-slate-900/80 focus:shadow-lg focus:shadow-cyan-400/20 focus:scale-[1.02]"
                         />
                         <button
@@ -417,7 +417,7 @@ export default function CriarConta() {
                     <div className="mt-2.5 p-3 bg-gradient-to-r from-blue-500/10 to-blue-600/10 border border-blue-500/30 rounded-xl">
                       <p className="text-blue-300 text-xs leading-relaxed flex items-start gap-2">
                         <span className="mt-0.5 flex-shrink-0">ℹ️</span>
-                        <span>Após confirmar, será exibido um modal para escolher seu avatar</span>
+                        <span>Após confirmar, será exibido um menu para escolheres o teu avatar</span>
                       </p>
                     </div>
                   </div>
