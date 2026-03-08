@@ -1,16 +1,18 @@
 import { useState } from "react";
 import logo from '../../Assets/logo.png';
 import { Home, Clock, Users, MessageSquare, Search, Settings, Star, Flame, Coins } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export default function DashBoardHeader() {
     const [activeNav, setActiveNav] = useState("home");
     const [searchFocused, setSearchFocused] = useState(false);
+    const navigate = useNavigate();
 
     const navItems = [
-        { id: "home", icon: <Home size={20} />, label: "Home" },
-        { id: "recent", icon: <Clock size={20} />, label: "Recent" },
-        { id: "friends", icon: <Users size={20} />, label: "Friends" },
-        { id: "messages", icon: <MessageSquare size={20} />, label: "Messages" },
+        { id: "home", icon: <Home size={20} />, label: "Home", path: "/Dashboard" },
+        { id: "recent", icon: <Clock size={20} />, label: "Recent", path: "/recent" },
+        { id: "friends", icon: <Users size={20} />, label: "Friends", path: "/friends" },
+        { id: "messages", icon: <MessageSquare size={20} />, label: "Messages", path: "/messages" },
     ];
 
     return (
@@ -75,7 +77,10 @@ export default function DashBoardHeader() {
                     {navItems.map((item) => (
                         <button
                             key={item.id}
-                            onClick={() => setActiveNav(item.id)}
+                            onClick={() => {
+                                setActiveNav(item.id);
+                                navigate(item.path);
+                            }}
                             title={item.label}
                             className="relative flex items-center justify-center w-10 h-10 rounded-full transition-all duration-200"
                             style={{

@@ -1,15 +1,11 @@
 import { useState } from "react";
-import {  Bell, Settings,  Map, Trophy, Library, ClipboardCheck } from "lucide-react";
-
-const servers = [
-    { id: "s1", label: null, icon: Map },
-    { id: "s2", label: null, icon: Trophy },
-    { id: "s3", label: null, icon: Library },
-    { id: "s4", label: null, icon: ClipboardCheck },
-];
+import { Bell, Settings, Map, Trophy, Library, ClipboardCheck } from "lucide-react";
+import { sidebarLinks } from "../../config/sideBarLinks";
+import { useNavigate } from "react-router-dom";
 
 export default function SideBar() {
     const [active, setActive] = useState("s1");
+    const navigate = useNavigate();
 
     return (
         <aside
@@ -24,12 +20,13 @@ export default function SideBar() {
                 <Divider />
 
                 {/* Game / server slots */}
-                {servers.map((server) => {
+                {sidebarLinks.map((server) => {
                     const IconComponent = server.icon;
                     return (
                         <SideButton
                             key={server.id}
-                            onClick={() => setActive(server.id)}
+                            onClick={() => navigate(server.path)}
+                            setActive={setActive}
                             active={active === server.id}
                             tooltip={server.id}
                         >

@@ -1,7 +1,9 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 import Landingpage from './Pages/landingPage'
 import GameTest from './Pages/gameTest'
-import { DashBoard } from './Pages/dashBoard'
+import { DashBoard } from './Pages/UserPage/dashBoard'
+import  Maps  from './Pages/UserPage/Maps'
+import  Trophies  from './Pages/UserPage/Trophies&Achievements'
 import Desafio1GameTest from "./Components/GameTest/desafio1"
 import Desafio2GameTest from "./Components/GameTest/desafio2"
 import DesafioFinal from "./Components/GameTest/desafioFinal"
@@ -24,6 +26,11 @@ function App() {
           <Route path="/Dashboard" element={<DashBoard />} />
           <Route path="/Login" element={<Login />} />
           <Route path="/CriarConta" element={<CriarConta />} />
+          <Route path="/Maps" element={<Maps />} />
+          <Route path="/Trophies" element={<Trophies />} />
+          <Route path="/recent" element={<div>Página Recente - Em desenvolvimento</div>} />
+          <Route path="/friends" element={<div>Página de Amigos - Em desenvolvimento</div>} />
+          <Route path="/messages" element={<div>Página de Mensagens - Em desenvolvimento</div>} />
           <Route path="*" element={<h1>Página não encontrada</h1>} />
         </Routes>
       </BrowserRouter>

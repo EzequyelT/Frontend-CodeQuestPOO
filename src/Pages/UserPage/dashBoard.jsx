@@ -1,7 +1,7 @@
-import DashBoardHeader from "../Components/Header/HeaderDashBoard";
-import SideBar from "../Components/SideBar/SideBar";
-import mago from "../assets/DashBoard/mago.png"
-import "../css/DashBoard.css";
+import DashBoardHeader from "../../Components/Header/HeaderDashBoard";
+import SideBar from "../../Components/SideBar/SideBar";
+import mago from "../../assets/DashBoard/mago.png"
+import "../../css/DashBoard.css";
 
 // ============================================================
 // 🔷 DATA
@@ -173,7 +173,7 @@ function XPBar({ current, total }) {
 // ============================================================
 function MainCard({ player }) {
     return (
-        <div className="relative bg-[#161b16] rounded-2xl border border-gray-800 overflow-hidden animate-slideInLeft">
+        <div className="relative bg-[#151414] rounded-2xl border border-gray-800 overflow-hidden animate-slideInLeft">
 
             {/* Topo: título + badge */}
             <div className="flex justify-between items-center px-6 pt-5 pb-4">
@@ -246,7 +246,7 @@ function MainCard({ player }) {
 // ============================================================
 function MapsPanel({ maps }) {
     return (
-        <div className="bg-[#161b16] rounded-2xl border border-gray-800 p-4 flex flex-col gap-3 flex-1 animate-slideInDown">
+        <div className="bg-[#151414] rounded-2xl border border-gray-800 p-4 flex flex-col gap-3 flex-1 animate-slideInDown">
             <div className="flex justify-between items-center">
                 <h3 className="text-white text-sm font-semibold">🗺️ Mapas de Aprendizado</h3>
                 <button className="w-5 h-5 rounded border border-gray-700 flex items-center justify-center text-gray-500 text-xs hover:text-white">+</button>
@@ -307,7 +307,7 @@ function MapsPanel({ maps }) {
 function ErrorTypesPanel({ errors }) {
     const total = errors.reduce((s, e) => s + e.count, 0);
     return (
-        <div className="bg-[#161b16] rounded-2xl border border-gray-800 p-4 flex flex-col gap-3 flex-1 animate-slideInDown delay-200">
+        <div className="bg-[#151414] rounded-2xl border border-gray-800 p-4 flex flex-col gap-3 flex-1 animate-slideInDown delay-200">
             <div className="flex justify-between items-center">
                 <h3 className="text-white text-sm font-semibold">📈 Tipos de Erros</h3>
                 <span className="text-gray-500 text-xs border border-gray-700 rounded px-2 py-0.5">{total} total</span>
@@ -359,7 +359,7 @@ function TrophiesAndMissionPanel({ trophies, mission }) {
     const done = mission.current >= mission.total;
 
     return (
-        <div className="bg-[#161b16] rounded-2xl border border-gray-800 p-4 flex flex-col gap-4 flex-1 animate-slideInRight">
+        <div className="bg-[#151414] rounded-2xl border border-gray-800 p-4 flex flex-col gap-4 flex-1 animate-slideInRight">
 
             {/* Troféus */}
             <div>
