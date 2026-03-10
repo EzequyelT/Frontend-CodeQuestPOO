@@ -1,4 +1,5 @@
 import DashBoardHeader from "../../Components/Header/HeaderDashBoard";
+import { useState, useEffect } from "react";
 import SideBar from "../../Components/SideBar/SideBar";
 import mago from "../../assets/DashBoard/mago.png"
 import "../../css/DashBoard.css";
@@ -27,15 +28,15 @@ const PLAYER = {
 
 const MAPS = [
     { name: "Floresta Encantada", emoji: "🌲", desafios: 8, total: 8, boss: "Guardião da Floresta", bossEmoji: "🐉", color: "#16a34a", bgColor: "#14532d", done: true },
-    { name: "Vila Misteriosa",    emoji: "🏡", desafios: 6, total: 8, boss: "Cavaleiro Sombrio",   bossEmoji: "⚔️", color: "#ea580c", bgColor: "#431407", done: false },
-    { name: "Castelo do Dragão",  emoji: "🏰", desafios: 0, total: 10, boss: "Dragão Ancestral",  bossEmoji: "🐲", color: "#6b7280", bgColor: "#111827", locked: true },
+    { name: "Vila Misteriosa", emoji: "🏡", desafios: 6, total: 8, boss: "Cavaleiro Sombrio", bossEmoji: "⚔️", color: "#ea580c", bgColor: "#431407", done: false },
+    { name: "Castelo do Dragão", emoji: "🏰", desafios: 0, total: 10, boss: "Dragão Ancestral", bossEmoji: "🐲", color: "#6b7280", bgColor: "#111827", locked: true },
 ];
 
 const ERROR_TYPES = [
-    { name: "Sintaxe",         count: 12, pct: 35, color: "#ef4444" },
-    { name: "Lógica",          count: 8,  pct: 24, color: "#f97316" },
-    { name: "Encapsulamento",  count: 7,  pct: 21, color: "#eab308" },
-    { name: "Herança",         count: 7,  pct: 20, color: "#a855f7" },
+    { name: "Sintaxe", count: 12, pct: 35, color: "#ef4444" },
+    { name: "Lógica", count: 8, pct: 24, color: "#f97316" },
+    { name: "Encapsulamento", count: 7, pct: 21, color: "#eab308" },
+    { name: "Herança", count: 7, pct: 20, color: "#a855f7" },
 ];
 
 const TROPHIES = [
@@ -179,7 +180,7 @@ function MainCard({ player }) {
             <div className="flex justify-between items-center px-6 pt-5 pb-4">
                 <h2 className="text-white font-bold text-base tracking-wide">CodeQuestPOO</h2>
                 <span className="text-xs text-gray-500 border border-gray-700 rounded px-2 py-0.5 mr-52">
-                    Aprendizado
+                  {player.ran}
                 </span>
             </div>
 
@@ -231,10 +232,10 @@ function MainCard({ player }) {
                     maskImage: "linear-gradient(to right, transparent 0%, black 28%)",
                 }}
             >
-               <img src={mago} alt="heroi" className="h-full w-full mb-4" />
+                <img src={mago} alt="heroi" className="h-full w-full mb-4" />
 
                 {/* Botões sobrepostos */}
-               
+
             </div>
 
         </div>
@@ -424,6 +425,15 @@ function TrophiesAndMissionPanel({ trophies, mission }) {
 }
 
 export function DashBoard() {
+    const [user, setUser] = useState(null);
+
+    useEffect(() => {
+        const storedUser = localStorage.getItem("cq_user");
+
+        if (storedUser) {
+            setUser(JSON.parse(storedUser));
+        }
+    }, []);
     return (
         <div className="relative min-h-screen bg-black animate-fadeIn">
             <DashBoardHeader />
