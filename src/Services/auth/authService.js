@@ -1,4 +1,4 @@
-import api from "../api";
+import api from "../API";
 
 const TOKEN_KEY = "cq_token";
 
@@ -15,14 +15,13 @@ export const register = async (dados) => {
 // --- token helpers -------------------------------------------------
 export const saveToken = (token) => {
   localStorage.setItem(TOKEN_KEY, token);
-  api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+  // O interceptor em API.js vai adicionar o header automaticamente
 };
 
 export const getToken = () => localStorage.getItem(TOKEN_KEY);
 
 export const logout = () => {
   localStorage.removeItem(TOKEN_KEY);
-  delete api.defaults.headers.common["Authorization"];
 };
 
 export const isAuthenticated = () => !!getToken();

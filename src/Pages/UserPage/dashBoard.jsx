@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import SideBar from "../../Components/SideBar/SideBar";
 import mago from "../../assets/DashBoard/mago.png"
 import "../../css/DashBoard.css";
+import { getProgressoAluno}from "../../Services/alunos/alunoProgress";
+
 
 // ============================================================
 // 🔷 DATA
@@ -180,7 +182,7 @@ function MainCard({ player }) {
             <div className="flex justify-between items-center px-6 pt-5 pb-4">
                 <h2 className="text-white font-bold text-base tracking-wide">CodeQuestPOO</h2>
                 <span className="text-xs text-gray-500 border border-gray-700 rounded px-2 py-0.5 mr-52">
-                  {player.ran}
+                  {player.rank}
                 </span>
             </div>
 
@@ -426,23 +428,84 @@ function TrophiesAndMissionPanel({ trophies, mission }) {
 
 export function DashBoard() {
     const [user, setUser] = useState(null);
+    const [progresso, setProgresso] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [erro, setErro] = useState(null);
 
     useEffect(() => {
         const storedUser = localStorage.getItem("cq_user");
 
-        if (storedUser) {
-            setUser(JSON.parse(storedUser));
+        if (!storedUser) {
+            setErro("Utilizador não autenticado");
+            setLoading(false);
+            console.error("[Dashboard] Sem utilizador no localStorage");
+            return;
         }
+
+        const userData = JSON.parse(storedUser);
+        console.log("[Dashboard] User data:", userData);
+        setUser(userData);
+
+        // Carregar progresso com JWT
+        getProgressoAluno()
+            .then(data => {
+                console.log("[Dashboard] ✅ Progresso carregado:", data);
+                setProgresso({
+                    totalXP: data.xp_total ?? data.xp ?? 0,
+                    nextLevelXP: data.xp_proximo_nivel ?? 3000,
+                    diasSeguidos: data.dias_seguidos ?? 0,
+                    dicasUsadas: data.dicas_usadas ?? 0,
+                    desafios: data.desafios_completos ?? 0,
+                    accuracy: data.acertos ?? 80,
+                    level: data.nivel_atual ?? 1,
+                    name: userData.nome,
+                    rank: "Aprendiz",
+                    errors: 22,
+                    memberSince: "Set 2024",
+                    weekActivity: [30, 55, 40, 70, 95, 50, 20],
+                    currentDay: 4,
+                    heroi: mago
+                });
+                setErro(null);
+            })
+            .catch(err => {
+                const errorMsg = err.response?.data?.error || err.message || "Erro desconhecido";
+                console.error("[Dashboard] ❌ Erro ao carregar progresso:", errorMsg);
+                setErro(`Erro: ${errorMsg}`);
+                // Usar dados padrão mesmo com erro
+                setProgresso({
+                    ...PLAYER,
+                    name: userData.nome
+                });
+            })
+            .finally(() => setLoading(false));
     }, []);
+
+    if (loading) {
+        return (
+            <div className="relative min-h-screen bg-black animate-fadeIn flex items-center justify-center">
+                <div className="text-white text-center">
+                    <div className="w-12 h-12 border-4 border-yellow-600 border-t-yellow-400 rounded-full animate-spin mx-auto mb-4"></div>
+                    <p>Carregando dashboard...</p>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="relative min-h-screen bg-black animate-fadeIn">
             <DashBoardHeader />
             <SideBar />
 
             <main className="ml-20 mt-5 p-6 pt-24">
+                {erro && (
+                    <div className="bg-red-500/20 border border-red-500/50 text-red-200 p-4 rounded mb-4">
+                        <p className="font-semibold">⚠️ {erro}</p>
+                        <p className="text-sm mt-1 text-red-300">Abre a consola (F12) para mais detalhes</p>
+                    </div>
+                )}
                 <LoginRewardBanner />
-                <MainCard player={PLAYER} />
-
+                {progresso && <MainCard player={progresso} />}
                 <div className="flex gap-4 mt-6">
                     <MapsPanel maps={MAPS} />
                     <ErrorTypesPanel errors={ERROR_TYPES} />
