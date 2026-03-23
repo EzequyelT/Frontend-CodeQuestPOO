@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import DashBoardHeader from "../../Components/Header/HeaderDashBoard";
 
@@ -136,15 +136,51 @@ function Modal({ a, onClose }) {
 export default function Trophies() {
     const [cat, setCat] = useState("all");
     const [sel, setSel] = useState(null);
+    const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [erro, setErro] = useState(null);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const storedUser = localStorage.getItem("cq_user");
+
+        if (!storedUser) {
+            setErro("Utilizador não autenticado");
+            setLoading(false);
+            console.error("[Trophies] Sem utilizador no localStorage");
+            return;
+        }
+
+        const userData = JSON.parse(storedUser);
+        console.log("[Trophies] User data:", userData);
+        setUser(userData);
+        setLoading(false);
+    }, []);
+
     const list = cat === "all" ? ACHIEVEMENTS : ACHIEVEMENTS.filter(a => a.cat === cat);
     const rows = [];
     for (let i = 0; i < list.length; i += 3) rows.push(list.slice(i, i + 3));
 
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-black flex items-center justify-center">
+                <div className="text-white">Carregando...</div>
+            </div>
+        );
+    }
+
+    if (erro) {
+        return (
+            <div className="min-h-screen bg-black flex items-center justify-center">
+                <div className="text-red-400">{erro}</div>
+            </div>
+        );
+    }
+
     return (
 
         <>
-           <DashBoardHeader />
+           <DashBoardHeader user={user} />
 
             <div className="min-h-screen w-full pt-20" style={{ background: "#030310", fontFamily: "'Segoe UI',system-ui,sans-serif" }}>
                 {/* dot grid */}

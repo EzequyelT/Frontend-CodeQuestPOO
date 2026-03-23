@@ -2,7 +2,8 @@ import { useState } from "react";
 import logo from '../../Assets/logo.png';
 import { Home, Clock, Users, MessageSquare, Search, Settings, Star, Zap, DollarSign } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import Modal from "../Modal/Modal";
+import Modal from "../Modal/ProfileModal";
+
 
 export default function DashBoardHeader({ user }) {
   const [activeNav, setActiveNav] = useState("home");
@@ -10,12 +11,16 @@ export default function DashBoardHeader({ user }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
 
+
+
   const navItems = [
     { id: "home", icon: <Home size={20} />, label: "Home", path: "/Dashboard" },
     { id: "recent", icon: <Clock size={20} />, label: "Recent", path: "/recent" },
     { id: "friends", icon: <Users size={20} />, label: "Friends", path: "/friends" },
     { id: "messages", icon: <MessageSquare size={20} />, label: "Messages", path: "/messages" },
   ];
+
+
 
   return (
     <>
@@ -58,6 +63,7 @@ export default function DashBoardHeader({ user }) {
       `}</style>
 
       <header
+
         className="fixed top-0 left-0 w-full h-20 flex items-center gap-4 px-6 py-4"
         style={{
           background: "rgba(15, 17, 21, 0.97)",
@@ -191,38 +197,39 @@ export default function DashBoardHeader({ user }) {
 
       </header>
 
+
+
       {/* Modal de Perfil (fora do header para evitar issues de z-index/contexto) */}
-      <Modal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        title="Perfil"
-        content={
-          <div className="flex flex-col gap-2">
-            <div className="text-gray-400 text-sm">Nome</div>
-            <div className="text-white font-bold">{user?.name || "Guest"}</div>
-            <div className="text-gray-400 text-sm mt-2">Email</div>
-            <div className="text-white font-bold">{user?.email || "guest@email.com"}</div>
-          </div>
-        }
-        actions={[
-          {
-            label: "Sair da Conta",
-            onClick: () => alert("Aqui você faria o logout"),
-            color: "red",
-          },
-          {
-            label: "Fechar",
-            onClick: () => setIsModalOpen(false),
-            color: "gray",
-          },
-        ]}
-      />
+      <div className="relative">
+
+        {isModalOpen && (
+          <>
+            <div
+              onClick={() => setIsModalOpen(false)}
+              style={{
+                position: "fixed",
+                inset: 0,
+                background: "rgba(0, 0, 0, 0.4)",
+                backdropFilter: "blur(6px)",
+                WebkitBackdropFilter: "blur(6px)",
+                zIndex: 40,
+              }}
+            />
+            <Modal
+              user={user}
+              onClose={() => setIsModalOpen(false)}
+            />
+          </>
+        )}
+      </div>
     </>
   );
 }
 
 function Stat({ icon, value, delay }) {
+
   return (
+
     <div
       className="stat-pill flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-white/10"
       style={{

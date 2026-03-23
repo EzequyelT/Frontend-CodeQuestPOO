@@ -14,12 +14,12 @@ import {
   ArrowRight,
   AlertCircle
 } from 'lucide-react';
-import logo from '../Assets/logo.png';
-import Bg from '../Assets/Login/BgLogin.jpg';
-import HeroSection from '../Assets/Login/HeroCreateAccount.png';
-import AvatarModal from '../Components/Modal/AvatarModal';
+import logo from '../../assets/logo.png';
+import Bg from '../../assets/Login/BgLogin.jpg';
+import HeroSection from '../../assets/Login/HeroCreateAccount.png';
+import AvatarModal from '../../Components/Modal/AvatarModal';
 import { useNavigate } from "react-router-dom";
-import { registerUser } from '../Services/alunos/alunoService';
+import { registerUser } from '../../Services/alunos/alunoService';
 
 // Componente Toast Melhorado
 const Toast = ({ message, type, onClose }) => {

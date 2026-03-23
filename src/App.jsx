@@ -7,8 +7,9 @@ import  Trophies  from './Pages/UserPage/Trophies&Achievements'
 import Desafio1GameTest from "./Components/GameTest/desafio1"
 import Desafio2GameTest from "./Components/GameTest/desafio2"
 import DesafioFinal from "./Components/GameTest/desafioFinal"
-import Login from "./Pages/login"
-import CriarConta from "./Pages/criarConta"
+import Login from "./Pages/auth/login"
+import CriarConta from "./Pages/auth/criarConta"
+import FlorestaDosAlgoritmos from "./Pages/Game/FlorestaDosAlgoritmos"
 import './App.css'
 
 
@@ -28,6 +29,7 @@ function App() {
           <Route path="/CriarConta" element={<CriarConta />} />
           <Route path="/Maps" element={<Maps />} />
           <Route path="/Trophies" element={<Trophies />} />
+          <Route path="/FlorestaDosAlgoritmos" element={<FlorestaDosAlgoritmos />} />
           <Route path="/recent" element={<div>Página Recente - Em desenvolvimento</div>} />
           <Route path="/friends" element={<div>Página de Amigos - Em desenvolvimento</div>} />
           <Route path="/messages" element={<div>Página de Mensagens - Em desenvolvimento</div>} />

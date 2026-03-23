@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import SideBar from "../../Components/SideBar/SideBar";
 import mago from "../../assets/DashBoard/mago.png"
 import "../../css/DashBoard.css";
-import { getProgressoAluno}from "../../Services/alunos/alunoProgress";
+import { getProgressoDashboard } from "../../Services/progressoService";
 
 
 // ============================================================
@@ -447,7 +447,8 @@ export function DashBoard() {
         setUser(userData);
 
         // Carregar progresso com JWT
-        getProgressoAluno()
+        const token = localStorage.getItem("cq_token");
+        getProgressoDashboard(token)
             .then(data => {
                 console.log("[Dashboard] ✅ Progresso carregado:", data);
                 setProgresso({
@@ -494,8 +495,8 @@ export function DashBoard() {
 
     return (
         <div className="relative min-h-screen bg-black animate-fadeIn">
-            <DashBoardHeader />
-            <SideBar />
+            <DashBoardHeader user={user} />
+            <SideBar user={user} />
 
             <main className="ml-20 mt-5 p-6 pt-24">
                 {erro && (

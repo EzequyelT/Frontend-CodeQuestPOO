@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { Lock, User, Eye, EyeOff, CheckCircle, XCircle, X } from 'lucide-react';
-import logo from '../Assets/logo.png';
-import Bg from '../Assets/Login/BgLogin.jpg';
-import HeroSection from '../Assets/Login/Hero.png';
+import logo from '../../assets/logo.png';
+import Bg from '../../assets/Login/BgLogin.jpg';
+import HeroSection from '../../assets/Login/Hero.png';
 import { useNavigate } from "react-router-dom";
-import { login as authLogin, saveToken } from "../Services/auth/authService";
+import { login as authLogin, saveToken } from "../../Services/auth/authService";
 
 // Componente de Notificação Toast
 const Toast = ({ message, type, onClose }) => {
