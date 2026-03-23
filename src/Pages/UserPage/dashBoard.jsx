@@ -1,4 +1,6 @@
 import DashBoardHeader from "../../Components/Header/HeaderDashBoard";
+import { getProgresso } from "../../Services/progressoService";
+import { getMapas } from "../../Services/mapasService";
 import { useState, useEffect } from "react";
 import SideBar from "../../Components/SideBar/SideBar";
 import mago from "../../assets/DashBoard/mago.png"
@@ -59,6 +61,7 @@ const DAILY_MISSION = {
 };
 
 const DAYS = ["SEG", "TER", "QUA", "QUI", "SEX", "SÁB", "DOM"];
+
 
 // ============================================================
 // 🔷 AccuracyChart (DonutChart adaptado)
@@ -182,7 +185,7 @@ function MainCard({ player }) {
             <div className="flex justify-between items-center px-6 pt-5 pb-4">
                 <h2 className="text-white font-bold text-base tracking-wide">CodeQuestPOO</h2>
                 <span className="text-xs text-gray-500 border border-gray-700 rounded px-2 py-0.5 mr-52">
-                  {player.rank}
+                    {player.rank}
                 </span>
             </div>
 
@@ -431,6 +434,8 @@ export function DashBoard() {
     const [progresso, setProgresso] = useState(null);
     const [loading, setLoading] = useState(true);
     const [erro, setErro] = useState(null);
+    const [mapasProgresso, setMapasProgresso] = useState([]);
+
 
     useEffect(() => {
         const storedUser = localStorage.getItem("cq_user");
@@ -469,6 +474,8 @@ export function DashBoard() {
                 });
                 setErro(null);
             })
+
+
             .catch(err => {
                 const errorMsg = err.response?.data?.error || err.message || "Erro desconhecido";
                 console.error("[Dashboard] ❌ Erro ao carregar progresso:", errorMsg);
@@ -480,6 +487,33 @@ export function DashBoard() {
                 });
             })
             .finally(() => setLoading(false));
+    }, []);
+
+    useEffect(() => {
+        const token = localStorage.getItem("cq_token");
+
+        getMapas()
+            .then(mapas => getProgresso(token).then(progresso => ({ mapas, progresso })))
+            .then(({ mapas, progresso }) => {
+                const combinados = mapas.map((m) => {
+                    const prog = progresso.find(p => p.mapa === m.id) || {};
+
+                    return {
+                        ...m,
+                        desafios: prog.desafios_completos || 0,
+                        total: prog.total_desafios || 0,
+                        locked: !prog.desbloqueado,
+                        done: prog.porcentagem === 100,
+                        color: "#22c55e",
+                        bgColor: "#333",
+                        emoji: "🗺️",
+                        boss: "Boss",
+                        bossEmoji: "👹"
+                    };
+                });
+
+                setMapasProgresso(combinados);
+            });
     }, []);
 
     if (loading) {
@@ -508,7 +542,7 @@ export function DashBoard() {
                 <LoginRewardBanner />
                 {progresso && <MainCard player={progresso} />}
                 <div className="flex gap-4 mt-6">
-                    <MapsPanel maps={MAPS} />
+                    <MapsPanel maps={mapasProgresso} />
                     <ErrorTypesPanel errors={ERROR_TYPES} />
                     <TrophiesAndMissionPanel trophies={TROPHIES} mission={DAILY_MISSION} />
                 </div>

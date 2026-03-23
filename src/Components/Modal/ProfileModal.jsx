@@ -264,7 +264,7 @@ export default function ProfileModal({ user, onClose }) {
         <div className="pm-header">
           <span className="pm-title">Conta</span>
           <button className="pm-close" onClick={onClose}>
-            <X size={19 } />
+            <X size={19} />
           </button>
         </div>
 
@@ -325,8 +325,11 @@ export default function ProfileModal({ user, onClose }) {
           <button
             className="pm-logout"
             onClick={() => {
+              localStorage.removeItem("user"); 
+              sessionStorage.removeItem("user");
+
               onClose();
-              navigate("/Dashboard");
+              navigate("/Dashboard"); 
             }}
           >
             <LogOut size={15} />

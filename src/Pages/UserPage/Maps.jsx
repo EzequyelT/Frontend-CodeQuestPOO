@@ -13,6 +13,7 @@ export default function Maps() {
     const [mapasProgresso, setMapasProgresso] = useState([]);
     const navigate = useNavigate();
 
+
     useEffect(() => {
         const storedUser = localStorage.getItem("cq_user");
         const token = localStorage.getItem("cq_token");

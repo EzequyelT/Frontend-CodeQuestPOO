@@ -22,32 +22,32 @@ export const getProgresso = async (token) => {
 };
 
 export const getProgressoDashboard = async (token) => {
-  const progresso = await getProgresso(token);
-  if (!Array.isArray(progresso) || progresso.length === 0) {
+  try {
+    const res = await fetch(`${API_URL}/api/progresso/dashboard`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!res.ok) {
+      throw new Error("Erro ao buscar dashboard de progresso");
+    }
+
+    const data = await res.json();
+    return data;
+  } catch (err) {
+    console.error("[ProgressoService] ❌", err);
     return {
       xp_total: 0,
-      xp_proximo_nivel: 3000,
-      dias_seguidos: 0,
-      dicas_usadas: 0,
-      desafios_completos: 0,
-      acertos: 0,
       nivel_atual: 1,
+      coins: 0,
+      streak: 0,
+      tempo_total_jogo: 0,
+      desafios_completos: 0,
+      total_desafios: 0,
+      porcentagem_completa: 0,
     };
   }
-
-  const totalDesafios = progresso.reduce((acc, mapa) => acc + (mapa.total_desafios || 0), 0);
-  const desafiosCompletos = progresso.reduce((acc, mapa) => acc + (mapa.desafios_completos || 0), 0);
-  const totalXP = desafiosCompletos * 100;
-  const acertos = totalDesafios > 0 ? Math.round((desafiosCompletos / totalDesafios) * 100) : 0;
-
-  return {
-    xp_total: totalXP,
-    xp_proximo_nivel: 3000,
-    dias_seguidos: 7,
-    dicas_usadas: 15,
-    desafios_completos: desafiosCompletos,
-    acertos,
-    nivel_atual: 1,
-  };
 };
 
