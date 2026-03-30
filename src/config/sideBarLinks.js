@@ -1,24 +1,24 @@
-import { Map, Trophy, Library, ClipboardCheck } from "lucide-react";
+import { Map, Trophy, BarChart, CheckSquare } from "lucide-react";
 
 export const sidebarLinks = [
   {
-    id: "maps",
+    id: "Mapas",
     icon: Map,
-    path: "/Maps",
+    path: "/maps",
   },
   {
-    id: "trophies",
+    id: "Trouféis",
     icon: Trophy,
-    path: "/Trophies",
+    path: "/trophies",
   },
   {
-    id: "library",
-    icon: Library,
-    path: "/library",
+    id: "Placar de Líderes",
+    icon: BarChart, 
+    path: "/leaderboard",
   },
   {
-    id: "challenges",
-    icon: ClipboardCheck,
+    id: "Desafios",
+    icon: CheckSquare, 
     path: "/challenges",
   },
 ];

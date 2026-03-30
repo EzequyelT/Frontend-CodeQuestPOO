@@ -1,4 +1,6 @@
 import DashBoardHeader from "../../Components/Header/HeaderDashBoard";
+import { useNavigate } from "react-router-dom";
+import { iniciarTempo, pararTempo } from "../../Services/tempoService";
 import { getProgresso } from "../../Services/progressoService";
 import { getMapas } from "../../Services/mapasService";
 import { useState, useEffect } from "react";
@@ -435,7 +437,27 @@ export function DashBoard() {
     const [loading, setLoading] = useState(true);
     const [erro, setErro] = useState(null);
     const [mapasProgresso, setMapasProgresso] = useState([]);
+    const navigate = useNavigate();
 
+
+    const token = localStorage.getItem("cq_token");
+
+    useEffect(() => {
+        if (!token) {
+            navigate("/login");
+            return;
+        }
+    }, [token]);
+
+    useEffect(() => {
+        if (token) {
+            iniciarTempo(token);
+        }
+
+        return () => {
+            pararTempo();
+        };
+    }, [token]);
 
     useEffect(() => {
         const storedUser = localStorage.getItem("cq_user");

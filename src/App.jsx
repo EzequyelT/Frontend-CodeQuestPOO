@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom"
 import Landingpage from './Pages/landingPage'
 import GameTest from './Pages/gameTest'
 import { DashBoard } from './Pages/UserPage/dashBoard'
+import  Perfil  from './Pages/UserPage/Perfil'
 import  Maps  from './Pages/UserPage/Maps'
 import  Trophies  from './Pages/UserPage/Trophies&Achievements'
 import Desafio1GameTest from "./Components/GameTest/desafio1"
@@ -33,7 +34,8 @@ function App() {
           <Route path="/recent" element={<div>Página Recente - Em desenvolvimento</div>} />
           <Route path="/friends" element={<div>Página de Amigos - Em desenvolvimento</div>} />
           <Route path="/messages" element={<div>Página de Mensagens - Em desenvolvimento</div>} />
-          <Route path="*" element={<h1>Página não encontrada</h1>} />
+          <Route path="/Perfil" element={<Perfil />} />
+          <Route path="*" element={<h1 className="text-white">Página não encontrada</h1>} />
         </Routes>
       </BrowserRouter>
     </>

@@ -1,16 +1,82 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getProgressoDashboard } from "../../Services/progressoService";
 import logo from '../../Assets/logo.png';
 import { Home, Clock, Users, MessageSquare, Search, Settings, Star, Zap, DollarSign } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Modal from "../Modal/ProfileModal";
 
 
+function formatarTempo(segundos = 0) {
+    const h = Math.floor(segundos / 3600);
+    const m = Math.floor((segundos % 3600) / 60);
+    const s = segundos % 60;
+
+    return h > 0 ? `${h}h` : m > 0 ? `${m}min` : `${s}s`;
+}
+
 export default function DashBoardHeader({ user }) {
   const [activeNav, setActiveNav] = useState("home");
   const [searchFocused, setSearchFocused] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [stats, setStats] = useState({
+    tempo_total_jogo: 0,
+    xp_total: 0,
+    coins: 0,
+    streak: 0,
+  });
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const token = localStorage.getItem("cq_token");
+        if (!token) return;
+
+        const data = await getProgressoDashboard(token);
+
+        setStats(data);
+      } catch (err) {
+        console.error("Erro ao carregar stats:", err);
+        // Usar dados padrão em caso de erro
+        setStats({
+          tempo_total_jogo: 0,
+          xp_total: 0,
+          coins: 0,
+          streak: 0,
+        });
+      }
+    };
+
+    fetchStats();
+  }, []);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const token = localStorage.getItem("cq_token");
+        if (!token) {
+          console.warn("❌ Token não encontrado no localStorage");
+          return;
+        }
+
+        const data = await getProgressoDashboard(token);
+
+        // 👇 Adiciona isto
+        console.log("📦 Dados completos recebidos:", data);
+        console.log("⏱️ tempo_total_jogo:", formatarTempo(data.tempo_total_jogo));
+        console.log("⭐ xp_total:", data.xp_total);
+        console.log("💰 coins:", data.coins);
+        console.log("⚡ streak:", data.streak);
+
+        setStats(data);
+      } catch (err) {
+        console.error("Erro ao carregar stats:", err);
+        setStats({ tempo_total_jogo: 0, xp_total: 0, coins: 0, streak: 0 });
+      }
+    };
+
+    fetchStats();
+  }, []);
 
 
   const navItems = [
@@ -63,7 +129,6 @@ export default function DashBoardHeader({ user }) {
       `}</style>
 
       <header
-
         className="fixed top-0 left-0 w-full h-20 flex items-center gap-4 px-6 py-4"
         style={{
           background: "rgba(15, 17, 21, 0.97)",
@@ -125,10 +190,10 @@ export default function DashBoardHeader({ user }) {
 
         {/* Stats */}
         <div className="flex items-center gap-2">
-          <Stat icon={<Clock size={14} color="#06b6d4" />} value="1284 H" delay="0ms" />
-          <Stat icon={<Star size={14} color="#facc15" />} value="23245 XP" delay="60ms" />
-          <Stat icon={<DollarSign size={14} color="#a78bfa" />} value="23245" delay="120ms" />
-          <Stat icon={<Zap size={14} color="#f97316" />} value="3" delay="180ms" />
+          <Stat icon={<Clock size={14} color="#06b6d4" />} value={formatarTempo(stats.tempo_total_jogo)} delay="0ms" />
+          <Stat icon={<Star size={14} color="#facc15" />} value={`${stats.xp_total} XP`} delay="60ms" />
+          <Stat icon={<DollarSign size={14} color="#a78bfa" />} value={stats.coins} delay="120ms" />
+          <Stat icon={<Zap size={14} color="#f97316" />} value={stats.streak} delay="180ms" />
         </div>
 
         {/* Right group — search + settings + avatar */}
@@ -199,7 +264,7 @@ export default function DashBoardHeader({ user }) {
 
 
 
-      {/* Modal de Perfil (fora do header para evitar issues de z-index/contexto) */}
+      {/* Modal de Perfil (fora do header para evitar issues de z-index/contexto)  */}
       <div className="relative">
 
         {isModalOpen && (

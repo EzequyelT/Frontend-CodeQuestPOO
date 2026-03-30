@@ -85,76 +85,66 @@ export default function Maps() {
     }
 
     return (
-
-        <div className="maps">
+        <div className="maps min-h-screen bg-black flex flex-col">
             <DashBoardHeader user={user} />
             <SideBar user={user} />
-            <div className="flex items-start justify-center gap-8 mt-20">
 
-                {/* Imagem + botão sobrepostos */}
-                <div className="relative">
+            <div className="flex-1 flex flex-col items-center justify-between mt-20 ml-20 px-6 pb-8">
+                {/* Imagem + botão */}
+                <div className="relative mt-6">
                     <img
                         src={map1}
                         alt="Mapa 1"
-                        className="w-95 h-130 transition-transform duration-300 hover:scale-105 cursor-pointer"
+                        className="w-95 h-140 transition-transform duration-300 hover:scale-105 cursor-pointer"
                     />
                     <button
-                        className="
-        absolute bottom-6 left-1/2 -translate-x-1/2
-        bg-green-600 text-white
-        px-6 py-2 rounded-full
-        hover:bg-green-700
-        transition-colors duration-200
-        animate-bounce
-        border-2 border-black
-        font-semibold
-      "
+                        className="absolute left-1/2 bottom-35 -translate-x-1/2 bg-green-600 text-white px-6 py-2 rounded-full hover:bg-green-700 transition-colors duration-200 animate-bounce border-2 border-black font-semibold"
                         onClick={() => navigate('/FlorestaDosAlgoritmos')}
                     >
                         jogar
                     </button>
                 </div>
 
-                {/* Barra de níveis ao lado */}
-                <div className="w-[420px] flex flex-col gap-4 pt-4">
-                    {mapasProgresso.map((m, i) => {
-                        const pct = m.porcentagem;
-                        return (
-                            <div key={i} className="flex flex-col gap-2 hover:scale-105 transition-transform duration-300">
-                                <div
-                                    className="rounded-lg h-14 flex items-center justify-between px-3 border"
-                                    style={{
-                                        backgroundColor: m.bgColor + "99",
-                                        borderColor: m.color + "55",
-                                        opacity: m.locked ? 0.5 : 1,
-                                    }}
-                                >
-                                    <div className="flex items-center gap-2">
-                                        <span className="text-xl">{m.emoji}</span>
-                                        <div>
-                                            <p className="text-white text-xs font-semibold">{m.nome}</p>
-                                            <p className="text-gray-400 text-[10px]">Boss: {m.bossEmoji} {m.boss}</p>
-                                        </div>
-                                    </div>
-                                    {m.locked ? (
-                                        <span>🔒</span>
-                                    ) : m.done ? (
-                                        <span className="text-[10px] font-bold text-white bg-green-600 rounded px-1.5 py-0.5">Completo</span>
-                                    ) : (
-                                        <span className="text-[10px] font-bold" style={{ color: m.color }}>{pct.toFixed(0)}%</span>
-                                    )}
-                                </div>
-                                <div className="h-1 bg-gray-800 rounded-full">
+                <footer className="w-full max-w-5xl mt-20">
+                    <div className="w-full flex flex-col gap-4 rounded-2xl border border-gray-800 bg-[#111] p-5">
+                        {mapasProgresso.map((m, i) => {
+                            const pct = m.porcentagem;
+                            return (
+                                <div key={i} className="flex flex-col gap-2 hover:scale-[1.01] transition-transform duration-300">
                                     <div
-                                        className="h-1 rounded-full transition-all duration-1000"
-                                        style={{ width: `${pct}%`, backgroundColor: m.color }}
-                                    />
+                                        className="rounded-lg h-14 flex items-center justify-between px-6 border"
+                                        style={{
+                                            backgroundColor: m.bgColor + "99",
+                                            borderColor: m.color + "55",
+                                            opacity: m.locked ? 0.5 : 1,
+                                        }}
+                                    >
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-xl">{m.emoji}</span>
+                                            <div>
+                                                <p className="text-white text-xs font-semibold">{m.nome}</p>
+                                                <p className="text-gray-400 text-[10px]">Boss: {m.bossEmoji} {m.boss}</p>
+                                            </div>
+                                        </div>
+                                        {m.locked ? (
+                                            <span>🔒</span>
+                                        ) : m.done ? (
+                                            <span className="text-[10px] font-bold text-white bg-green-600 rounded px-1.5 py-0.5">Completo</span>
+                                        ) : (
+                                            <span className="text-[10px] font-bold" style={{ color: m.color }}>{pct.toFixed(0)}%</span>
+                                        )}
+                                    </div>
+                                    <div className="h-1 bg-gray-800 rounded-full overflow-hidden">
+                                        <div
+                                            className="h-1 rounded-full transition-all duration-1000"
+                                            style={{ width: `${pct}%`, backgroundColor: m.color }}
+                                        />
+                                    </div>
                                 </div>
-                            </div>
-                        );
-                    })}
-                </div>
-
+                            );
+                        })}
+                    </div>
+                </footer>
             </div>
         </div>
     )
