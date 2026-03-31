@@ -11,7 +11,7 @@ export default function SideBar() {
         <aside
             className="fixed top-20 left-0 h-[calc(100vh-5rem)] w-20 flex flex-col items-center py-4 gap-2"
             style={{
-                background: "rgba(15, 17, 21, 0.97)",
+                background: "black",
                 borderRight: "1px solid rgba(255,255,255,0.05)",
             }}
         >

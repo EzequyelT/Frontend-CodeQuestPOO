@@ -1,5 +1,3 @@
-import { userRound } from "react-icons/fi";
-
 export default function Perfil() {
     return (
         <div className="p-4">

@@ -135,7 +135,7 @@ function WeeklyBars({ activity, currentDay }) {
 // ============================================================
 function LoginRewardBanner() {
     return (
-        <div className="flex items-center justify-between bg-gradient-to-r from-yellow-700/80 via-yellow-600/70 to-orange-600/60 border border-yellow-600/40 rounded-2xl px-6 py-4 mb-5 animate-scaleUp animate-glow">
+        <div className="flex items-center justify-between bg-gradient-to-r from-yellow-700/80 via-yellow-600/70 to-orange-600/60 border border-yellow-600/40 rounded-4xl px-6 py-4 mb-5 animate-scaleUp animate-glow">
             <div className="flex items-center gap-3">
                 <span className="text-2xl animate-bounce-custom">🎁</span>
                 <div>
@@ -181,11 +181,11 @@ function XPBar({ current, total }) {
 // ============================================================
 function MainCard({ player }) {
     return (
-        <div className="relative bg-[#151414] rounded-2xl border border-gray-800 overflow-hidden animate-slideInLeft">
+        <div className="relative bg-[#151414] rounded-3xl border border-gray-800 overflow-hidden animate-slideInLeft">
 
             {/* Topo: título + badge */}
             <div className="flex justify-between items-center px-6 pt-5 pb-4">
-                <h2 className="text-white font-bold text-base tracking-wide">CodeQuestPOO</h2>
+                <h2 className="text-white font-bold text-2xl tracking-wide animate-pulse">Bem-vindo, {player.name}!</h2>
                 <span className="text-xs text-gray-500 border border-gray-700 rounded px-2 py-0.5 mr-52">
                     {player.rank}
                 </span>
@@ -254,7 +254,7 @@ function MainCard({ player }) {
 // ============================================================
 function MapsPanel({ maps }) {
     return (
-        <div className="bg-[#151414] rounded-2xl border border-gray-800 p-4 flex flex-col gap-3 flex-1 animate-slideInDown">
+        <div className="bg-[#151414] rounded-4xl border border-gray-800 p-4 flex flex-col gap-3 flex-1 animate-slideInDown">
             <div className="flex justify-between items-center">
                 <h3 className="text-white text-sm font-semibold">🗺️ Mapas de Aprendizado</h3>
                 <button className="w-5 h-5 rounded border border-gray-700 flex items-center justify-center text-gray-500 text-xs hover:text-white">+</button>
@@ -315,7 +315,7 @@ function MapsPanel({ maps }) {
 function ErrorTypesPanel({ errors }) {
     const total = errors.reduce((s, e) => s + e.count, 0);
     return (
-        <div className="bg-[#151414] rounded-2xl border border-gray-800 p-4 flex flex-col gap-3 flex-1 animate-slideInDown delay-200">
+        <div className="bg-[#151414] rounded-4xl border border-gray-800 p-4 flex flex-col gap-3 flex-1 animate-slideInDown delay-200">
             <div className="flex justify-between items-center">
                 <h3 className="text-white text-sm font-semibold">📈 Tipos de Erros</h3>
                 <span className="text-gray-500 text-xs border border-gray-700 rounded px-2 py-0.5">{total} total</span>
@@ -367,7 +367,7 @@ function TrophiesAndMissionPanel({ trophies, mission }) {
     const done = mission.current >= mission.total;
 
     return (
-        <div className="bg-[#151414] rounded-2xl border border-gray-800 p-4 flex flex-col gap-4 flex-1 animate-slideInRight">
+        <div className="bg-[#151414] rounded-4xl border border-gray-800 p-4 flex flex-col gap-4 flex-1 animate-slideInRight">
 
             {/* Troféus */}
             <div>

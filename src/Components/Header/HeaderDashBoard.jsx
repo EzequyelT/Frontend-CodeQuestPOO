@@ -131,7 +131,7 @@ export default function DashBoardHeader({ user }) {
       <header
         className="fixed top-0 left-0 w-full h-20 flex items-center gap-4 px-6 py-4"
         style={{
-          background: "rgba(15, 17, 21, 0.97)",
+          background: "black",
           borderBottom: "1px solid rgba(255,255,255,0.06)",
           boxShadow: "0 4px 32px rgba(0,0,0,0.5)"
         }}

@@ -1,73 +1,88 @@
-import { useState } from "react";
-import { Star, Gem, Trophy, Users, ChevronLeft, Lock, Settings, Volume2 } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import { Star, Gem, Trophy, Users, ChevronLeft, Lock, Settings, Volume2, Loader2 } from "lucide-react";
 
-// ── Replace these with your real imports ──────────────────────────────────────
 import map from "../../assets/Maps/Map1.png";
-import banner from "../../assets/Maps/Banner.jpg";
+import Banner from "../../assets/Maps/Banner.jpg";
+
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DATA LAYER — swap fetchLevels() with your real API/DB call
+//
+// Expected shape:
+//   player:  { stars, gems, xp, xpMax, level }
+//   levels:  [{ id, name, challenges: [{ id, name, description, x, y, state, stars, xpReward }] }]
+//
+// x, y → position on the map as % (0-100). Adjust to match your map image.
+// state → "completed" | "available" | "locked"
 // ─────────────────────────────────────────────────────────────────────────────
 
-const LEVELS = [
-  {
-    id: 1,
-    name: "Trilha da Iniciação",
-    description: "Aprenda os primeiros passos dos algoritmos.",
-    x: 18,   // % from left of map container
-    y: 72,   // % from top  of map container
-    state: "completed", // completed | available | locked
-    stars: 3,
-    xpReward: 120,
-  },
-  {
-    id: 2,
-    name: "Clareira dos Loops",
-    description: "Domine estruturas de repetição.",
-    x: 35,
-    y: 52,
-    state: "completed",
-    stars: 2,
-    xpReward: 150,
-  },
-  {
-    id: 3,
-    name: "Gruta das Condicionais",
-    description: "Tome decisões com if/else e switch.",
-    x: 55,
-    y: 38,
-    state: "available",
-    stars: 0,
-    xpReward: 180,
-  },
-  {
-    id: 4,
-    name: "Pico dos Recursivos",
-    description: "Enfrente funções que chamam a si mesmas.",
-    x: 73,
-    y: 22,
-    state: "locked",
-    stars: 0,
-    xpReward: 220,
-  },
-  {
-    id: 5,
-    name: "Santuário do Mestre",
-    description: "O desafio final aguarda os dignos.",
-    x: 84,
-    y: 10,
-    state: "locked",
-    stars: 0,
-    xpReward: 300,
-  },
-];
+async function fetchLevels() {
+  // TODO: replace with real fetch:
+  // const res = await fetch("/api/map/floresta-dos-algoritmos");
+  // return res.json();
 
-const PLAYER = {
-  stars: 5,
-  gems: 12,
-  xp: 270,
-  xpMax: 500,
-  level: 3,
-};
+  await new Promise(r => setTimeout(r, 900)); // simulate network latency
+  return {
+    player: { stars: 5, gems: 12, xp: 270, xpMax: 500, level: 3 },
+    levels: [
+      {
+        id: 1,
+        name: "Nível I — Raízes",
+        challenges: [
+          { id: 1, name: "Primeiro Passo",    description: "Variáveis e tipos de dados.", x: 22, y: 88, state: "completed", stars: 3, xpReward: 80  },
+          { id: 2, name: "Condicionais",      description: "if / else e operadores.",      x: 42, y: 78, state: "completed", stars: 2, xpReward: 100 },
+          { id: 3, name: "Loops Básicos",     description: "for e while na prática.",      x: 62, y: 68, state: "completed", stars: 1, xpReward: 110 },
+        ],
+      },
+      {
+        id: 2,
+        name: "Nível II — Copa",
+        challenges: [
+          { id: 4, name: "Funções",           description: "Definição e chamada.",         x: 30, y: 52, state: "available", stars: 0, xpReward: 130 },
+          { id: 5, name: "Arrays",            description: "Listas e iteração.",           x: 65, y: 42, state: "locked",    stars: 0, xpReward: 150 },
+          { id: 6, name: "Objetos",           description: "Chaves, valores e métodos.",   x: 90, y: 30, state: "locked",    stars: 0, xpReward: 160 },
+        ],
+      },
+      {
+        id: 3,
+        name: "Nível III — Cimo",
+        challenges: [
+          { id: 7, name: "Recursão",          description: "Funções que chamam a si.",     x: 10, y: 35, state: "locked",   stars: 0, xpReward: 200 },
+          { id: 8, name: "Mestre da Floresta",description: "Desafio final.",               x: 46, y:  10, state: "locked",   stars: 0, xpReward: 300 },
+        ],
+      },
+    ],
+  };
+}
 
-// ── Star renderer ─────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// HELPERS
+// ─────────────────────────────────────────────────────────────────────────────
+
+function allChallenges(levels) {
+  return levels.flatMap(l => l.challenges);
+}
+
+/**
+ * Camera Y: 0 = show bottom of map, 1 = show top of map.
+ * Finds the furthest unlocked challenge (lowest y%) and positions the camera
+ * so that challenge is roughly centred vertically.
+ */
+function computeCameraY(levels) { 
+  const all = allChallenges(levels);
+  const frontier = all
+    .filter(c => c.state !== "locked")
+    .sort((a, b) => a.y - b.y)[0]; // smallest y = highest on map
+  if (!frontier) return 0;
+  // challenge.y: 88 (bottom) → camY 0 | challenge.y: 6 (top) → camY 1
+  return Math.max(0, Math.min(1, 1 - frontier.y / 100));
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// STARS
+// ─────────────────────────────────────────────────────────────────────────────
+
 function Stars({ count, max = 3, size = 11 }) {
   return (
     <div style={{ display: "flex", gap: 2 }}>
@@ -82,122 +97,98 @@ function Stars({ count, max = 3, size = 11 }) {
   );
 }
 
-// ── Single level node ─────────────────────────────────────────────────────────
-function LevelNode({ level, onHover, hoveredId }) {
-  const isHovered = hoveredId === level.id;
+// ─────────────────────────────────────────────────────────────────────────────
+// CHALLENGE NODE
+// ─────────────────────────────────────────────────────────────────────────────
 
-  const stateStyles = {
+function ChallengeNode({ challenge, onHover, hoveredId }) {
+  const isHovered = hoveredId === challenge.id;
+  const S = 52;
+
+  const style = {
     completed: {
       border: "3px solid #FFD700",
-      background: "radial-gradient(circle at 35% 35%, #4a3800, #1a1400)",
-      glow: "0 0 0px #FFD700, 0 0 20px rgba(255,215,0,0.4), 0 0 40px rgba(255,215,0,0.15)",
-      numberColor: "#FFD700",
+      bg: "radial-gradient(circle at 35% 35%, #4a3800, #1a1400)",
+      glow: "0 0 18px rgba(255,215,0,0.45), 0 0 40px rgba(255,215,0,0.15)",
+      numColor: "#FFD700",
     },
     available: {
       border: "3px solid #4fc3f7",
-      background: "radial-gradient(circle at 35% 35%, #0d2a3d, #061520)",
-      glow: "0 0 0px #4fc3f7, 0 0 25px rgba(79,195,247,0.6), 0 0 50px rgba(79,195,247,0.25)",
-      numberColor: "#4fc3f7",
+      bg: "radial-gradient(circle at 35% 35%, #0d2a3d, #061520)",
+      glow: "0 0 22px rgba(79,195,247,0.65), 0 0 50px rgba(79,195,247,0.25)",
+      numColor: "#4fc3f7",
     },
     locked: {
-      border: "3px solid #333",
-      background: "radial-gradient(circle at 35% 35%, #1a1a1a, #0a0a0a)",
+      border: "3px solid #2a2a2a",
+      bg: "radial-gradient(circle at 35% 35%, #141414, #080808)",
       glow: "none",
-      numberColor: "#444",
+      numColor: "#333",
     },
-  }[level.state];
-
-  const NODE_SIZE = 56;
+  }[challenge.state];
 
   return (
     <div
-      onMouseEnter={() => onHover(level.id)}
+      onMouseEnter={() => onHover(challenge.id)}
       onMouseLeave={() => onHover(null)}
       style={{
         position: "absolute",
-        left: `${level.x}%`,
-        top: `${level.y}%`,
-        transform: isHovered && level.state !== "locked"
-          ? "translate(-50%, -58%)"
-          : "translate(-50%, -50%)",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        gap: 4,
-        cursor: level.state === "locked" ? "not-allowed" : "pointer",
+        left: `${challenge.x}%`,
+        top: `${challenge.y}%`,
+        transform: isHovered && challenge.state !== "locked"
+          ? "translate(-50%,-60%)" : "translate(-50%,-50%)",
+        display: "flex", flexDirection: "column", alignItems: "center", gap: 4,
+        cursor: challenge.state === "locked" ? "not-allowed" : "pointer",
         zIndex: isHovered ? 30 : 10,
         transition: "transform 0.2s ease",
       }}
     >
-      {/* Pulse rings for available */}
-      {level.state === "available" && (
-        <>
-          <div style={{
-            position: "absolute",
-            width: NODE_SIZE + 20, height: NODE_SIZE + 20,
-            borderRadius: "50%",
-            border: "2px solid rgba(79,195,247,0.4)",
-            animation: "pulseRing 2s ease-out infinite",
-            top: "50%", left: "50%",
-            transform: "translate(-50%, -54%)",
-            pointerEvents: "none",
-          }} />
-          <div style={{
-            position: "absolute",
-            width: NODE_SIZE + 36, height: NODE_SIZE + 36,
-            borderRadius: "50%",
-            border: "2px solid rgba(79,195,247,0.2)",
-            animation: "pulseRing 2s ease-out infinite 0.5s",
-            top: "50%", left: "50%",
-            transform: "translate(-50%, -54%)",
-            pointerEvents: "none",
-          }} />
-        </>
-      )}
+      {/* Pulse rings */}
+      {challenge.state === "available" && [0, 0.5].map(delay => (
+        <div key={delay} style={{
+          position: "absolute",
+          width: S + 22, height: S + 22, borderRadius: "50%",
+          border: `2px solid rgba(79,195,247,${delay === 0 ? 0.45 : 0.2})`,
+          animation: `pulseRing 2s ease-out infinite ${delay}s`,
+          top: "50%", left: "50%",
+          transform: "translate(-50%,-54%)",
+          pointerEvents: "none",
+        }} />
+      ))}
 
-      {/* Node circle */}
+      {/* Circle */}
       <div style={{
-        width: NODE_SIZE, height: NODE_SIZE,
-        borderRadius: "50%",
-        border: stateStyles.border,
-        background: stateStyles.background,
-        boxShadow: isHovered && level.state !== "locked"
-          ? stateStyles.glow + ", 0 8px 32px rgba(0,0,0,0.8)"
-          : stateStyles.glow,
+        width: S, height: S, borderRadius: "50%",
+        border: style.border, background: style.bg,
+        boxShadow: isHovered && challenge.state !== "locked"
+          ? style.glow + ", 0 10px 30px rgba(0,0,0,0.9)" : style.glow,
         display: "flex", alignItems: "center", justifyContent: "center",
-        position: "relative",
-        transition: "box-shadow 0.3s",
+        position: "relative", transition: "box-shadow 0.3s",
       }}>
         <span style={{
-          fontFamily: "'Georgia', serif",
-          fontWeight: "900",
-          fontSize: 22,
-          color: stateStyles.numberColor,
-          textShadow: level.state !== "locked" ? `0 0 12px ${stateStyles.numberColor}` : "none",
-          lineHeight: 1,
+          fontFamily: "Georgia, serif", fontWeight: 900, fontSize: 20,
+          color: style.numColor,
+          textShadow: challenge.state !== "locked" ? `0 0 12px ${style.numColor}` : "none",
         }}>
-          {level.id}
+          {challenge.id}
         </span>
 
-        {/* Lock overlay */}
-        {level.state === "locked" && (
+        {challenge.state === "locked" && (
           <div style={{
             position: "absolute", inset: 0, borderRadius: "50%",
-            background: "rgba(0,0,0,0.55)",
+            background: "rgba(0,0,0,0.6)",
             display: "flex", alignItems: "center", justifyContent: "center",
           }}>
-            <Lock size={20} color="#555" />
+            <Lock size={18} color="#444" />
           </div>
         )}
 
-        {/* Checkmark badge */}
-        {level.state === "completed" && (
+        {challenge.state === "completed" && (
           <div style={{
             position: "absolute", top: -4, right: -4,
             width: 18, height: 18, borderRadius: "50%",
             background: "#FFD700",
             display: "flex", alignItems: "center", justifyContent: "center",
-            boxShadow: "0 0 8px rgba(255,215,0,0.8)",
+            boxShadow: "0 0 8px rgba(255,215,0,0.9)",
           }}>
             <svg width={11} height={11} viewBox="0 0 24 24" fill="none"
               stroke="#000" strokeWidth="3.5" strokeLinecap="round">
@@ -207,48 +198,34 @@ function LevelNode({ level, onHover, hoveredId }) {
         )}
       </div>
 
-      {/* Stars */}
-      <Stars count={level.stars} />
+      <Stars count={challenge.stars} />
 
       {/* Tooltip */}
-      {isHovered && level.state !== "locked" && (
+      {isHovered && challenge.state !== "locked" && (
         <div style={{
-          position: "absolute",
-          bottom: "calc(100% + 14px)",
-          left: "50%",
+          position: "absolute", bottom: "calc(100% + 14px)", left: "50%",
           transform: "translateX(-50%)",
-          background: "linear-gradient(135deg, #1a0e05, #0d0805)",
-          border: "1.5px solid #8b5e1a",
-          borderRadius: 10,
-          padding: "10px 14px",
-          width: 195,
-          boxShadow: "0 8px 32px rgba(0,0,0,0.9), 0 0 0 1px rgba(255,180,0,0.08)",
-          zIndex: 50,
-          pointerEvents: "none",
+          background: "linear-gradient(135deg,#1a0e05,#0d0805)",
+          border: "1.5px solid #8b5e1a", borderRadius: 10,
+          padding: "10px 14px", width: 195,
+          boxShadow: "0 8px 32px rgba(0,0,0,0.95)",
+          zIndex: 50, pointerEvents: "none",
         }}>
-          {/* Arrow */}
           <div style={{
             position: "absolute", bottom: -7, left: "50%",
             transform: "translateX(-50%)",
-            width: 12, height: 7,
-            background: "#8b5e1a",
-            clipPath: "polygon(0 0, 100% 0, 50% 100%)",
+            width: 12, height: 7, background: "#8b5e1a",
+            clipPath: "polygon(0 0,100% 0,50% 100%)",
           }} />
-          <p style={{
-            margin: 0,
-            fontFamily: "Georgia, serif", fontWeight: "bold",
-            fontSize: 13, color: "#f5c878", marginBottom: 4,
-          }}>
-            {level.name}
+          <p style={{ margin: "0 0 4px", fontFamily: "Georgia,serif", fontWeight: "bold", fontSize: 13, color: "#f5c878" }}>
+            {challenge.name}
           </p>
           <p style={{ margin: 0, fontSize: 11, color: "#a08060", lineHeight: 1.4 }}>
-            {level.description}
+            {challenge.description}
           </p>
           <div style={{ marginTop: 8, display: "flex", alignItems: "center", gap: 4 }}>
             <Star size={11} style={{ fill: "#FFD700", color: "#FFD700" }} />
-            <span style={{ fontSize: 11, color: "#f5c878", fontWeight: 600 }}>
-              +{level.xpReward} XP
-            </span>
+            <span style={{ fontSize: 11, color: "#f5c878", fontWeight: 600 }}>+{challenge.xpReward} XP</span>
           </div>
         </div>
       )}
@@ -256,42 +233,72 @@ function LevelNode({ level, onHover, hoveredId }) {
   );
 }
 
-// ── SVG connecting path ───────────────────────────────────────────────────────
-function ConnectingPath({ levels }) {
-  const pts = levels.map(l => ({ x: l.x, y: l.y }));
+// ─────────────────────────────────────────────────────────────────────────────
+// CONNECTING PATH (within a level)
+// ─────────────────────────────────────────────────────────────────────────────
+
+function LevelPath({ challenges }) {
+  if (challenges.length < 2) return null;
+  const pts = challenges.map(c => ({ x: c.x, y: c.y }));
 
   const buildD = (upTo) => {
     let d = `M ${pts[0].x} ${pts[0].y}`;
     for (let i = 0; i < Math.min(upTo, pts.length - 1); i++) {
-      const c = pts[i], n = pts[i + 1];
-      const cx1 = c.x + (n.x - c.x) * 0.4;
-      const cy1 = c.y;
-      const cx2 = c.x + (n.x - c.x) * 0.6;
-      const cy2 = n.y;
-      d += ` C ${cx1} ${cy1}, ${cx2} ${cy2}, ${n.x} ${n.y}`;
+      const a = pts[i], b = pts[i + 1];
+      d += ` C ${a.x + (b.x - a.x) * 0.4} ${a.y}, ${a.x + (b.x - a.x) * 0.6} ${b.y}, ${b.x} ${b.y}`;
     }
     return d;
   };
 
   const fullD = buildD(pts.length - 1);
-  const litEnd = levels.findIndex(l => l.state === "available");
-  const litD = buildD(litEnd >= 0 ? litEnd : levels.filter(l => l.state === "completed").length - 1);
+  const litEnd = challenges.findIndex(c => c.state === "available");
+  const litD = buildD(litEnd >= 0 ? litEnd : challenges.filter(c => c.state === "completed").length - 1);
 
   return (
     <svg viewBox="0 0 100 100" preserveAspectRatio="none"
-      style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none", zIndex: 5 }}>
-      {/* Full dim path */}
-      <path d={fullD} fill="none" stroke="#1a1008" strokeWidth="0.9" />
-      <path d={fullD} fill="none" stroke="rgba(0,0,0,0.5)" strokeWidth="0.5"
-        strokeDasharray="2 2" strokeLinecap="round" />
-      {/* Lit golden path */}
-      <path d={litD} fill="none" stroke="#6b4010" strokeWidth="0.7" />
-      <path d={litD} fill="none" stroke="#FFD700" strokeWidth="0.3" opacity="0.75" />
+      style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none", zIndex: 4 }}>
+      <path d={fullD} fill="none" stroke="#1a1008" strokeWidth="0.8" />
+      <path d={fullD} fill="none" stroke="rgba(0,0,0,0.4)" strokeWidth="0.4" strokeDasharray="2 2" />
+      <path d={litD}  fill="none" stroke="#6b4010" strokeWidth="0.65" />
+      <path d={litD}  fill="none" stroke="#FFD700" strokeWidth="0.28" opacity="0.8" />
     </svg>
   );
 }
 
-// ── XP bar ────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// LEVEL LABEL BANNER
+// ─────────────────────────────────────────────────────────────────────────────
+
+function LevelBanner({ level }) {
+  const first = level.challenges[0];
+  return (
+    <div style={{
+      position: "absolute",
+      left: `${first.x}%`,
+      top: `${first.y + 7}%`,
+      transform: "translateX(-50%)",
+      background: "linear-gradient(90deg,transparent,rgba(0,0,0,0.75) 20%,rgba(0,0,0,0.75) 80%,transparent)",
+      padding: "3px 14px",
+      borderTop: "1px solid rgba(139,74,26,0.5)",
+      borderBottom: "1px solid rgba(139,74,26,0.5)",
+      whiteSpace: "nowrap",
+      zIndex: 3, pointerEvents: "none",
+    }}>
+      <span style={{
+        fontFamily: "Georgia,serif", fontWeight: "bold",
+        fontSize: 10, letterSpacing: "0.1em",
+        color: "#a08060", textTransform: "uppercase",
+      }}>
+        {level.name}
+      </span>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// XP BAR
+// ─────────────────────────────────────────────────────────────────────────────
+
 function XPBar({ xp, xpMax, level }) {
   const pct = Math.min((xp / xpMax) * 100, 100);
   return (
@@ -299,9 +306,9 @@ function XPBar({ xp, xpMax, level }) {
       <div style={{
         width: 36, height: 36, borderRadius: "50%",
         border: "2px solid #8b5e1a",
-        background: "radial-gradient(circle at 35% 35%, #3a2010, #1a0e05)",
+        background: "radial-gradient(circle at 35% 35%,#3a2010,#1a0e05)",
         display: "flex", alignItems: "center", justifyContent: "center",
-        fontFamily: "Georgia, serif", fontWeight: "bold", fontSize: 14,
+        fontFamily: "Georgia,serif", fontWeight: "bold", fontSize: 14,
         color: "#f5c878", flexShrink: 0,
         boxShadow: "0 0 12px rgba(255,180,0,0.35)",
       }}>
@@ -309,24 +316,19 @@ function XPBar({ xp, xpMax, level }) {
       </div>
       <div style={{ flex: 1 }}>
         <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
-          <span style={{ fontSize: 10, color: "#a08060", fontFamily: "Georgia, serif" }}>Nível {level}</span>
+          <span style={{ fontSize: 10, color: "#a08060", fontFamily: "Georgia,serif" }}>Nível {level}</span>
           <span style={{ fontSize: 10, color: "#a08060" }}>{xp}/{xpMax} XP</span>
         </div>
-        <div style={{
-          width: "100%", height: 9, borderRadius: 5,
-          background: "#1a1008", border: "1px solid #3a2010",
-          overflow: "hidden",
-        }}>
+        <div style={{ height: 9, borderRadius: 5, background: "#1a1008", border: "1px solid #3a2010", overflow: "hidden" }}>
           <div style={{
             height: "100%", width: `${pct}%`, borderRadius: 5,
-            background: "linear-gradient(90deg, #8b4500, #FFD700, #fffacd)",
+            background: "linear-gradient(90deg,#8b4500,#FFD700,#fffacd)",
             boxShadow: "0 0 10px rgba(255,215,0,0.6)",
-            transition: "width 0.5s ease",
-            position: "relative", overflow: "hidden",
+            transition: "width 0.6s ease", position: "relative", overflow: "hidden",
           }}>
             <div style={{
               position: "absolute", inset: 0,
-              background: "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%)",
+              background: "linear-gradient(90deg,transparent,rgba(255,255,255,0.28) 50%,transparent)",
               animation: "shimmer 2.5s infinite",
             }} />
           </div>
@@ -336,28 +338,138 @@ function XPBar({ xp, xpMax, level }) {
   );
 }
 
-// ── Main ──────────────────────────────────────────────────────────────────────
-export default function FlorestaDosAlgoritmos() {
-  const [hoveredId, setHoveredId] = useState(null);
-  const completed = LEVELS.filter(l => l.state === "completed").length;
+// ─────────────────────────────────────────────────────────────────────────────
+// PROGRESS INDICATOR (right edge of map)
+// ─────────────────────────────────────────────────────────────────────────────
 
+function ProgressBar({ levels }) {
+  const all  = allChallenges(levels);
+  const done = all.filter(c => c.state === "completed").length;
+  const pct  = Math.round((done / all.length) * 100);
+  return (
+    <div style={{
+      position: "absolute", right: 12, top: "50%",
+      transform: "translateY(-50%)",
+      display: "flex", flexDirection: "column", alignItems: "center", gap: 6,
+      zIndex: 20, pointerEvents: "none",
+    }}>
+      <div style={{
+        width: 4, height: 120, borderRadius: 2,
+        background: "#1a1008", border: "1px solid #3a2010",
+        position: "relative", overflow: "hidden",
+      }}>
+        <div style={{
+          position: "absolute", bottom: 0, left: 0, right: 0,
+          height: `${pct}%`, borderRadius: 2,
+          background: "linear-gradient(0deg,#8b4500,#FFD700)",
+          boxShadow: "0 0 6px rgba(255,215,0,0.5)",
+          transition: "height 1s ease",
+        }} />
+      </div>
+      <span style={{ fontSize: 9, color: "#a08060", fontFamily: "Georgia,serif" }}>{pct}%</span>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MAIN
+// ─────────────────────────────────────────────────────────────────────────────
+
+export default function FlorestaDosAlgoritmos() {
+  const [data,       setData]      = useState(null);
+  const [loading,    setLoading]   = useState(true);
+  const [hoveredId,  setHoveredId] = useState(null);
+  const [translateY, setTranslateY] = useState(0);   // pixels, ≤ 0
+  const [dragging,   setDragging]  = useState(false);
+
+  const mainRef        = useRef(null);
+  const dragStartY     = useRef(0);
+  const dragStartTrans = useRef(0);
+  const navigate = useNavigate();
+
+  const MAP_EXTRA = 1.8;
+
+  // Compute initial camera position in pixels so the frontier node is centred
+  function initialTranslate(levels, mainH) {
+    const all = allChallenges(levels);
+    const frontier = all.filter(c => c.state !== "locked").sort((a, b) => a.y - b.y)[0];
+    if (!frontier) return -(MAP_EXTRA - 1) * mainH; // show bottom
+    const nodeAbsY = (frontier.y / 100) * MAP_EXTRA * mainH;
+    const raw      = mainH / 2 - nodeAbsY;
+    return Math.max(-(MAP_EXTRA - 1) * mainH, Math.min(0, raw));
+  }
+
+  useEffect(() => {
+    fetchLevels()
+      .then(result => {
+        setData(result);
+        // Wait one frame so mainRef.current has a real height
+        requestAnimationFrame(() => {
+          const mainH = mainRef.current?.offsetHeight ?? 600;
+          setTranslateY(initialTranslate(result.levels, mainH));
+        });
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
+  // ── Drag handlers ──────────────────────────────────────────────────────────
+  function clampY(y) {
+    const mainH = mainRef.current?.offsetHeight ?? 600;
+    return Math.max(-(MAP_EXTRA - 1) * mainH, Math.min(0, y));
+  }
+
+  function onPointerDown(e) {
+    // Ignore clicks on buttons/interactive nodes
+    if (e.target.closest("button")) return;
+    setDragging(true);
+    dragStartY.current     = e.clientY;
+    dragStartTrans.current = translateY;
+    e.currentTarget.setPointerCapture(e.pointerId);
+  }
+
+  function onPointerMove(e) {
+    if (!dragging) return;
+    const dy = e.clientY - dragStartY.current;
+    setTranslateY(clampY(dragStartTrans.current + dy));
+  }
+
+  function onPointerUp() {
+    setDragging(false);
+  }
+
+  if (loading) return (
+    <div style={{
+      height: "100dvh", background: "#000",
+      display: "flex", flexDirection: "column",
+      alignItems: "center", justifyContent: "center", gap: 14,
+    }}>
+      <Loader2 size={32} color="#8b5e1a" style={{ animation: "spin 1s linear infinite" }} />
+      <p style={{ fontFamily: "Georgia,serif", color: "#a08060", fontSize: 14 }}>A carregar o mapa…</p>
+      <style>{`@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}`}</style>
+    </div>
+  );
+
+  const { player, levels } = data;
+  const challenges = allChallenges(levels);
+  const done = challenges.filter(c => c.state === "completed").length;
+
+ 
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=DM+Sans:wght@400;600&display=swap');
-
+        @import url('https://fonts.googleapis.com/css2?family=IM+Fell+English&family=DM+Sans:wght@400;600&display=swap');
         @keyframes pulseRing {
-          0%   { transform: translate(-50%, -54%) scale(1);   opacity: 0.7; }
-          100% { transform: translate(-50%, -54%) scale(1.6); opacity: 0; }
+          0%   { transform: translate(-50%,-54%) scale(1);   opacity: 0.7; }
+          100% { transform: translate(-50%,-54%) scale(1.7); opacity: 0;   }
         }
         @keyframes shimmer {
           0%   { transform: translateX(-100%); }
-          100% { transform: translateX(200%); }
+          100% { transform: translateX(200%);  }
         }
         @keyframes floatUp {
-          0%   { transform: translateY(0)    opacity: 0.5; }
+          0%   { transform: translateY(0px);   opacity: 0.5; }
           50%  { opacity: 1; }
-          100% { transform: translateY(-40px); opacity: 0; }
+          100% { transform: translateY(-40px); opacity: 0;   }
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
       `}</style>
@@ -366,76 +478,96 @@ export default function FlorestaDosAlgoritmos() {
         fontFamily: "DM Sans, sans-serif",
         background: "#000",
         height: "100dvh",
-        display: "flex",
-        flexDirection: "column",
+        display: "flex", flexDirection: "column",
         overflow: "hidden",
       }}>
 
         {/* HEADER */}
         <header style={{
           position: "relative",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          padding: "10px 16px",
-          background: "linear-gradient(180deg, rgba(0,0,0,0.97) 0%, rgba(0,0,0,0.75) 100%)",
+          display: "flex", alignItems: "center", justifyContent: "space-between",
+          padding: "10px 20px",
+          background: "linear-gradient(180deg,rgba(0,0,0,0.97),rgba(0,0,0,0.75))",
           borderBottom: "1.5px solid rgba(139,74,26,0.4)",
-          zIndex: 20,
-          flexShrink: 0,
+          zIndex: 20, flexShrink: 0,
         }}>
-
-          <button
-            style={{
-              display: "flex", alignItems: "center", gap: 5,
-              fontFamily: "Georgia, serif", fontWeight: "bold", fontSize: 12,
-              color: "#f5dfa0",
-              background: "linear-gradient(180deg, #2a1508, #1a0d04)",
-              border: "2px solid #8b4a1a",
-              borderBottom: "3px solid #4a1800",
-              padding: "6px 12px", borderRadius: 8, cursor: "pointer",
-              boxShadow: "0 3px 0 #1a0800, inset 0 1px 0 rgba(255,220,120,0.1)",
-            }}
+          <button style={{
+            display: "flex", alignItems: "center", gap: 5,
+            fontFamily: "Georgia,serif", fontWeight: "bold", fontSize: 12,
+            color: "#f5dfa0",
+            background: "linear-gradient(180deg,#2a1508,#1a0d04)",
+            border: "2px solid #8b4a1a", borderBottom: "3px solid #4a1800",
+            padding: "6px 12px", borderRadius: 8, cursor: "pointer",
+            boxShadow: "0 3px 0 #1a0800,inset 0 1px 0 rgba(255,220,120,0.1)",
+          }}
             onMouseEnter={e => e.currentTarget.style.filter = "brightness(1.2)"}
             onMouseLeave={e => e.currentTarget.style.filter = "brightness(1)"}
+            onClick={() => navigate("/Maps")}
           >
-            <ChevronLeft size={14} />
-            Voltar
+            <ChevronLeft size={14} /> Voltar
           </button>
-
-          {/* Title */}
+   
           <div style={{ position: "absolute", left: "50%", transform: "translateX(-50%)", textAlign: "center" }}>
-            <h1 style={{
-              fontFamily: "'IM Fell English', Georgia, serif",
-              fontSize: 20, fontWeight: "bold",
-              color: "#f5c878",
-              textShadow: "0 0 20px rgba(255,180,0,0.5), 0 2px 4px rgba(0,0,0,0.8)",
-              letterSpacing: "0.05em", lineHeight: 1.1,
-            }}>
-              Floresta dos Algoritmos
-            </h1>
-            <p style={{ fontSize: 11, color: "#a08060", fontFamily: "Georgia, serif", letterSpacing: "0.08em" }}>
-              {completed}/{LEVELS.length} desafios completos
-            </p>
+            <div style={{ position: "relative", display: "inline-block" }}>
+              <img
+                src={Banner}
+                alt="Banner"
+                style={{
+                  width: 210,
+                  height: "auto",
+                  display: "block",
+                  borderRadius: 10,
+                  opacity: 0.9,
+                  marginTop: 4,
+                }}
+              />
+              <div style={{
+                position: "absolute",
+                inset: 0,
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                textAlign: "center",
+                padding: "10px 14px",
+              }}>
+                <h1 style={{
+                  fontFamily: "'IM Fell English',Georgia,serif",
+                  fontSize: 16,
+                  fontWeight: "bold",
+                  color: "#f5c878",
+                  textShadow: "0 0 20px rgba(255,180,0,0.5),0 2px 4px rgba(0,0,0,0.8)",
+                  letterSpacing: "0.05em",
+                }}>
+                  Floresta dos Algoritmos
+                </h1>
+                <p style={{
+                  fontSize: 11,
+                  color: "#f8deb0",
+                  fontFamily: "Georgia,serif",
+                  marginTop: 4,
+                  textShadow: "0 1px 3px rgba(0,0,0,0.9)",
+                }}>
+                  {done}/{challenges.length} desafios completos
+                </p>
+              </div>
+            </div>
           </div>
 
-          {/* Stats */}
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <div style={{
-              display: "flex", alignItems: "center", gap: 5,
-              padding: "5px 10px", borderRadius: 20,
-              background: "rgba(0,0,0,0.5)", border: "1.5px solid rgba(255,215,0,0.5)",
-            }}>
-              <Star size={13} style={{ fill: "#FFD700", color: "#FFD700" }} />
-              <span style={{ fontSize: 13, fontWeight: "700", color: "#f5e090" }}>{PLAYER.stars}</span>
-            </div>
-            <div style={{
-              display: "flex", alignItems: "center", gap: 5,
-              padding: "5px 10px", borderRadius: 20,
-              background: "rgba(0,0,0,0.5)", border: "1.5px solid rgba(167,139,250,0.5)",
-            }}>
-              <Gem size={13} style={{ fill: "#a78bfa", color: "#a78bfa" }} />
-              <span style={{ fontSize: 13, fontWeight: "700", color: "#c4b5fd" }}>{PLAYER.gems}</span>
-            </div>
+            {[
+              { icon: <Star size={13} style={{ fill: "#FFD700", color: "#FFD700" }} />, val: player.stars, border: "rgba(255,215,0,0.5)",   color: "#f5e090" },
+              { icon: <Gem  size={13} style={{ fill: "#a78bfa", color: "#a78bfa" }} />, val: player.gems,  border: "rgba(167,139,250,0.5)", color: "#c4b5fd" },
+            ].map(({ icon, val, border, color }, i) => (
+              <div key={i} style={{
+                display: "flex", alignItems: "center", gap: 5,
+                padding: "5px 10px", borderRadius: 20,
+                background: "rgba(0,0,0,0.5)", border: `1.5px solid ${border}`,
+              }}>
+                {icon}
+                <span style={{ fontSize: 13, fontWeight: 700, color }}>{val}</span>
+              </div>
+            ))}
             <button style={{
               width: 32, height: 32, borderRadius: 8,
               background: "rgba(0,0,0,0.5)", border: "1.5px solid #333",
@@ -443,7 +575,7 @@ export default function FlorestaDosAlgoritmos() {
               cursor: "pointer", color: "#888",
             }}
               onMouseEnter={e => { e.currentTarget.style.color = "#f5c878"; e.currentTarget.style.borderColor = "#8b5e1a"; }}
-              onMouseLeave={e => { e.currentTarget.style.color = "#888"; e.currentTarget.style.borderColor = "#333"; }}
+              onMouseLeave={e => { e.currentTarget.style.color = "#888";    e.currentTarget.style.borderColor = "#333"; }}
             >
               <Settings size={14} />
             </button>
@@ -451,105 +583,143 @@ export default function FlorestaDosAlgoritmos() {
         </header>
 
         {/* MAP */}
-        <main style={{ flex: 1, position: "relative", overflow: "hidden" }}>
-          <img
-            src={map}
-            alt="Mapa da Floresta dos Algoritmos"
-            style={{
-              width: "100%", height: "100%",
-              objectFit: "cover", objectPosition: "center",
-              filter: "brightness(0.55) saturate(0.8)",
-              display: "block",
-            }}
-          />
+        <main
+          ref={mainRef}
+          style={{
+            flex: 1, position: "relative", overflow: "hidden",
+            cursor: dragging ? "grabbing" : "grab",
+            touchAction: "none",
+          }}
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={onPointerUp}
+          onPointerCancel={onPointerUp}
+        >
 
-          {/* Vignette */}
+          {/* Scrollable map + nodes */}
           <div style={{
             position: "absolute", inset: 0,
-            background: "radial-gradient(ellipse at center, transparent 35%, rgba(0,0,0,0.65) 100%)",
-            pointerEvents: "none",
-          }} />
-          <div style={{
-            position: "absolute", top: 0, left: 0, right: 0, height: 80,
-            background: "linear-gradient(180deg, rgba(0,0,0,0.65) 0%, transparent 100%)",
-            pointerEvents: "none",
-          }} />
-          <div style={{
-            position: "absolute", bottom: 0, left: 0, right: 0, height: 80,
-            background: "linear-gradient(0deg, rgba(0,0,0,0.75) 0%, transparent 100%)",
-            pointerEvents: "none",
-          }} />
+            height: `${MAP_EXTRA * 100}%`,
+            transform: `translateY(${translateY}px)`,
+            transition: dragging ? "none" : "transform 1.6s cubic-bezier(0.4,0,0.2,1)",
+          }}>
+            <img
+              src={map}
+              alt="Mapa"
+              style={{
+                width: "100%", height: "100%",
+                objectFit: "cover", objectPosition: "center",
+                filter: "brightness(0.75) saturate(0.90)",
+                display: "block", position: "absolute", inset: 0,
+              }}
+            />
 
-          {/* Nodes + path */}
-          <div style={{ position: "absolute", inset: 0 }}>
-            <ConnectingPath levels={LEVELS} />
-            {LEVELS.map((level) => (
-              <LevelNode
-                key={level.id}
-                level={level}
-                onHover={setHoveredId}
-                hoveredId={hoveredId}
-              />
+            <div style={{
+              position: "absolute", inset: 0,
+              background: "radial-gradient(ellipse at center,transparent 35%,rgba(0,0,0,0.65) 100%)",
+              pointerEvents: "none",
+            }} />
+
+            {/* Levels */}
+            {levels.map(level => (
+              <div key={level.id} style={{ position: "absolute", inset: 0 }}>
+                <LevelPath challenges={level.challenges} />
+                <LevelBanner level={level} />
+                {level.challenges.map(challenge => (
+                  <ChallengeNode
+                    key={challenge.id}
+                    challenge={challenge}
+                    onHover={setHoveredId}
+                    hoveredId={hoveredId}
+                  />
+                ))}
+              </div>
+            ))}
+
+            {/* Particles */}
+            {[...Array(10)].map((_, i) => (
+              <div key={i} style={{
+                position: "absolute",
+                left: `${8 + i * 9}%`,
+                bottom: `${8 + (i % 4) * 16}%`,
+                width: i % 3 === 0 ? 5 : 3,
+                height: i % 3 === 0 ? 5 : 3,
+                borderRadius: "50%",
+                background: i % 2 === 0 ? "#FFD70088" : "#4fc3f788",
+                animation: `floatUp ${3.5 + i * 0.55}s ease-in-out infinite ${i * 0.4}s`,
+                pointerEvents: "none",
+              }} />
             ))}
           </div>
 
-          {/* Ambient particles */}
-          {[...Array(10)].map((_, i) => (
-            <div key={i} style={{
-              position: "absolute",
-              left: `${8 + i * 10}%`,
-              bottom: `${10 + (i % 4) * 18}%`,
-              width: i % 3 === 0 ? 5 : 3,
-              height: i % 3 === 0 ? 5 : 3,
-              borderRadius: "50%",
-              background: i % 2 === 0 ? "#FFD70088" : "#4fc3f788",
-              animation: `floatUp ${3.5 + i * 0.6}s ease-in-out infinite ${i * 0.45}s`,
-              pointerEvents: "none",
-            }} />
-          ))}
+          {/* Fixed fades */}
+          <div style={{
+            position: "absolute", top: 0, left: 0, right: 0, height: 70,
+            background: "linear-gradient(180deg,rgba(0,0,0,0.7),transparent)",
+            pointerEvents: "none", zIndex: 15,
+          }} />
+          <div style={{
+            position: "absolute", bottom: 0, left: 0, right: 0, height: 80,
+            background: "linear-gradient(0deg,rgba(0,0,0,0.8),transparent)",
+            pointerEvents: "none", zIndex: 15,
+          }} />
+
+          {/* Progress indicator */}
+          <ProgressBar levels={levels} />
+
+          {/* Drag hint — shown only briefly */}
+          {!dragging && (
+            <div style={{
+              position: "absolute", bottom: 90, left: "50%",
+              transform: "translateX(-50%)",
+              display: "flex", flexDirection: "column", alignItems: "center", gap: 4,
+              pointerEvents: "none", zIndex: 16,
+              opacity: 0.45,
+            }}>
+              <svg width={18} height={22} viewBox="0 0 18 22" fill="none">
+                <path d="M9 2 L9 20 M3 8 L9 2 L15 8" stroke="#f5c878" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              <svg width={18} height={22} viewBox="0 0 18 22" fill="none">
+                <path d="M9 2 L9 20 M3 14 L9 20 L15 14" stroke="#f5c878" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
+          )}
         </main>
 
         {/* FOOTER */}
         <footer style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 10,
+          display: "flex", alignItems: "center", gap: 10,
           padding: "8px 14px",
-          background: "linear-gradient(0deg, rgba(0,0,0,0.98) 0%, rgba(0,0,0,0.82) 100%)",
+          background: "linear-gradient(0deg,rgba(0,0,0,0.98),rgba(0,0,0,0.82))",
           borderTop: "1.5px solid rgba(139,74,26,0.35)",
-          flexShrink: 0,
-          minHeight: 74,
+          flexShrink: 0, minHeight: 74,
         }}>
-
           {[
-            { icon: <Users size={24} />, label: "Heróis",     border: "#8b4a1a", color: "#f5c878", bg: "linear-gradient(180deg,#4a2a10,#2a1508)" },
-            { icon: <Trophy size={24} />, label: "Conquistas", border: "#9b8a2a", color: "#f5e090", bg: "linear-gradient(180deg,#4a3a10,#2a2008)" },
-            { icon: <Volume2 size={24} />, label: "Som",       border: "#2a4a2a", color: "#90c890", bg: "linear-gradient(180deg,#1a3a1a,#0d200d)" },
+            { icon: <Users   size={24}/>, label: "Heróis",     border: "#8b4a1a", color: "#f5c878", bg: "linear-gradient(180deg,#4a2a10,#2a1508)" },
+            { icon: <Trophy  size={24}/>, label: "Conquistas", border: "#9b8a2a", color: "#f5e090", bg: "linear-gradient(180deg,#4a3a10,#2a2008)" },
+            { icon: <Volume2 size={24}/>, label: "Som",        border: "#2a4a2a", color: "#90c890", bg: "linear-gradient(180deg,#1a3a1a,#0d200d)" },
           ].map(({ icon, label, border, color, bg }) => (
             <button key={label} style={{
               display: "flex", flexDirection: "column",
               alignItems: "center", justifyContent: "center",
               width: 64, height: 64, gap: 4,
               borderRadius: 10, cursor: "pointer",
-              fontFamily: "Georgia, serif", fontWeight: "bold", fontSize: 9,
+              fontFamily: "Georgia,serif", fontWeight: "bold", fontSize: 9,
               letterSpacing: "0.05em",
-              border: `2px solid ${border}`,
-              borderBottom: `3px solid ${border}88`,
-              color,
-              background: bg,
-              boxShadow: "0 4px 0 rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05)",
-              transition: "filter 0.15s, transform 0.15s",
+              border: `2px solid ${border}`, borderBottom: `3px solid ${border}88`,
+              color, background: bg,
+              boxShadow: "0 4px 0 rgba(0,0,0,0.5),inset 0 1px 0 rgba(255,255,255,0.05)",
+              transition: "filter 0.15s,transform 0.15s",
             }}
               onMouseEnter={e => { e.currentTarget.style.filter = "brightness(1.25)"; e.currentTarget.style.transform = "translateY(-2px)"; }}
-              onMouseLeave={e => { e.currentTarget.style.filter = "brightness(1)"; e.currentTarget.style.transform = "translateY(0)"; }}
+              onMouseLeave={e => { e.currentTarget.style.filter = "brightness(1)";    e.currentTarget.style.transform = "translateY(0)";    }}
             >
-              {icon}
-              {label}
+              {icon}{label}
             </button>
           ))}
 
           <div style={{ flex: 1, paddingLeft: 6 }}>
-            <XPBar xp={PLAYER.xp} xpMax={PLAYER.xpMax} level={PLAYER.level} />
+            <XPBar xp={player.xp} xpMax={player.xpMax} level={player.level} />
           </div>
         </footer>
       </div>
