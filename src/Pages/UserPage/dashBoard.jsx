@@ -1,13 +1,11 @@
 import DashBoardHeader from "../../Components/Header/HeaderDashBoard";
 import { useNavigate } from "react-router-dom";
-import { iniciarTempo, pararTempo } from "../../Services/tempoService";
-import { getProgresso } from "../../Services/progressoService";
+import { iniciarTempo, pararTempo, getProgresso, getProgressoDashboard } from "../../Services/UserService";
 import { getMapas } from "../../Services/mapasService";
 import { useState, useEffect } from "react";
 import SideBar from "../../Components/SideBar/SideBar";
 import mago from "../../assets/DashBoard/mago.png"
 import "../../css/DashBoard.css";
-import { getProgressoDashboard } from "../../Services/progressoService";
 
 
 // ============================================================

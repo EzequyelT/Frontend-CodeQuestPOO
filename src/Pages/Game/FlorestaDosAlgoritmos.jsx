@@ -1,60 +1,70 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Star, Gem, Trophy, Users, ChevronLeft, Lock, Settings, Volume2, Loader2 } from "lucide-react";
+import { getLevelsByMap } from "../../Services/levelService";
+import { getProgresso } from "../../Services/UserService";
 
 import map from "../../assets/Maps/Map1.png";
 import Banner from "../../assets/Maps/Banner.jpg";
+import Arrow from "../../assets/Maps/Arrow.png";
 
 
-// ─────────────────────────────────────────────────────────────────────────────
-// DATA LAYER — swap fetchLevels() with your real API/DB call
-//
-// Expected shape:
-//   player:  { stars, gems, xp, xpMax, level }
-//   levels:  [{ id, name, challenges: [{ id, name, description, x, y, state, stars, xpReward }] }]
-//
-// x, y → position on the map as % (0-100). Adjust to match your map image.
-// state → "completed" | "available" | "locked"
-// ─────────────────────────────────────────────────────────────────────────────
+const CHALLENGEPOSITIONS = {
+  1: { x: 22, y: 88 },
+  2: { x: 42, y: 78 },
+  3: { x: 62, y: 68 },
+  4: { x: 30, y: 52 },
+  5: { x: 65, y: 42 },
+  6: { x: 90, y: 30 },
+  7: { x: 10, y: 35 },
+  8: { x: 46, y: 10 },
+};
 
-async function fetchLevels() {
-  // TODO: replace with real fetch:
-  // const res = await fetch("/api/map/floresta-dos-algoritmos");
-  // return res.json();
+// Recebe mapaId como parâmetro (ex: 1 para a Floresta dos Algoritmos)
+async function fetchLevels(mapaId, token) {
+  const [niveisDB, progressoTotal] = await Promise.all([
+    getLevelsByMap(mapaId),
+    getProgresso(token),
+  ]);
 
-  await new Promise(r => setTimeout(r, 900)); // simulate network latency
+  const progressoMapa = progressoTotal.find(p => p.mapa === mapaId) || {};
+  const desafiosCompletos = progressoMapa.desafios_completos || 0;
+
+  // Calcula posição global de cada desafio (0, 1, 2, 3...)
+  let posicaoGlobal = 0;
+
+  const levels = niveisDB.map((nivel) => ({
+    id: nivel.id,
+    name: nivel.nome,
+    challenges: nivel.desafios.map((desafio) => {
+      const pos = CHALLENGEPOSITIONS[desafio.id] ?? { x: 50, y: 50 };
+      const minhaPosicao = posicaoGlobal++;   // incrementa a cada desafio
+
+      let state;
+      if (minhaPosicao < desafiosCompletos) state = "completed";
+      else if (minhaPosicao === desafiosCompletos) state = "available";
+      else state = "locked";
+
+      return {
+        id: desafio.id,
+        name: desafio.nome,
+        description: desafio.descricao,
+        xpReward: desafio.xp,
+        x: pos.x,
+        y: pos.y,
+        state,
+        stars: state === "completed" ? 3 : 0,
+      };
+    }),
+  }));
+
   return {
-    player: { stars: 5, gems: 12, xp: 270, xpMax: 500, level: 3 },
-    levels: [
-      {
-        id: 1,
-        name: "Nível I — Raízes",
-        challenges: [
-          { id: 1, name: "Primeiro Passo",    description: "Variáveis e tipos de dados.", x: 22, y: 88, state: "completed", stars: 3, xpReward: 80  },
-          { id: 2, name: "Condicionais",      description: "if / else e operadores.",      x: 42, y: 78, state: "completed", stars: 2, xpReward: 100 },
-          { id: 3, name: "Loops Básicos",     description: "for e while na prática.",      x: 62, y: 68, state: "completed", stars: 1, xpReward: 110 },
-        ],
-      },
-      {
-        id: 2,
-        name: "Nível II — Copa",
-        challenges: [
-          { id: 4, name: "Funções",           description: "Definição e chamada.",         x: 30, y: 52, state: "available", stars: 0, xpReward: 130 },
-          { id: 5, name: "Arrays",            description: "Listas e iteração.",           x: 65, y: 42, state: "locked",    stars: 0, xpReward: 150 },
-          { id: 6, name: "Objetos",           description: "Chaves, valores e métodos.",   x: 90, y: 30, state: "locked",    stars: 0, xpReward: 160 },
-        ],
-      },
-      {
-        id: 3,
-        name: "Nível III — Cimo",
-        challenges: [
-          { id: 7, name: "Recursão",          description: "Funções que chamam a si.",     x: 10, y: 35, state: "locked",   stars: 0, xpReward: 200 },
-          { id: 8, name: "Mestre da Floresta",description: "Desafio final.",               x: 46, y:  10, state: "locked",   stars: 0, xpReward: 300 },
-        ],
-      },
-    ],
+    player: { stars: 0, gems: 0, xp: 0, xpMax: 500, level: 1 },
+    levels,
   };
 }
+
+
 
 // ─────────────────────────────────────────────────────────────────────────────
 // HELPERS
@@ -69,7 +79,7 @@ function allChallenges(levels) {
  * Finds the furthest unlocked challenge (lowest y%) and positions the camera
  * so that challenge is roughly centred vertically.
  */
-function computeCameraY(levels) { 
+function computeCameraY(levels) {
   const all = allChallenges(levels);
   const frontier = all
     .filter(c => c.state !== "locked")
@@ -142,6 +152,25 @@ function ChallengeNode({ challenge, onHover, hoveredId }) {
         transition: "transform 0.2s ease",
       }}
     >
+
+      {/* Seta indicadora de fase atual */}
+      {challenge.state === "available" && (
+        <div style={{
+          position: "absolute",
+          top: -40,
+          left: "50%",
+          transform: "translateX(-50%)",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          animation: "bounceArrow 1s ease-in-out infinite",
+          pointerEvents: "none",
+          zIndex: 20,
+        }}>
+          {/* Seta SVG apontando para baixo */}
+          <img src={Arrow} width={70} height={60} viewBox="0 0 24 24" fill="none"></img>
+        </div>
+      )}
       {/* Pulse rings */}
       {challenge.state === "available" && [0, 0.5].map(delay => (
         <div key={delay} style={{
@@ -259,8 +288,8 @@ function LevelPath({ challenges }) {
       style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none", zIndex: 4 }}>
       <path d={fullD} fill="none" stroke="#1a1008" strokeWidth="0.8" />
       <path d={fullD} fill="none" stroke="rgba(0,0,0,0.4)" strokeWidth="0.4" strokeDasharray="2 2" />
-      <path d={litD}  fill="none" stroke="#6b4010" strokeWidth="0.65" />
-      <path d={litD}  fill="none" stroke="#FFD700" strokeWidth="0.28" opacity="0.8" />
+      <path d={litD} fill="none" stroke="#6b4010" strokeWidth="0.65" />
+      <path d={litD} fill="none" stroke="#FFD700" strokeWidth="0.28" opacity="0.8" />
     </svg>
   );
 }
@@ -343,9 +372,10 @@ function XPBar({ xp, xpMax, level }) {
 // ─────────────────────────────────────────────────────────────────────────────
 
 function ProgressBar({ levels }) {
-  const all  = allChallenges(levels);
+  const all = allChallenges(levels);
   const done = all.filter(c => c.state === "completed").length;
-  const pct  = Math.round((done / all.length) * 100);
+  const pct = Math.round((done / all.length) * 100);
+
   return (
     <div style={{
       position: "absolute", right: 12, top: "50%",
@@ -354,7 +384,7 @@ function ProgressBar({ levels }) {
       zIndex: 20, pointerEvents: "none",
     }}>
       <div style={{
-        width: 4, height: 120, borderRadius: 2,
+        width: 7, height: 150, borderRadius: 3,
         background: "#1a1008", border: "1px solid #3a2010",
         position: "relative", overflow: "hidden",
       }}>
@@ -366,7 +396,7 @@ function ProgressBar({ levels }) {
           transition: "height 1s ease",
         }} />
       </div>
-      <span style={{ fontSize: 9, color: "#a08060", fontFamily: "Georgia,serif" }}>{pct}%</span>
+      <span style={{ fontSize: 15, color: "#a08060", fontFamily: "Georgia,serif" }}>{pct}%</span>
     </div>
   );
 }
@@ -376,14 +406,15 @@ function ProgressBar({ levels }) {
 // ─────────────────────────────────────────────────────────────────────────────
 
 export default function FlorestaDosAlgoritmos() {
-  const [data,       setData]      = useState(null);
-  const [loading,    setLoading]   = useState(true);
-  const [hoveredId,  setHoveredId] = useState(null);
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [hoveredId, setHoveredId] = useState(null);
   const [translateY, setTranslateY] = useState(0);   // pixels, ≤ 0
-  const [dragging,   setDragging]  = useState(false);
+  const [dragging, setDragging] = useState(false);
 
-  const mainRef        = useRef(null);
-  const dragStartY     = useRef(0);
+  const mainRef = useRef(null);
+  const dragStartY = useRef(0);
   const dragStartTrans = useRef(0);
   const navigate = useNavigate();
 
@@ -395,21 +426,31 @@ export default function FlorestaDosAlgoritmos() {
     const frontier = all.filter(c => c.state !== "locked").sort((a, b) => a.y - b.y)[0];
     if (!frontier) return -(MAP_EXTRA - 1) * mainH; // show bottom
     const nodeAbsY = (frontier.y / 100) * MAP_EXTRA * mainH;
-    const raw      = mainH / 2 - nodeAbsY;
+    const raw = mainH / 2 - nodeAbsY;
     return Math.max(-(MAP_EXTRA - 1) * mainH, Math.min(0, raw));
   }
 
   useEffect(() => {
-    fetchLevels()
-      .then(result => {
-        setData(result);
-        // Wait one frame so mainRef.current has a real height
-        requestAnimationFrame(() => {
-          const mainH = mainRef.current?.offsetHeight ?? 600;
-          setTranslateY(initialTranslate(result.levels, mainH));
-        });
-      })
-      .finally(() => setLoading(false));
+    async function carregar() {
+      try {
+        const token = localStorage.getItem("cq_token");
+        if (!token) {
+          navigate("/login");
+          return;
+        }
+
+        // Passa o token para fetchLevels usar no getProgresso
+        const resultado = await fetchLevels(1, token);
+        setData(resultado);
+      } catch (err) {
+        console.error("Erro ao carregar o mapa:", err);
+        setError(err.message); // <-- também tens um bug aqui: trocar por setLoading
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    carregar();
   }, []);
 
   // ── Drag handlers ──────────────────────────────────────────────────────────
@@ -422,7 +463,7 @@ export default function FlorestaDosAlgoritmos() {
     // Ignore clicks on buttons/interactive nodes
     if (e.target.closest("button")) return;
     setDragging(true);
-    dragStartY.current     = e.clientY;
+    dragStartY.current = e.clientY;
     dragStartTrans.current = translateY;
     e.currentTarget.setPointerCapture(e.pointerId);
   }
@@ -436,6 +477,15 @@ export default function FlorestaDosAlgoritmos() {
   function onPointerUp() {
     setDragging(false);
   }
+
+  if (error) return (
+    <div style={{
+      height: "100dvh", background: "#000",
+      display: "flex", alignItems: "center", justifyContent: "center",
+    }}>
+      <p style={{ color: "#f87171", fontFamily: "Georgia,serif" }}>Erro: {error}</p>
+    </div>
+  );
 
   if (loading) return (
     <div style={{
@@ -453,7 +503,7 @@ export default function FlorestaDosAlgoritmos() {
   const challenges = allChallenges(levels);
   const done = challenges.filter(c => c.state === "completed").length;
 
- 
+
   return (
     <>
       <style>{`
@@ -470,6 +520,10 @@ export default function FlorestaDosAlgoritmos() {
           0%   { transform: translateY(0px);   opacity: 0.5; }
           50%  { opacity: 1; }
           100% { transform: translateY(-40px); opacity: 0;   }
+        }
+          @keyframes bounceArrow {
+          0%, 100% { transform: translateX(-50%) translateY(0px);  }
+          50%       { transform: translateX(-50%) translateY(-8px); }
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
       `}</style>
@@ -506,7 +560,7 @@ export default function FlorestaDosAlgoritmos() {
           >
             <ChevronLeft size={14} /> Voltar
           </button>
-   
+
           <div style={{ position: "absolute", left: "50%", transform: "translateX(-50%)", textAlign: "center" }}>
             <div style={{ position: "relative", display: "inline-block" }}>
               <img
@@ -556,8 +610,8 @@ export default function FlorestaDosAlgoritmos() {
 
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             {[
-              { icon: <Star size={13} style={{ fill: "#FFD700", color: "#FFD700" }} />, val: player.stars, border: "rgba(255,215,0,0.5)",   color: "#f5e090" },
-              { icon: <Gem  size={13} style={{ fill: "#a78bfa", color: "#a78bfa" }} />, val: player.gems,  border: "rgba(167,139,250,0.5)", color: "#c4b5fd" },
+              { icon: <Star size={13} style={{ fill: "#FFD700", color: "#FFD700" }} />, val: player.stars, border: "rgba(255,215,0,0.5)", color: "#f5e090" },
+              { icon: <Gem size={13} style={{ fill: "#a78bfa", color: "#a78bfa" }} />, val: player.gems, border: "rgba(167,139,250,0.5)", color: "#c4b5fd" },
             ].map(({ icon, val, border, color }, i) => (
               <div key={i} style={{
                 display: "flex", alignItems: "center", gap: 5,
@@ -575,7 +629,7 @@ export default function FlorestaDosAlgoritmos() {
               cursor: "pointer", color: "#888",
             }}
               onMouseEnter={e => { e.currentTarget.style.color = "#f5c878"; e.currentTarget.style.borderColor = "#8b5e1a"; }}
-              onMouseLeave={e => { e.currentTarget.style.color = "#888";    e.currentTarget.style.borderColor = "#333"; }}
+              onMouseLeave={e => { e.currentTarget.style.color = "#888"; e.currentTarget.style.borderColor = "#333"; }}
             >
               <Settings size={14} />
             </button>
@@ -677,10 +731,10 @@ export default function FlorestaDosAlgoritmos() {
               opacity: 0.45,
             }}>
               <svg width={18} height={22} viewBox="0 0 18 22" fill="none">
-                <path d="M9 2 L9 20 M3 8 L9 2 L15 8" stroke="#f5c878" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M9 2 L9 20 M3 8 L9 2 L15 8" stroke="#f5c878" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
               <svg width={18} height={22} viewBox="0 0 18 22" fill="none">
-                <path d="M9 2 L9 20 M3 14 L9 20 L15 14" stroke="#f5c878" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M9 2 L9 20 M3 14 L9 20 L15 14" stroke="#f5c878" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </div>
           )}
@@ -695,9 +749,9 @@ export default function FlorestaDosAlgoritmos() {
           flexShrink: 0, minHeight: 74,
         }}>
           {[
-            { icon: <Users   size={24}/>, label: "Heróis",     border: "#8b4a1a", color: "#f5c878", bg: "linear-gradient(180deg,#4a2a10,#2a1508)" },
-            { icon: <Trophy  size={24}/>, label: "Conquistas", border: "#9b8a2a", color: "#f5e090", bg: "linear-gradient(180deg,#4a3a10,#2a2008)" },
-            { icon: <Volume2 size={24}/>, label: "Som",        border: "#2a4a2a", color: "#90c890", bg: "linear-gradient(180deg,#1a3a1a,#0d200d)" },
+            { icon: <Users size={24} />, label: "Heróis", border: "#8b4a1a", color: "#f5c878", bg: "linear-gradient(180deg,#4a2a10,#2a1508)" },
+            { icon: <Trophy size={24} />, label: "Conquistas", border: "#9b8a2a", color: "#f5e090", bg: "linear-gradient(180deg,#4a3a10,#2a2008)" },
+            { icon: <Volume2 size={24} />, label: "Som", border: "#2a4a2a", color: "#90c890", bg: "linear-gradient(180deg,#1a3a1a,#0d200d)" },
           ].map(({ icon, label, border, color, bg }) => (
             <button key={label} style={{
               display: "flex", flexDirection: "column",
@@ -712,7 +766,7 @@ export default function FlorestaDosAlgoritmos() {
               transition: "filter 0.15s,transform 0.15s",
             }}
               onMouseEnter={e => { e.currentTarget.style.filter = "brightness(1.25)"; e.currentTarget.style.transform = "translateY(-2px)"; }}
-              onMouseLeave={e => { e.currentTarget.style.filter = "brightness(1)";    e.currentTarget.style.transform = "translateY(0)";    }}
+              onMouseLeave={e => { e.currentTarget.style.filter = "brightness(1)"; e.currentTarget.style.transform = "translateY(0)"; }}
             >
               {icon}{label}
             </button>

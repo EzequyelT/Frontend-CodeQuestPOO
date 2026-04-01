@@ -8,8 +8,8 @@ import  Trophies  from './Pages/UserPage/Trophies&Achievements'
 import Desafio1GameTest from "./Components/GameTest/desafio1"
 import Desafio2GameTest from "./Components/GameTest/desafio2"
 import DesafioFinal from "./Components/GameTest/desafioFinal"
-import Login from "./Pages/auth/login"
-import CriarConta from "./Pages/auth/criarConta"
+import Login from "./Pages/Auth/login"
+import CriarConta from "./Pages/Auth/criarConta"
 import FlorestaDosAlgoritmos from "./Pages/Game/FlorestaDosAlgoritmos"
 import './App.css'
 

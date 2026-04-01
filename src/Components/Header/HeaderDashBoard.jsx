@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getProgressoDashboard } from "../../Services/progressoService";
+import { getProgressoDashboard } from "../../Services/UserService";
 import logo from '../../Assets/logo.png';
 import { Home, Clock, Users, MessageSquare, Search, Settings, Star, Zap, DollarSign } from "lucide-react";
 import { useNavigate } from "react-router-dom";

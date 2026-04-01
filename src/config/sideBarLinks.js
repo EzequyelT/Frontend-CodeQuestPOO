@@ -1,9 +1,9 @@
-import { Map, Trophy, BarChart, CheckSquare } from "lucide-react";
+import { GamepadIcon , Trophy, BarChart, CheckSquare } from "lucide-react";
 
 export const sidebarLinks = [
   {
     id: "Mapas",
-    icon: Map,
+    icon: GamepadIcon,
     path: "/maps",
   },
   {

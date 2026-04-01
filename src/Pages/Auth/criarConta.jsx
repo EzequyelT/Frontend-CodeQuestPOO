@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Lock,
   User,
@@ -19,7 +19,7 @@ import Bg from '../../assets/Login/BgLogin.jpg';
 import HeroSection from '../../assets/Login/HeroCreateAccount.png';
 import AvatarModal from '../../Components/Modal/AvatarModal';
 import { useNavigate } from "react-router-dom";
-import { registerUser } from '../../Services/alunos/alunoService';
+import { registerUser } from '../../Services/UserService';
 
 // Componente Toast Melhorado
 const Toast = ({ message, type, onClose }) => {

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getProgresso } from "../../Services/progressoService";
+import { getProgresso } from "../../Services/UserService";
 import { getMapas } from "../../Services/mapasService";
 import DashBoardHeader from "../../Components/Header/HeaderDashBoard";
 import SideBar from "../../Components/SideBar/SideBar";

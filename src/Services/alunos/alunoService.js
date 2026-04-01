@@ -1,11 +1,32 @@
-import API from "../API";
+// This compatibility shim avoids 404 for old code paths
+// and forwards to the new centralized UserService.
 
-export const registerUser = async (data) => {
-  const response = await API.post("/alunos", data);
-  return response.data;
-};
+import {
+  registerUser,
+  getAllAlunos,
+  login,
+  register,
+  saveToken,
+  getToken,
+  logout,
+  isAuthenticated,
+  getProgresso,
+  getProgressoDashboard,
+  iniciarTempo,
+  pararTempo,
+} from "../UserService";
 
-export const getAllAlunos = async () => {
-  const response = await API.get("/alunos");
-  return response.data;
+export {
+  registerUser,
+  getAllAlunos,
+  login,
+  register,
+  saveToken,
+  getToken,
+  logout,
+  isAuthenticated,
+  getProgresso,
+  getProgressoDashboard,
+  iniciarTempo,
+  pararTempo,
 };
