@@ -1,7 +1,9 @@
 import DashBoardHeader from "../../Components/Header/HeaderDashBoard";
 import { useNavigate } from "react-router-dom";
 import { iniciarTempo, pararTempo, getProgresso, getProgressoDashboard } from "../../Services/UserService";
+import { getDesempenhoDesafios } from "../../Services/DesempenhoDesafiosService";
 import { getMapas } from "../../Services/mapasService";
+import map1 from "../../assets/Maps/FirstMap.png";
 import { useState, useEffect } from "react";
 import SideBar from "../../Components/SideBar/SideBar";
 import mago from "../../assets/DashBoard/mago.png"
@@ -29,12 +31,6 @@ const PLAYER = {
     weekActivity: [30, 55, 40, 70, 95, 50, 20],
     currentDay: 4,
 };
-
-const MAPS = [
-    { name: "Floresta Encantada", emoji: "🌲", desafios: 8, total: 8, boss: "Guardião da Floresta", bossEmoji: "🐉", color: "#16a34a", bgColor: "#14532d", done: true },
-    { name: "Vila Misteriosa", emoji: "🏡", desafios: 6, total: 8, boss: "Cavaleiro Sombrio", bossEmoji: "⚔️", color: "#ea580c", bgColor: "#431407", done: false },
-    { name: "Castelo do Dragão", emoji: "🏰", desafios: 0, total: 10, boss: "Dragão Ancestral", bossEmoji: "🐲", color: "#6b7280", bgColor: "#111827", locked: true },
-];
 
 const ERROR_TYPES = [
     { name: "Sintaxe", count: 12, pct: 35, color: "#ef4444" },
@@ -177,7 +173,10 @@ function XPBar({ current, total }) {
 // ============================================================
 // 🔷 MainCard
 // ============================================================
-function MainCard({ player }) {
+function MainCard({ player, desempenho }) {
+
+    console.log("Desempenho recebido no MainCard:", desempenho);
+
     return (
         <div className="relative bg-[#151414] rounded-3xl border border-gray-800 overflow-hidden animate-slideInLeft">
 
@@ -185,7 +184,7 @@ function MainCard({ player }) {
             <div className="flex justify-between items-center px-6 pt-5 pb-4">
                 <h2 className="text-white font-bold text-2xl tracking-wide animate-pulse">Bem-vindo, {player.name}!</h2>
                 <span className="text-xs text-gray-500 border border-gray-700 rounded px-2 py-0.5 mr-52">
-                    {player.rank}
+                    {desempenho.progressao?.titulo}
                 </span>
             </div>
 
@@ -196,9 +195,9 @@ function MainCard({ player }) {
                 <div className="flex flex-col gap-4 w-52 flex-shrink-0">
                     <AccuracyChart accuracy={player.accuracy} errors={player.errors} />
                     <div className="border-t border-gray-800" />
-                    <div className="grid grid-cols-2 gap-y-2 text-xs">
-                        <span className="text-gray-500">Seu Nível:</span>
-                        <span className="text-white font-bold text-right">{player.level}</span>
+                    <div className="grid grid-cols-2 gap-y-2 text-xs mt-4">
+                        <span className="text-gray-500  mr-6">Seu Nível:</span>
+                        <span className="text-white font-bold text-right ">{desempenho.progressao?.nivel} 🎖️</span>
                         <span className="text-gray-500">Dias Seguidos:</span>
                         <span className="text-white font-bold text-right">{player.diasSeguidos} 🔥</span>
                     </div>
@@ -209,9 +208,10 @@ function MainCard({ player }) {
 
                 {/* Coluna 2 — Gráfico + XP */}
                 <div className="flex flex-col gap-4 flex-1">
+
                     <WeeklyBars activity={player.weekActivity} currentDay={player.currentDay} />
                     <div className="border-t border-gray-800" />
-                    <XPBar current={player.totalXP} total={player.nextLevelXP} />
+                    <XPBar current={desempenho.progressao?.xp} total={desempenho.progressao?.xpProximoNivel} />
                     <div className="grid grid-cols-3 gap-2 text-xs mt-1">
                         <div className="bg-gray-800/50 rounded-lg p-2 text-center border border-gray-700/30">
                             <p className="text-white font-bold text-base">{player.desafios}</p>
@@ -270,7 +270,12 @@ function MapsPanel({ maps }) {
                             }}
                         >
                             <div className="flex items-center gap-2">
-                                <span className="text-xl">{m.emoji}</span>
+                                <img
+                                    src={m.map1}
+                                    alt="mapa"
+                                    className="w-12 h-14 rounded-2xl mb-2  flex-shrink-0"
+                                    
+                                />
                                 <div>
                                     <p className="text-white text-xs font-semibold leading-none">{m.name}</p>
                                     <p className="text-gray-400 text-[10px] mt-0.5">
@@ -358,6 +363,32 @@ function ErrorTypesPanel({ errors }) {
 }
 
 // ============================================================
+// 🔷 Helper: transforma dados de API em objeto player
+// ============================================================
+function mapProgressToPlayer(userData, data) {
+    const progressao = data.progressao || {};
+
+    return {
+        name: userData.nome,
+        heroi: mago,
+        memberSince: "Set 2024",
+        weekActivity: [30, 55, 40, 70, 95, 50, 20],
+        currentDay: 5,
+
+        diasSeguidos: data.streak ?? 0,
+        dicasUsadas: data.dicas_usadas ?? 0,
+        desafios: data.desafios_completos ?? 0,
+        accuracy: data.acertos ?? 80,
+        errors: data.errors ?? 20,
+
+        totalXP: progressao.xpAtual ?? 0,
+        nextLevelXP: progressao.xpProximoNivel ?? 500,
+        level: progressao.nivel ?? 1,
+        rank: progressao.titulo ?? "Aprendiz",
+    };
+}
+
+// ============================================================
 // 🔷 TrophiesAndMissionPanel (substitui GoalsPanel)
 // ============================================================
 function TrophiesAndMissionPanel({ trophies, mission }) {
@@ -435,64 +466,93 @@ export function DashBoard() {
     const [loading, setLoading] = useState(true);
     const [erro, setErro] = useState(null);
     const [mapasProgresso, setMapasProgresso] = useState([]);
+    const [desempenhoDesafios, setDesempenhoDesafios] = useState([]);
     const navigate = useNavigate();
 
 
     const token = localStorage.getItem("cq_token");
 
     useEffect(() => {
-        if (!token) {
-            navigate("/login");
-            return;
+        try {
+            if (!token) {
+                navigate("/login");
+                return;
+            }
+        } catch (err) {
+            console.error("Erro ao verificar autenticação", err.response || err);
         }
+
     }, [token]);
 
     useEffect(() => {
-        if (token) {
-            iniciarTempo(token);
+
+        try {
+
+            if (token) {
+                iniciarTempo(token);
+            }
+
+            return () => {
+                pararTempo();
+            };
+        } catch (err) {
+            console.error("Erro ao iniciar tempo de sessão", err.response || err);
         }
 
-        return () => {
-            pararTempo();
-        };
     }, [token]);
+
+    useEffect(() => {
+        try {
+
+            async function fetchDesempenho() {
+                const desempenho = await getDesempenhoDesafios();
+                console.log("Dados recebidos:", desempenhoDesafios);
+                setDesempenhoDesafios(desempenho);
+            }
+            fetchDesempenho();
+
+        } catch (err) {
+            console.error("Erro ao carregar XP do utilizador", err.response || err);
+        }
+
+    }, []);
+
 
     useEffect(() => {
         const storedUser = localStorage.getItem("cq_user");
 
         if (!storedUser) {
-            setErro("Utilizador não autenticado");
-            setLoading(false);
-            console.error("[Dashboard] Sem utilizador no localStorage");
+            //queueMicrotask para evitar setState durante renderização
+            queueMicrotask(() => {
+                setErro("Utilizador não autenticado");
+                setLoading(false);
+            });
+
+            queueMicrotask(() => {
+                setLoading(false);
+                console.error("[Dashboard] Sem utilizador no localStorage");
+            });
+
             return;
         }
 
         const userData = JSON.parse(storedUser);
         console.log("[Dashboard] User data:", userData);
-        setUser(userData);
+        queueMicrotask(() => {
+            setUser(userData);
+        });
 
         // Carregar progresso com JWT
         const token = localStorage.getItem("cq_token");
         getProgressoDashboard(token)
+
             .then(data => {
                 console.log("[Dashboard] ✅ Progresso carregado:", data);
-                setProgresso({
-                    totalXP: data.xp_total ?? data.xp ?? 0,
-                    nextLevelXP: data.xp_proximo_nivel ?? 3000,
-                    diasSeguidos: data.dias_seguidos ?? 0,
-                    dicasUsadas: data.dicas_usadas ?? 0,
-                    desafios: data.desafios_completos ?? 0,
-                    accuracy: data.acertos ?? 80,
-                    level: data.nivel_atual ?? 1,
-                    name: userData.nome,
-                    rank: "Aprendiz",
-                    errors: 22,
-                    memberSince: "Set 2024",
-                    weekActivity: [30, 55, 40, 70, 95, 50, 20],
-                    currentDay: 4,
-                    heroi: mago
-                });
+
+                const player = mapProgressToPlayer(userData, data);
+                setProgresso(player);
                 setErro(null);
+
             })
 
 
@@ -511,29 +571,34 @@ export function DashBoard() {
 
     useEffect(() => {
         const token = localStorage.getItem("cq_token");
+        try {
+            getMapas()
+                .then(mapas => getProgresso(token).then(progresso => ({ mapas, progresso })))
+                .then(({ mapas, progresso }) => {
+                    const combinados = mapas.map((m) => {
+                        const prog = progresso.find(p => p.mapa === m.id) || {};
 
-        getMapas()
-            .then(mapas => getProgresso(token).then(progresso => ({ mapas, progresso })))
-            .then(({ mapas, progresso }) => {
-                const combinados = mapas.map((m) => {
-                    const prog = progresso.find(p => p.mapa === m.id) || {};
+                        return {
+                            ...m,
+                            map1: m.map1 || map1, // garante imagem sempre existente
+                            desafios: prog.desafios_completos || 0,
+                            total: prog.total_desafios || 0,
+                            locked: !prog.desbloqueado,
+                            done: prog.porcentagem === 100,
+                            color: "#22c55e",
+                            bgColor: "#333",
+                            emoji: "🗺️",
+                            boss: "Boss",
+                            bossEmoji: "👹"
+                        };
+                    });
 
-                    return {
-                        ...m,
-                        desafios: prog.desafios_completos || 0,
-                        total: prog.total_desafios || 0,
-                        locked: !prog.desbloqueado,
-                        done: prog.porcentagem === 100,
-                        color: "#22c55e",
-                        bgColor: "#333",
-                        emoji: "🗺️",
-                        boss: "Boss",
-                        bossEmoji: "👹"
-                    };
+                    setMapasProgresso(combinados);
                 });
+        } catch (err) {
+            console.error("Erro ao carregar mapas e progresso", err.response || err);
+        }
 
-                setMapasProgresso(combinados);
-            });
     }, []);
 
     if (loading) {
@@ -560,7 +625,7 @@ export function DashBoard() {
                     </div>
                 )}
                 <LoginRewardBanner />
-                {progresso && <MainCard player={progresso} />}
+                {progresso && <MainCard player={progresso} desempenho={desempenhoDesafios} />}
                 <div className="flex gap-4 mt-6">
                     <MapsPanel maps={mapasProgresso} />
                     <ErrorTypesPanel errors={ERROR_TYPES} />

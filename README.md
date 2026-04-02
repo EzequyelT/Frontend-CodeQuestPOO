@@ -26,173 +26,136 @@ Prepara para o Boss: Serpente do Bug
 
 🏰 Castelo → POO (herança, encapsulamento, polimorfismo)
 
+Título do jogador baseado no XP:
 
-floresta
+Level	XP necessário	Título
+1	0	Aprendiz
+2	80	Explorador
+3	180	Programador
+4	320	Mestre do Código
+5 (MAX)	500	Guardião do Código
 
-import map from "../../assets/Maps/Map1.png";
-import banner from "../../assets/Maps/Banner.jpg";
-import { Star, Gem, Trophy, Users, ChevronLeft } from "lucide-react";
 
-export default function FlorestaDosAlgoritmos() {
-    return (
-        <div style={{ fontFamily: "DM Sans, sans-serif", background: "black" }}>
-            {/* TOP HUD */}
+________________________________________________________________________________________
 
-            <header className="relative w-full flex items-center justify-between px-4 sm:px-6 py-3">
+✅ O que já está feito
+🟡 Em progresso
+🔴 O que falta fazer (organizado por prioridade)
 
-                {/* LEFT */}
-                <button
-                    className="flex items-center gap-1 whitespace-nowrap
-    font-serif font-bold text-xs sm:text-[13px] tracking-wide
-    text-[#f5dfa0] bg-black
-    border-2 border-[#a0621a] border-b-[#6b3a0a]
-    px-3 py-2 rounded-md cursor-pointer
-    transition hover:brightness-125
-    shadow-[0_3px_0_#2a1000,inset_0_1px_0_rgba(255,220,120,0.15)]"
-                >
-                    <ChevronLeft size={14} />
-                    <span className="hidden sm:inline">Voltar ao Mapa</span>
-                </button>
+📘 Estado Atual do Projeto — CodeQuestPOO
+✅ 1. Funcionalidades Já Implementadas
+🗄️ Base de Dados
+✅ Estrutura da base de dados criada e normalizada
+✅ Tabelas principais implementadas:
+alunos
+herois
+mapas
+niveis
+desafios
+desempenho_desafio
+erros
+✅ Relações com chaves estrangeiras configuradas
+✅ Sistema preparado para análise por IA
+🔐 Autenticação
+✅ Registo de conta funcional
+✅ Login funcional
+✅ Sistema de autenticação ativo
+📊 Dashboard
+✅ Dashboard ligado aos dados reais do jogador
+✅ Mostra corretamente:
+mapa atual
+nível atual
+progresso
+tempo total de jogo (já calculado)
+✅ Dados puxados diretamente da base de dados
 
-                {/* CENTER */}
-                <div className="pointer-events-none absolute left-1/2 -translate-x-1/2 translate-y-1/4
-    translate-y-10 flex flex-col items-center">
+⚠️ Já preparado mas ainda sem lógica automática:
 
-                    <div className="relative flex items-center justify-center">
+XP
+Coins
+Streak
+🗺️ Sistema de Mapas
+✅ Mapa 1 (Floresta dos Algoritmos) ligado à BD
+✅ Níveis carregados dinamicamente
+✅ Desafios carregados da base de dados
+✅ Estrutura escalável para novos mapas
 
-                        <img
-                            src={banner}
-                            alt="banner"
-                            className="
-          h-130 sm:h-16 md:h-30
-          w-150 sm:w-64 md:w-100
-          
-        "
-                        />
 
-                        {/* TITLE */}
-                        <h1
-                            className="
-          absolute text-white
-          font-serif font-bold
-          text-sm sm:text-lg md:text-xl
-          tracking-wide
-          leading-none
-          mt-4
-          animate-bounce
-        "
-                        >
-                            Floresta dos Algoritmos
-                        </h1>
-                    </div>
 
-                    {/* SUBTITLE */}
-                    <h2
-                        className="
-        text-white
-        text-[12px] sm:text-xs
-        -mt-0.5
-        tracking-wide
-        font-bold
-      "
-                    >
-                        0/3 desafios completos
-                    </h2>
+🟡 2. Em Desenvolvimento
 
-                </div>
+🎯 Sistema de Desafios
+🔄 Estrutura pronta
 
-                {/* RIGHT */}
-                <div className="flex items-center gap-2 sm:gap-3">
+❌ Falta implementar:
 
-                    <div
-                        className="flex items-center gap-1 px-2 sm:px-3 py-1
-      rounded-full text-xs sm:text-sm font-semibold
-      bg-black/45 border-[1.5px] border-yellow-400 text-yellow-200"
-                    >
-                        <Star size={14} className="fill-yellow-400 text-yellow-400" />
-                        <span>0</span>
-                    </div>
+Associação do aluno ao herói escolhido
+lógica das respostas
+validação das respostas
+feedback ao jogador
+ligação ao desempenho_desafio
 
-                    <div
-                        className="flex items-center gap-1 px-2 sm:px-3 py-1
-      rounded-full text-xs sm:text-sm font-semibold
-      bg-black/45 border-[1.5px] border-violet-400 text-violet-200"
-                    >
-                        <Gem size={14} className="fill-violet-400 text-violet-400" />
-                        <span>0</span>
-                    </div>
+🔴 3. O Que Falta Fazer (Organizado por Prioridade)
 
-                </div>
-            </header>
+🥇 PRIORIDADE ALTA — Gameplay Base
 
-            {/* MAP */}
-            <main className="w-full flex justify-center items-center mt-22">
-                <div
-                    className="
-    flex justify-center items-center
-    w-[1100px] max-w-[120vw]
-  "
-                >
-                    <img
-                        src={map}
-                        alt="Mapa da Floresta dos Algoritmos"
-                        className="
-      w-full
-      h-auto
-      object-contain
-    "
-                        style={{
-                            filter: `
-        drop-shadow(0 0 2px white)
-        drop-shadow(0 0 2px white)
-        drop-shadow(0 0 4px white)
-        drop-shadow(0 0 8px rgba(255,255,255,0.5))
-      `
-                        }}
-                    />
-                </div>
-            </main>
+🎮 Sistema de Desafios (CORE DO JOGO)
+ Criar desafios do Mapa 1
+ Implementar tipos:
 
-            {/* BOTTOM HUD */}
-            <footer className="flex items-center gap-2 px-5 
-        h-[60px] flex-shrink-0 z-10
-        bg-gradient-to-t from-[#000000] 
-        border-t-2 ">
+quiz escolha múltipla
+arrastar respostas
 
-                {/* Heroes */}
-                <button className="flex flex-col items-center justify-center
-          w-[68px] h-[68px] gap-1
-          rounded-lg cursor-pointer
-          font-serif font-bold text-[10px] tracking-wide
-          border-2 border-[#8b4a1a]
-          text-[#f5c878]
-          transition hover:brightness-125 hover:-translate-y-0.5
-          shadow-[0_4px_0_rgba(0,0,0,0.5)]
-          bg-gradient-to-b from-[#4a2a10] to-[#2a1508]">
-
-                    <Users size={26} />
-                    Heróis
-                </button>
-
-                {/* Trophies */}
-                <button className="flex flex-col items-center justify-center
-          w-[68px] h-[68px] gap-1
-          rounded-lg cursor-pointer
-          font-serif font-bold text-[10px] tracking-wide
-          border-2 border-[#9b8a2a]
-          text-yellow-200
-          transition hover:brightness-125 hover:-translate-y-0.5
-          shadow-[0_4px_0_rgba(0,0,0,0.5)]
-          bg-gradient-to-b from-[#4a3a10] to-[#2a2008]">
-
-                    <Trophy size={26} />
-                    Conquistas
-                </button>
-
-                <span className="ml-auto font-serif text-[13px] tracking-wide text-[#c8a060] drop-shadow">
-                    Você está no nível …
-                </span>
-            </footer>
-        </div>
-    );
-}
+código simples Python
+ Validação automática das respostas
+ Guardar resultado em desempenho_desafio
+ Sistema de tentativa
+⭐ Sistema de XP
+ Atribuir XP ao completar desafio
+ XP por nível concluído
+ Atualizar XP automaticamente no aluno
+ Mostrar animação/feedback de ganho
+💰 Sistema de Coins
+ Coins por resposta correta
+ Coins por completar nível
+ Integração com sistema de dicas
+🔥 Sistema de Streak
+ Guardar último login
+ Verificar login diário
+ Incrementar streak
+ Reset se faltar um dia
+🥈 PRIORIDADE MÉDIA — Progressão
+🧭 Progressão entre níveis
+ Desbloquear próximo nível automaticamente
+ Atualizar nivel_atual
+ Atualizar mapa_atual
+ Verificar conclusão do mapa
+🗺️ Mapas 2 e 3
+ Criar níveis na BD
+ Inserir desafios
+ Conectar frontend
+🤖 Sistema de Feedback IA
+ Guardar tipo de erro
+ Gerar feedback:
+verificativo
+explicativo
+estratégico
+ Mostrar feedback ao jogador
+🥉 PRIORIDADE BAIXA — Experiência
+👤 Perfil do Jogador
+ Estatísticas completas
+ Histórico de desempenho
+ Tipo de erro mais comum
+🎬 Cutscenes
+ Introdução do mapa
+ Introdução do boss
+ Explicação do nível
+🏆 Gamificação Extra
+ Loja de dicas (coins)
+ Leaderboard (opcional)
+ Títulos por XP
+s
+                                   |
+                                                                                        |
+                                                                                        |
+________________________________________________________________________________________|
