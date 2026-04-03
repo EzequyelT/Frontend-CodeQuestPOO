@@ -1,5 +1,8 @@
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
+
+
+//Esta função busca o progresso do aluno, incluindo XP, nível, moedas, streak, tempo total de jogo, desafios completos e total de desafios. Ela pode ser usada para exibir o progresso do aluno no dashboard ou em outras partes da aplicação.
 export const getProgresso = async (token) => {
   try {
     const res = await fetch(`${API_URL}/api/progresso`, {

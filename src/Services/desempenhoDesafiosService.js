@@ -2,14 +2,14 @@ import { getToken } from "./auth/authService";
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
 
-export const getDesempenhoDesafios = async () => {
+
+// Busca XP e progressão do aluno (para o dashboard com o nivel, xp proximo nivel, titulo)
+export const obterXPAluno = async () => {
   try {
-    // Pega o token salvo no authService
     const token = getToken();
     if (!token) throw new Error("Utilizador não autenticado");
 
-    // Faz a requisição para o endpoint correto
-    const response = await fetch(`${API}/progresso/dashboard`, {
+    const response = await fetch(`${API}/desafios`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -18,22 +18,20 @@ export const getDesempenhoDesafios = async () => {
     });
 
     if (!response.ok) {
-      // Se der erro no fetch
       const errorData = await response.json();
-      throw new Error(errorData.error || "Erro ao buscar progresso");
+      throw new Error(errorData.error || "Erro ao buscar progressão");
     }
 
-    // Converte para JSON
-    const data = await response.json();
-    return data; // Aqui vem o XP, progressão, etc.
-
+    return await response.json(); // { xp, progressao: { nivel, titulo, xp, xpProximoNivel, ... } }
   } catch (err) {
-    console.error("[DesempenhoDesafiosService] ❌", err);
-    return null; 
+    console.error("[BuscarProgressao] ❌", err);
+    return null;
   }
 };
 
-export  const concluirDesafio = async (desafioId, dados = {}) => {
+
+//Aqui contem a lógica de processamento do desempenho dos desafios, como calcular o XP ganho, atualizar o progresso do aluno, etc. Esta função pode ser chamada após a conclusão de um desafio para atualizar o desempenho do aluno.
+export  const processarConclusaoDesafio = async (desafioId, dados = {}) => {
   try {
     const token = getToken();
     if (!token) throw new Error("Utilizador não autenticado");

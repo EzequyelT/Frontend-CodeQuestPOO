@@ -1,12 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Star, Gem, Trophy, Users, ChevronLeft, Lock, Settings, Volume2, Loader2 } from "lucide-react";
-import { getLevelsByMap } from "../../Services/levelService";
-import { getProgresso } from "../../Services/UserService";
-
-import map from "../../assets/Maps/Map1.png";
-import Banner from "../../assets/Maps/Banner.jpg";
-import Arrow from "../../assets/Maps/Arrow.png";
+import { getLevelsByMap } from "../../../Services/levelService";
+import { getProgresso } from "../../../Services/UserService";
+import map from "../../../assets/Maps/Map1.png";
+import Banner from "../../../assets/Maps/Banner.jpg";
+import Arrow from "../../../assets/Maps/Arrow.png";
 
 
 const CHALLENGEPOSITIONS = {
@@ -420,6 +419,28 @@ export default function FlorestaDosAlgoritmos() {
 
   const MAP_EXTRA = 1.8;
 
+  <style>{`
+  @import url('https://fonts.googleapis.com/css2?family=IM+Fell+English&family=DM+Sans:wght@400;600&display=swap');
+
+  @keyframes pulseRing {
+    0%   { transform: translate(-50%,-54%) scale(1);   opacity: 0.7; }
+    100% { transform: translate(-50%,-54%) scale(1.7); opacity: 0;   }
+  }
+  @keyframes shimmer {
+    0%   { transform: translateX(-100%); }
+    100% { transform: translateX(200%);  }
+  }
+  @keyframes floatUp {
+    0%   { transform: translateY(0px);   opacity: 0.5; }
+    50%  { opacity: 1; }
+    100% { transform: translateY(-40px); opacity: 0;   }
+  }
+  @keyframes bounceArrow {
+    0%, 100% { transform: translateX(-50%) translateY(0px);  }
+    50%       { transform: translateX(-50%) translateY(-8px); }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+`}</style>
   // Compute initial camera position in pixels so the frontier node is centred
   function initialTranslate(levels, mainH) {
     const all = allChallenges(levels);
@@ -444,7 +465,7 @@ export default function FlorestaDosAlgoritmos() {
         setData(resultado);
       } catch (err) {
         console.error("Erro ao carregar o mapa:", err);
-        setError(err.message); // <-- também tens um bug aqui: trocar por setLoading
+        setError(err.message); 
       } finally {
         setLoading(false);
       }
@@ -506,28 +527,6 @@ export default function FlorestaDosAlgoritmos() {
 
   return (
     <>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=IM+Fell+English&family=DM+Sans:wght@400;600&display=swap');
-        @keyframes pulseRing {
-          0%   { transform: translate(-50%,-54%) scale(1);   opacity: 0.7; }
-          100% { transform: translate(-50%,-54%) scale(1.7); opacity: 0;   }
-        }
-        @keyframes shimmer {
-          0%   { transform: translateX(-100%); }
-          100% { transform: translateX(200%);  }
-        }
-        @keyframes floatUp {
-          0%   { transform: translateY(0px);   opacity: 0.5; }
-          50%  { opacity: 1; }
-          100% { transform: translateY(-40px); opacity: 0;   }
-        }
-          @keyframes bounceArrow {
-          0%, 100% { transform: translateX(-50%) translateY(0px);  }
-          50%       { transform: translateX(-50%) translateY(-8px); }
-        }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-      `}</style>
-
       <div style={{
         fontFamily: "DM Sans, sans-serif",
         background: "#000",

@@ -7,11 +7,11 @@ import Modal from "../Modal/ProfileModal";
 
 
 function formatarTempo(segundos = 0) {
-    const h = Math.floor(segundos / 3600);
-    const m = Math.floor((segundos % 3600) / 60);
-    const s = segundos % 60;
+  const h = Math.floor(segundos / 3600);
+  const m = Math.floor((segundos % 3600) / 60);
+  const s = segundos % 60;
 
-    return h > 0 ? `${h}h` : m > 0 ? `${m}min` : `${s}s`;
+  return h > 0 ? `${h}h` : m > 0 ? `${m}min` : `${s}s`;
 }
 
 export default function DashBoardHeader({ user }) {
@@ -257,6 +257,7 @@ export default function DashBoardHeader({ user }) {
             >
               U
             </button>
+           
           </div>
         </div>
 

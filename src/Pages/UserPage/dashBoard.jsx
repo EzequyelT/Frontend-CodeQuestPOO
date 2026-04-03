@@ -1,7 +1,7 @@
 import DashBoardHeader from "../../Components/Header/HeaderDashBoard";
 import { useNavigate } from "react-router-dom";
 import { iniciarTempo, pararTempo, getProgresso, getProgressoDashboard } from "../../Services/UserService";
-import { getDesempenhoDesafios } from "../../Services/DesempenhoDesafiosService";
+import { obterXPAluno } from "../../Services/desempenhoDesafiosService";
 import { getMapas } from "../../Services/mapasService";
 import map1 from "../../assets/Maps/FirstMap.png";
 import { useState, useEffect } from "react";
@@ -29,8 +29,29 @@ const PLAYER = {
     hoursThisWeek: "16 H 32 M",
     maxPerDay: "5 H 21 M",
     weekActivity: [30, 55, 40, 70, 95, 50, 20],
-    currentDay: 4,
 };
+
+const DAYS = ["domingo", "segunda", "terça", "quarta", "quinta", "sexta", "sábado"];
+
+function getDayofWeek() {
+    try {
+        const today = new Date();
+        const dayLisbon = new Intl.DateTimeFormat("pt-PT", {
+            weekday: "long",
+            timeZone: "Europe/Lisbon"
+        }).format(today);
+
+        const shortDay = dayLisbon.split('-')[0];
+        const currentDayOfWeek = DAYS.indexOf(shortDay);
+
+        console.log(`Dia: ${shortDay}, Índice: ${currentDayOfWeek}`);
+        return currentDayOfWeek;
+    } catch(erro) {
+        console.error("Erro ao obter dia da semana:", erro);
+        return -1; 
+    }
+}
+
 
 const ERROR_TYPES = [
     { name: "Sintaxe", count: 12, pct: 35, color: "#ef4444" },
@@ -55,8 +76,6 @@ const DAILY_MISSION = {
     reward: "+100",
     streak: { active: true, daysLeft: 3, goal: "Streak 10 dias" },
 };
-
-const DAYS = ["SEG", "TER", "QUA", "QUI", "SEX", "SÁB", "DOM"];
 
 
 // ============================================================
@@ -101,13 +120,13 @@ function AccuracyChart({ accuracy, errors }) {
 // ============================================================
 // 🔷 WeeklyBars (igual ao original)
 // ============================================================
-function WeeklyBars({ activity, currentDay }) {
+function WeeklyBars({ activity, currentDayOfWeek }) {
     const max = Math.max(...activity);
     return (
         <div className="flex items-end gap-1.5 h-20">
             {activity.map((val, i) => {
                 const h = (val / max) * 100;
-                const active = i === currentDay;
+                const active = i === currentDayOfWeek;
                 return (
                     <div key={i} className="flex flex-col items-center gap-1 flex-1 h-full justify-end">
                         <div style={{ height: `${h}%` }}
@@ -147,7 +166,7 @@ function LoginRewardBanner() {
 // ============================================================
 // 🔷 XP Bar
 // ============================================================
-function XPBar({ current, total }) {
+function XPBar({ current = 0, total = 0 }) {
     const pct = Math.min((current / total) * 100, 100);
     return (
         <div className="flex flex-col gap-1 mt-1">
@@ -173,9 +192,11 @@ function XPBar({ current, total }) {
 // ============================================================
 // 🔷 MainCard
 // ============================================================
-function MainCard({ player, desempenho }) {
+function MainCard({ player, calculoXp, currentDayOfWeek }) {
 
-    console.log("Desempenho recebido no MainCard:", desempenho);
+    console.log("Desempenho recebido no MainCard:", calculoXp);
+
+    const progressaoXp = calculoXp?.progressao || {};
 
     return (
         <div className="relative bg-[#151414] rounded-3xl border border-gray-800 overflow-hidden animate-slideInLeft">
@@ -184,7 +205,7 @@ function MainCard({ player, desempenho }) {
             <div className="flex justify-between items-center px-6 pt-5 pb-4">
                 <h2 className="text-white font-bold text-2xl tracking-wide animate-pulse">Bem-vindo, {player.name}!</h2>
                 <span className="text-xs text-gray-500 border border-gray-700 rounded px-2 py-0.5 mr-52">
-                    {desempenho.progressao?.titulo}
+                    {progressaoXp.titulo}
                 </span>
             </div>
 
@@ -197,7 +218,7 @@ function MainCard({ player, desempenho }) {
                     <div className="border-t border-gray-800" />
                     <div className="grid grid-cols-2 gap-y-2 text-xs mt-4">
                         <span className="text-gray-500  mr-6">Seu Nível:</span>
-                        <span className="text-white font-bold text-right ">{desempenho.progressao?.nivel} 🎖️</span>
+                        <span className="text-white font-bold text-right ">{progressaoXp.nivel} 🎖️</span>
                         <span className="text-gray-500">Dias Seguidos:</span>
                         <span className="text-white font-bold text-right">{player.diasSeguidos} 🔥</span>
                     </div>
@@ -209,9 +230,9 @@ function MainCard({ player, desempenho }) {
                 {/* Coluna 2 — Gráfico + XP */}
                 <div className="flex flex-col gap-4 flex-1">
 
-                    <WeeklyBars activity={player.weekActivity} currentDay={player.currentDay} />
+                    <WeeklyBars activity={player.weekActivity} currentDayOfWeek={currentDayOfWeek} />
                     <div className="border-t border-gray-800" />
-                    <XPBar current={desempenho.progressao?.xp} total={desempenho.progressao?.xpProximoNivel} />
+                    <XPBar current={progressaoXp.xp} total={progressaoXp.xpProximoNivel} />
                     <div className="grid grid-cols-3 gap-2 text-xs mt-1">
                         <div className="bg-gray-800/50 rounded-lg p-2 text-center border border-gray-700/30">
                             <p className="text-white font-bold text-base">{player.desafios}</p>
@@ -260,7 +281,7 @@ function MapsPanel({ maps }) {
             {maps.map((m, i) => {
                 const pct = Math.min((m.desafios / m.total) * 100, 100);
                 return (
-                    <div key={i} className="flex flex-col gap-2 hover:scale-105 transition-transform duration-300">
+                    <div key={i} className="flex flex-col gap-2 hover:scale-105 transition-transform duration-300 mt-3  ">
                         <div
                             className="rounded-lg h-14 flex items-center justify-between px-3 border"
                             style={{
@@ -274,7 +295,7 @@ function MapsPanel({ maps }) {
                                     src={m.map1}
                                     alt="mapa"
                                     className="w-12 h-14 rounded-2xl mb-2  flex-shrink-0"
-                                    
+
                                 />
                                 <div>
                                     <p className="text-white text-xs font-semibold leading-none">{m.name}</p>
@@ -466,7 +487,7 @@ export function DashBoard() {
     const [loading, setLoading] = useState(true);
     const [erro, setErro] = useState(null);
     const [mapasProgresso, setMapasProgresso] = useState([]);
-    const [desempenhoDesafios, setDesempenhoDesafios] = useState([]);
+    const [progressaoXp, setProgressaoXp] = useState(null);
     const navigate = useNavigate();
 
 
@@ -502,19 +523,18 @@ export function DashBoard() {
     }, [token]);
 
     useEffect(() => {
-        try {
-
-            async function fetchDesempenho() {
-                const desempenho = await getDesempenhoDesafios();
-                console.log("Dados recebidos:", desempenhoDesafios);
-                setDesempenhoDesafios(desempenho);
+        async function fetchProgressao() {
+            try {
+                const resultado = await obterXPAluno();
+                if (resultado) {
+                    console.log("[Dashboard] Progressão carregada:", resultado);
+                    setProgressaoXp(resultado);
+                }
+            } catch (err) {
+                console.error("Erro ao carregar progressão", err);
             }
-            fetchDesempenho();
-
-        } catch (err) {
-            console.error("Erro ao carregar XP do utilizador", err.response || err);
         }
-
+        fetchProgressao();
     }, []);
 
 
@@ -612,6 +632,8 @@ export function DashBoard() {
         );
     }
 
+    const currentDayOfWeek = getDayofWeek();
+
     return (
         <div className="relative min-h-screen bg-black animate-fadeIn">
             <DashBoardHeader user={user} />
@@ -625,7 +647,12 @@ export function DashBoard() {
                     </div>
                 )}
                 <LoginRewardBanner />
-                {progresso && <MainCard player={progresso} desempenho={desempenhoDesafios} />}
+
+
+                {progresso && progressaoXp &&
+                    <MainCard player={progresso} calculoXp={progressaoXp} currentDayOfWeek={currentDayOfWeek}
+                    />}
+
                 <div className="flex gap-4 mt-6">
                     <MapsPanel maps={mapasProgresso} />
                     <ErrorTypesPanel errors={ERROR_TYPES} />
