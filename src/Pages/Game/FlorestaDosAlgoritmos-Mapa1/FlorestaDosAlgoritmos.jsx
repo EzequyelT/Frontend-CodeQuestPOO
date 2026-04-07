@@ -49,6 +49,7 @@ async function fetchLevels(mapaId, token) {
         name: desafio.nome,
         description: desafio.descricao,
         xpReward: desafio.xp,
+        route: `/floresta/nivel-${nivel.id}/desafio-${desafio.id}`,
         x: pos.x,
         y: pos.y,
         state,
@@ -110,9 +111,31 @@ function Stars({ count, max = 3, size = 11 }) {
 // CHALLENGE NODE
 // ─────────────────────────────────────────────────────────────────────────────
 
-function ChallengeNode({ challenge, onHover, hoveredId }) {
+function ChallengeNode({ challenge, onHover, hoveredId, navigate }) {
+  const hoverTimeout = useRef(null);
   const isHovered = hoveredId === challenge.id;
   const S = 52;
+
+  useEffect(() => {
+    return () => {
+      if (hoverTimeout.current) {
+        clearTimeout(hoverTimeout.current);
+      }
+    };
+  }, []);
+
+  const handleMouseEnter = () => {
+    if (hoverTimeout.current) {
+      clearTimeout(hoverTimeout.current);
+    }
+    onHover(challenge.id);
+  };
+
+  const handleMouseLeave = () => {
+    hoverTimeout.current = setTimeout(() => {
+      onHover(null);
+    }, 500);
+  };
 
   const style = {
     completed: {
@@ -137,8 +160,9 @@ function ChallengeNode({ challenge, onHover, hoveredId }) {
 
   return (
     <div
-      onMouseEnter={() => onHover(challenge.id)}
-      onMouseLeave={() => onHover(null)}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+
       style={{
         position: "absolute",
         left: `${challenge.x}%`,
@@ -156,18 +180,19 @@ function ChallengeNode({ challenge, onHover, hoveredId }) {
       {challenge.state === "available" && (
         <div style={{
           position: "absolute",
-          top: -40,
+          top: -45,
           left: "50%",
           transform: "translateX(-50%)",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
           animation: "bounceArrow 1s ease-in-out infinite",
-          pointerEvents: "none",
+          pointerEvents: "auto",
           zIndex: 20,
+          filter: "drop-shadow(0 0 6px rgba(255,255,255,0.6))"
         }}>
           {/* Seta SVG apontando para baixo */}
-          <img src={Arrow} width={70} height={60} viewBox="0 0 24 24" fill="none"></img>
+          <img src={Arrow} width={80} height={60} viewBox="0 0 24 24" fill="none"></img>
         </div>
       )}
       {/* Pulse rings */}
@@ -179,7 +204,7 @@ function ChallengeNode({ challenge, onHover, hoveredId }) {
           animation: `pulseRing 2s ease-out infinite ${delay}s`,
           top: "50%", left: "50%",
           transform: "translate(-50%,-54%)",
-          pointerEvents: "none",
+          pointerEvents: "auto",
         }} />
       ))}
 
@@ -225,7 +250,7 @@ function ChallengeNode({ challenge, onHover, hoveredId }) {
           </div>
         )}
       </div>
-
+      
       <Stars count={challenge.stars} />
 
       {/* Tooltip */}
@@ -237,8 +262,9 @@ function ChallengeNode({ challenge, onHover, hoveredId }) {
           border: "1.5px solid #8b5e1a", borderRadius: 10,
           padding: "10px 14px", width: 195,
           boxShadow: "0 8px 32px rgba(0,0,0,0.95)",
-          zIndex: 50, pointerEvents: "none",
+          zIndex: 50,
         }}>
+          
           <div style={{
             position: "absolute", bottom: -7, left: "50%",
             transform: "translateX(-50%)",
@@ -255,8 +281,40 @@ function ChallengeNode({ challenge, onHover, hoveredId }) {
             <Star size={11} style={{ fill: "#FFD700", color: "#FFD700" }} />
             <span style={{ fontSize: 11, color: "#f5c878", fontWeight: 600 }}>+{challenge.xpReward} XP</span>
           </div>
+          <div>
+            <button
+              onClick={() => {
+                navigate(challenge.route);
+              }}
+              style={{
+                marginTop: 8,
+                width: "100%",
+                padding: "6px 10px",
+                borderRadius: 6,
+                border: "1px solid #d4a94f",
+                background: "linear-gradient(135deg,#2c1b08,#1a1005)",
+                color: "#f5c878",
+                fontWeight: 600,
+                fontSize: 12,
+                cursor: "pointer",
+                boxShadow: "0 0 10px rgba(255,200,120,0.2)",
+                transition: "all 0.2s ease",
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.background = "linear-gradient(135deg,#3a240c,#241506)";
+                e.target.style.boxShadow = "0 0 14px rgba(255,200,120,0.4)";
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.background = "linear-gradient(135deg,#2c1b08,#1a1005)";
+                e.target.style.boxShadow = "0 0 10px rgba(255,200,120,0.2)";
+              }}
+            >
+              Jogar
+            </button>
+          </div>
         </div>
       )}
+
     </div>
   );
 }
@@ -465,7 +523,7 @@ export default function FlorestaDosAlgoritmos() {
         setData(resultado);
       } catch (err) {
         console.error("Erro ao carregar o mapa:", err);
-        setError(err.message); 
+        setError(err.message);
       } finally {
         setLoading(false);
       }
@@ -662,7 +720,7 @@ export default function FlorestaDosAlgoritmos() {
               style={{
                 width: "100%", height: "100%",
                 objectFit: "cover", objectPosition: "center",
-                filter: "brightness(0.75) saturate(0.90)",
+                filter: "brightness(0.75) saturate(0.90) ",
                 display: "block", position: "absolute", inset: 0,
               }}
             />
@@ -684,6 +742,7 @@ export default function FlorestaDosAlgoritmos() {
                     challenge={challenge}
                     onHover={setHoveredId}
                     hoveredId={hoveredId}
+                    navigate={navigate}
                   />
                 ))}
               </div>
