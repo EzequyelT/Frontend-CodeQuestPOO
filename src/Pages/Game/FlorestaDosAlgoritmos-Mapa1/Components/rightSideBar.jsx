@@ -3,6 +3,8 @@ import mapImg from "../../../../assets/Maps/Map1.png";
 import { getLevelsByMap } from "../../../../Services/levelService";
 import { obterXPAluno } from "../../../../Services/desempenhoDesafiosService";
 import { getProgresso } from "../../../../Services/UserService";
+import Arrow from "../../../../assets/Maps/Arrow.png";
+import { Lock, Trophy, CheckSquare } from "lucide-react";
 
 // ─── DADOS LOCAIS ────────────────────────────────────────────────────────────
 
@@ -67,9 +69,15 @@ function ObjetivoBox({ objetivo }) {
     const done = objetivo.atual >= objetivo.total;
 
     return (
-        <div className="bg-gray-900/60 border border-gray-800 rounded-4xl p-3 flex flex-col gap-1">
+        <div className="rounded-4xl p-3 flex flex-col gap-1 flex flex-col gap-1"
+            style={{
+                background: "linear-gradient(180deg, #2d1654 0%, #1e0f3d 100%)",
+                border: "1px solid rgba(255,255,255,0.08)",
+                boxShadow: "0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.07)",
+            }}
+        >
             <div className="flex items-center gap-2">
-                <span className="text-base">🎯</span>
+                <span className="text-base"><CheckSquare className="h-8 w-5 text-amber-50" /></span>
                 <span className="text-white text-[11px] font-semibold">Objetivo Atual</span>
             </div>
             <p className="text-gray-400 text-[10px] leading-relaxed">{objetivo.texto}</p>
@@ -103,14 +111,25 @@ function FeedbackIA({ feedback }) {
     if (!visivel) return (
         <button
             onClick={() => setVisivel(true)}
-            className="w-full text-[10px] text-blue-400 border border-blue-900/40 rounded-xl py-2 hover:bg-blue-900/20 transition-colors"
+            className="w-full text-10px rounded-xl py-2 text-amber-400 font-bold"
+            style={{
+                background: "linear-gradient(180deg, #2d1654 0%, #1e0f3d 100%)",
+                border: "1px solid rgba(124,58,237,0.25)",
+                boxShadow: "0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.07)",
+            }}
         >
             💡 Ver Feedback da IA
         </button>
     );
 
     return (
-        <div className="bg-blue-950/40 border border-blue-800/40 rounded-4xl p-2.5 flex flex-col gap-1">
+        <div className="rounded-4xl p-2.5 flex flex-col gap-1"
+            style={{
+                background: "linear-gradient(180deg, #2d1654 0%, #1e0f3d 100%)",
+                border: "1px solid rgba(255,255,255,0.08)",
+                boxShadow: "0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.07)",
+            }}
+        >
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1.5">
                     <div className="w-5 h-5 rounded-full bg-blue-600/30 border border-blue-500/50 flex items-center justify-center">
@@ -139,7 +158,13 @@ function PedirDica({ onPedir }) {
     }
 
     return (
-        <div className="bg-gray-900/40 border border-gray-800 rounded-4xl p-3 flex items-center justify-between gap-1">
+        <div className="rounded-4xl p-3 flex items-center justify-between gap-1"
+            style={{
+                background: "linear-gradient(180deg, #2d1654 0%, #1e0f3d 100%)",
+                border: "1px solid rgba(255,255,255,0.08)",
+                boxShadow: "0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.07)",
+            }}
+        >
             <div>
                 <p className="text-white text-[11px] font-semibold">Pedir Dica</p>
                 <p className="text-gray-500 text-[9px]">−5 coins por dica</p>
@@ -147,7 +172,7 @@ function PedirDica({ onPedir }) {
             <button
                 onClick={handlePedir}
                 disabled={usado}
-                className="text-[10px] font-bold px-3 py-1.5 rounded-lg transition-all"
+                className="text-[10px] font-bold px-3 py-1.5 rounded-lg transition-all rounded-4xl"
                 style={{
                     background: usado
                         ? "rgba(255,255,255,0.05)"
@@ -175,7 +200,7 @@ function MiniMapa({ levels, desafiosCompletos, progressoMapa }) {
             <img
                 src={mapImg}
                 alt="mini mapa"
-                className="w-full h-full object-cover brightness-[0.75] saturate-[0.90]"
+                className="w-full h-full object-cover brightness-[0.80] saturate-[1]"
             />
 
             <div className="absolute top-1.5 left-3 mb-6 inline-flex items-center justify-center backdrop-blur-sm bg-black/40 rounded-full shadow-lg px-4 py-[5px]">
@@ -203,35 +228,30 @@ function MiniMapa({ levels, desafiosCompletos, progressoMapa }) {
             </div>
 
             {challenges.map(ch => {
-                // Definir estilo baseado no estado do challenge
-                const style = {
+                const S = 18; // tamanho base para mini mapa
+
+                const styles = {
                     completed: {
-                        width: "18px",
-                        height: "18px",
-                        borderRadius: "50%",
-                        border: "3px solid #FFD700",
-                        background: "radial-gradient(circle at 35% 35%, #FFD700, #b38600)",
-                        boxShadow: "0 0 12px #FFD700aa, 0 0 25px #FFD70044",
+                        border: "2px solid #FFD700",
+                        bg: "radial-gradient(circle at 35% 35%, #FFD700, #b38600)",
+                        glow: "0 0 12px #FFD700aa, 0 0 25px #FFD70044",
+                        numColor: "#1a0e00",
                     },
                     available: {
-                        width: "20px",
-                        height: "20px",
-                        borderRadius: "50%",
-                        border: "3px solid #4fc3f7",
-                        background: "radial-gradient(circle at 35% 35%, #4fc3f7, #0d2a3d)",
-                        boxShadow: "0 0 15px #4fc3f7cc, 0 0 35px #4fc3f722",
-                        animation: "pulse 1.5s infinite alternate",
+                        border: "2px solid #4fc3f7",
+                        bg: "radial-gradient(circle at 35% 35%, #4fc3f7, #0d2a3d)",
+                        glow: "0 0 15px #4fc3f7cc, 0 0 35px #4fc3f722",
+                        numColor: "#fff",
                     },
                     locked: {
-                        width: "14px",
-                        height: "14px",
-                        borderRadius: "50%",
                         border: "2px solid #2a2a2a",
-                        background: "radial-gradient(circle at 35% 35%, #444, #111)",
-                        boxShadow: "none",
+                        bg: "radial-gradient(circle at 35% 35%, #444, #111)",
+                        glow: "none",
+                        numColor: "#555",
                     },
-                }[ch.state];
+                };
 
+                const style = styles[ch.state];
                 return (
                     <div
                         key={ch.id}
@@ -241,18 +261,117 @@ function MiniMapa({ levels, desafiosCompletos, progressoMapa }) {
                             top: `${ch.y}%`,
                             transform: "translate(-50%, -50%)",
                             cursor: ch.state === "available" ? "pointer" : "default",
-                            ...style,
                         }}
-                    />
+                    >
+                        {/* Anéis pulsantes para available */}
+                        {ch.state === "available" && [0, 0.5].map(delay => (
+                            <div key={delay} style={{
+                                position: "absolute",
+                                width: S + 12,
+                                height: S + 12,
+                                borderRadius: "50%",
+                                border: `1.5px solid rgba(79,195,247,${delay === 0 ? 0.5 : 0.25})`,
+                                animation: `pulseRing 2s ease-out infinite ${delay}s`,
+                                top: "50%",
+                                left: "50%",
+                                transform: "translate(-50%, -50%)",
+                                pointerEvents: "none",
+                            }} />
+                        ))}
+                        {ch.state === "available" && (
+                            <div style={{
+                                position: "absolute",
+                                top: -20,
+                                left: "50%",
+                                transform: "translateX(-50%)",
+                                display: "flex",
+                                flexDirection: "column",
+                                alignItems: "center",
+                                animation: "bounceArrow 2s ease-in-out infinite",
+                                pointerEvents: "auto",
+                                zIndex: 40,
+                                filter: "drop-shadow(0 0 6px rgba(255,255,255,0.6))"
+                            }}>
+                                {/* Seta SVG apontando para baixo */}
+                                <img src={Arrow} width={80} height={60} viewBox="0 0 24 24" fill="none"></img>
+                            </div>
+                        )}
+                        {/* Círculo principal */}
+                        <div style={{
+                            width: S,
+                            height: S,
+                            borderRadius: "50%",
+                            border: style.border,
+                            background: style.bg,
+                            boxShadow: style.glow,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            position: "relative",
+                            transition: "all 0.3s ease",
+                        }}>
+                            {/* Número */}
+                            <span style={{
+                                fontFamily: "Georgia, serif",
+                                fontWeight: 900,
+                                fontSize: 9,
+                                color: style.numColor,
+                                textShadow: ch.state !== "locked" ? `0 0 6px ${style.numColor}` : "none",
+                            }}>
+                                {ch.id}
+                            </span>
+                            {/* Overlay de locked */}
+                            {ch.state === "locked" && (
+                                <div style={{
+                                    position: "absolute",
+                                    inset: 0,
+                                    borderRadius: "50%",
+                                    background: "rgba(0,0,0,0.5)",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                }}>
+                                    <Lock size={8} color="#444" />
+                                </div>
+                            )}
+                            {/* Badge de completed */}
+                            {ch.state === "completed" && (
+                                <div style={{
+                                    position: "absolute",
+                                    top: -3,
+                                    right: -3,
+                                    width: 10,
+                                    height: 10,
+                                    borderRadius: "50%",
+                                    background: "#FFD700",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    boxShadow: "0 0 6px rgba(255,215,0,0.9)",
+                                }}>
+                                    <svg width={6} height={6} viewBox="0 0 24 24" fill="none"
+                                        stroke="#000" strokeWidth="4" strokeLinecap="round">
+                                        <polyline points="20 6 9 17 4 12" />
+                                    </svg>
+                                </div>
+                            )}
+                        </div>
+                    </div>
                 );
             })}
 
             <style>{`
-    @keyframes pulse {
-        0% { transform: translate(-50%, -50%) scale(1); }
-        100% { transform: translate(-50%, -50%) scale(1.2); }
-    }
-`}</style>
+             @keyframes pulseRing {
+               0% {
+               transform: translate(-50%, -50%) scale(1);
+               opacity: 1;
+               }
+             100% {
+              transform: translate(-50%, -50%) scale(1.8);
+              opacity: 0;
+               }
+           }
+          `}</style>
         </div>
     );
 }
@@ -392,10 +511,10 @@ export default function RightSideBar() {
             `}</style>
 
             <aside
-                className="fixed right-20 top-1 h-screen flex flex-col gap-3 overflow-y-auto py-6 px-4"
+                className="fixed right-10 mt-4 h-screen flex flex-col gap-3 overflow-y-auto py-6 px-4"
                 style={{
                     width: 340,
-                    zIndex: 60,
+                    zIndex: 80,
                     scrollbarWidth: "none",
                     background: "transparent",
                 }}
@@ -404,9 +523,10 @@ export default function RightSideBar() {
                 <div
                     className="rounded-4xl p-3 flex flex-col gap-1"
                     style={{
-                        background: "linear-gradient(135deg,#1a1025,#0f0a1a)",
-                        border: "1px solid rgba(212,160,23,0.25)",
-                        boxShadow: "0 0 20px rgba(212,160,23,0.08)",
+                        background: "linear-gradient(180deg, #2d1654 0%, #1e0f3d 100%)",
+                        border: "1px solid rgba(255,255,255,0.08)",
+                        boxShadow: "0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.07)",
+
                     }}
                 >
                     <div className="flex items-center justify-between">
@@ -419,7 +539,7 @@ export default function RightSideBar() {
                                     boxShadow: "0 0 8px rgba(212,160,23,0.4)",
                                 }}
                             >
-                                🏆
+                                <Trophy className="h-9 w-4 items-center text-amber-50" />
                             </div>
                             <div>
                                 <p className="text-yellow-400 text-[11px] font-bold leading-none">
@@ -463,7 +583,7 @@ export default function RightSideBar() {
                 />
 
                 {/* FOOTER */}
-                <div className="flex flex-col gap-2 mt-auto pt-1">
+                <div className="flex flex-col gap-2 mb-5 pt-0">
                     <div
                         className="rounded-4xl px-4 py-2 flex items-center justify-between"
                         style={{
@@ -475,17 +595,6 @@ export default function RightSideBar() {
                         <span className="text-white text-[10px] font-bold">{tempoJogo}</span>
                     </div>
 
-                    <button
-                        className="w-full mb-2 py-2.5 rounded-4xl text-[13px] font-bold transition-all hover:brightness-110 active:scale-95"
-                        style={{
-                            background: "linear-gradient(135deg,#16a34a,#15803d)",
-                            color: "#fff",
-                            border: "1px solid rgba(22,163,74,0.4)",
-                            boxShadow: "0 0 16px rgba(22,163,74,0.25)",
-                        }}
-                    >
-                        ⚔️ Próxima Aventura
-                    </button>
                 </div>
             </aside>
         </>

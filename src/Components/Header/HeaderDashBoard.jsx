@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { getProgressoDashboard } from "../../Services/UserService";
 import logo from '../../Assets/logo.png';
-import { Home, Clock, Users, MessageSquare, Search, Settings, Star, Zap, DollarSign } from "lucide-react";
+import { Home, Clock, Users, MessageSquare, Search, Settings, Star, Flame , DollarSign } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Modal from "../Modal/ProfileModal";
 
@@ -86,8 +86,6 @@ export default function DashBoardHeader({ user }) {
     { id: "messages", icon: <MessageSquare size={20} />, label: "Messages", path: "/messages" },
   ];
 
-
-
   return (
     <>
       <style>{`
@@ -132,7 +130,6 @@ export default function DashBoardHeader({ user }) {
         className="fixed top-0 left-0 w-full h-20 flex items-center gap-4 px-6 py-4"
         style={{
           background: "black",
-          borderBottom: "1px solid rgba(255,255,255,0.06)",
           boxShadow: "0 4px 32px rgba(0,0,0,0.5)"
         }}
       >
@@ -193,7 +190,7 @@ export default function DashBoardHeader({ user }) {
           <Stat icon={<Clock size={14} color="#06b6d4" />} value={formatarTempo(stats.tempo_total_jogo)} delay="0ms" />
           <Stat icon={<Star size={14} color="#facc15" />} value={`${stats.xp_total} XP`} delay="60ms" />
           <Stat icon={<DollarSign size={14} color="#a78bfa" />} value={stats.coins} delay="120ms" />
-          <Stat icon={<Zap size={14} color="#f97316" />} value={stats.streak} delay="180ms" />
+          <Stat icon={<Flame  size={14} color="#f97316" />} value={stats.streak} delay="180ms" />
         </div>
 
         {/* Right group — search + settings + avatar */}
