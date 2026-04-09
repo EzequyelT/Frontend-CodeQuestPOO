@@ -17,7 +17,9 @@ export default function QuizHeader({
 
         <div className="flex-1 bg-[#2e2e50] rounded-full h-2.5 overflow-hidden">
           <div
-            className="h-full bg-[#4cde7f] rounded-full transition-all duration-300"
+            className="h-full rounded-full transition-all duration-300
+             bg-[#4cde7f] animate-pulse
+             shadow-[0_0_12px_#4cde7f,0_0_24px_#4cde7f]"
             style={{ width: `${progress}%` }}
           />
         </div>

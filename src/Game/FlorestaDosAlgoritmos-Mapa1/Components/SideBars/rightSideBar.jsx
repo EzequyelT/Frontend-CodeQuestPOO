@@ -378,7 +378,7 @@ function MiniMapa({ levels, desafiosCompletos, progressoMapa }) {
 
 // ─── COMPONENTE PRINCIPAL ────────────────────────────────────────────────────
 
-export default function RightSideBar() {
+export default function RightSideBar({ time }) {
     const [loading, setLoading] = useState(true);
     const [erro, setErro] = useState(null);
     const [desafiosCompletos, setDesafiosCompletos] = useState(0);
@@ -388,7 +388,19 @@ export default function RightSideBar() {
 
     const objetivo = OBJETIVO;
     const feedbackIA = FEEDBACK_IA;
-    const tempoJogo = "02h 14m";
+
+    function formatTime(totalSeconds) {
+        const horas = Math.floor(totalSeconds / 3600);
+        const minutos = Math.floor((totalSeconds % 3600) / 60);
+        const segundos = totalSeconds % 60;
+
+        const partes = [];
+        if (horas > 0) partes.push(`${horas}h`);
+        if (minutos > 0 || horas > 0) partes.push(`${minutos}m`);
+        partes.push(`${segundos}s`);
+
+        return partes.join(" ");
+    }
 
     // Função para buscar níveis e progresso
     async function fetchLevelsData(mapaId, token) {
@@ -592,7 +604,9 @@ export default function RightSideBar() {
                         }}
                     >
                         <span className="text-gray-500 text-[10px]">⏱ Tempo de jogo</span>
-                        <span className="text-white text-[10px] font-bold">{tempoJogo}</span>
+                        <span className="text-white text-[10px] font-bold">
+                            {formatTime(time)}
+                        </span>
                     </div>
 
                 </div>

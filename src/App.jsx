@@ -10,8 +10,8 @@ import Desafio2GameTest from "./Components/GameTest/desafio2";
 import DesafioFinal from "./Components/GameTest/desafioFinal";
 import Login from "./Pages/Auth/login";
 import CriarConta from "./Pages/Auth/criarConta";
-import FlorestaDosAlgoritmos from "./Pages/Game/FlorestaDosAlgoritmos-Mapa1/FlorestaDosAlgoritmos";
-import Mapa1 from "./Pages/Game/Routes/game.routes"
+import FlorestaDosAlgoritmos from "./Game/FlorestaDosAlgoritmos-Mapa1/FlorestaDosAlgoritmos";
+import Mapa1 from "./Game/Routes/game.routes"
 
 import './App.css';
 

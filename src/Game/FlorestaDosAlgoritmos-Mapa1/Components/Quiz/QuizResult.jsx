@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 // ─────────────────────────────────────────────
 // 🔌 MOCK DATA — substituir por chamada à API
@@ -72,9 +73,9 @@ function ScoreRing({ score }) {
           style={{ transition: "stroke-dashoffset 0.05s linear" }} />
       </svg>
       <div style={{
-        position: "relative", marginTop: -96, width: 128, height: 128,
+        position: "relative", marginTop: -130, width: 128, height: 128,
         display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-        gap: 2,
+        gap: 10,
       }}>
         <span style={{ fontSize: 30, fontWeight: 800, color: "#fff", lineHeight: 1 }}>
           {displayed}
@@ -152,6 +153,7 @@ export default function QuizResult({
   onBackToMap = API_HOOKS.onBackToMap,
 }) {
   const { correct, wrong, timeSeconds, hintsUsed, xpGained, score, streak, quizTitle } = result;
+  const Navigate = useNavigate()
 
   return (
     <div style={{
@@ -233,7 +235,7 @@ export default function QuizResult({
           </button>
 
           <button
-            onClick={onBackToMap}
+            onClick={() => Navigate("/FlorestaDosAlgoritmos")}
             style={{
               flex: 1, padding: "11px 0", borderRadius: 999,
               fontSize: 13, fontWeight: 700, color: "rgba(255,255,255,0.6)",
