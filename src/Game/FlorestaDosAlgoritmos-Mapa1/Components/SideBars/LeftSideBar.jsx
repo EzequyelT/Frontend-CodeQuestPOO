@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom"
 import { useState, useEffect } from "react"
-import { getProgressoDashboard } from "../../../../Services/UserService";
+import { getProgressoDashboard } from "../../../../Services/users/userStatsService";
 import { Settings, House, Undo2, Flame, DollarSign } from "lucide-react";
 
 export default function LeftSideBar() {

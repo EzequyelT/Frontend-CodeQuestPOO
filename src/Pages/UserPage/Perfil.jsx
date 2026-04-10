@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getProgressoDashboard } from "../../services/UserService/progressoService";
+import { getProgressoDashboard } from "../../Services/users/userStatsService";
 import DashBoardHeader from "../../Components/Header/HeaderDashBoard";
 import SideBar from "../../Components/SideBar/SideBar";
 import { ArrowLeft } from "lucide-react";

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { getProgresso } from "../../Services/UserService";
-import { getMapas } from "../../Services/mapasService";
+import { getProgresso } from "../../Services/users/userStatsService";
+import { getMapas } from "../../Services/maps/mapasService";
 import DashBoardHeader from "../../Components/Header/HeaderDashBoard";
 import SideBar from "../../Components/SideBar/SideBar";
 import map1 from "../../assets/Maps/FirstMap.png";

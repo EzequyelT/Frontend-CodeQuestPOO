@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { processarConclusaoDesafio } from "../../../Services/desempenhoDesafiosService";
+import { processarConclusaoDesafio } from "../../../Services/xpProgressService";
 import Dsf1 from "./dsf_1";
 import Dsf2 from "./dsf_2";
 import Dsf3 from "./dsf_3";

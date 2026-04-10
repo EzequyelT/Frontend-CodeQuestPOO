@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react"
 import RightSideBar from "../Components/SideBars/rightSideBar"
 import LeftSideBar from "../Components/SideBars/LeftSideBar"
 import QuizContainer from "../Components/Quiz/QuizContainer"
@@ -5,8 +6,10 @@ import QuestionCard from "../Components/Quiz/QuestionCard"
 import { useQuiz } from "../../Hooks/useQuiz"
 import QuizResult from "../Components/Quiz/QuizResult"
 import { useNavigate } from "react-router-dom"
+import { getToken, getUser } from "../../../Services/auth/authStorage";
+import { getLevelsByMap } from "../../../Services/maps/levelService"
 
-const Desafio = {
+const Dsf1 = {
     titulo: "Quiz – Classe Veículo",
     streak: 4,
     perguntas: [
@@ -69,20 +72,45 @@ const Desafio = {
 }
 
 export default function DSF1() {
+    const [levels, setLevels] = useState([]);
+    const [desafioId, setDesafioId] = useState(null);
+
     const navigate = useNavigate()
 
+    const token = getToken();
+    const userId = getUser();
+
+    const mapaId = 1
+
+    useEffect(() => {
+        async function loadLevels() {
+            const data = await getLevelsByMap(mapaId);
+            setLevels(data);
+
+            setDesafioId(data[0]?.id);
+        }
+
+        loadLevels();
+    }, []);
+
     const {
-        perguntaAtual,
+        currentQuestion,
         currentIndex,
-        respostaAtual,   
+        currentResponse,
         correct,
         wrong,
         timeSeconds,
         finished,
         totalQuestions,
-        responder,       // ← chamado pelo QuestionCard no onDrop
-        resetSlot,       // ← chamado pelo botão RotateCcw
-    } = useQuiz(Desafio.perguntas)  // ✅ passa perguntas, não slots
+        response,       // ← chamado pelo QuestionCard no onDrop
+        resetSlot,
+        resultadoFinal,      // ← chamado pelo botão RotateCcw
+    } = useQuiz(Dsf1.perguntas, { //Estou a terminar de conectar a rota do desempenho agora preciso de coloca o id do mapa e ver se esta registrado certo. Depois arrumar todo o fichero Service
+        token: token,
+        aluno_id: userId,
+        desafio_id: desafioId,
+        level_Id: levels
+    })
 
 
     // ✅ return obrigatório
@@ -94,41 +122,44 @@ export default function DSF1() {
                     wrong,
                     timeSeconds,
                     hintsUsed: 0,
-                    xpGained: correct * 80,
+                    xpGained: resultadoFinal?.xpGanho?.total ?? correct * 80,
                     score: Math.round((correct / totalQuestions) * 100),
-                    streak: Desafio.streak,
-                    quizTitle: Desafio.titulo,
+                    streak: Dsf1.streak,
+                    quizTitle: Dsf1.titulo,
+                    desafioCompleto: resultadoFinal?.desafioCompleto ?? false,
+                    primeiraVez: resultadoFinal?.primeiraVez ?? true,
                 }}
                 onRepeat={() => window.location.reload()}
                 onBackToMap={() => navigate("/Floresta")}
+                onNextChallenge={() => navigate("/nivel-1/desafio-2")}
             />
         )
     }
 
     return (
         <>
-            <RightSideBar time={timeSeconds}/>
+            <RightSideBar time={timeSeconds} />
             <LeftSideBar />
 
             <div className="flex flex-col">
                 <QuizContainer
                     headerProps={{
-                        children: Desafio.titulo,
+                        children: Dsf1.titulo,
                         currentQuestion: currentIndex + 1,   // ✅ dinâmico
                         totalQuestions: totalQuestions,
-                        streak: Desafio.streak,
+                        streak: Dsf1.streak,
                     }}
                     answerOptionsProps={{
-                        options: perguntaAtual.opcoes,        // ✅ opções da pergunta atual
+                        options: currentQuestion.opcoes,        // ✅ opções da pergunta atual
                     }}
                 >
                     {/* 1 slot único por pergunta */}
                     <div className="flex justify-center">
                         <QuestionCard
                             label="Arraste a resposta correta"
-                            pergunta={perguntaAtual.texto}
-                            dropped={respostaAtual}            // ✅ estado controlado pelo hook
-                            onDrop={(item) => responder(item)} // ✅ chama o hook
+                            pergunta={currentQuestion.texto}
+                            dropped={currentResponse}            // ✅ estado controlado pelo hook
+                            onDrop={(item) => response(item)} // ✅ chama o hook
                             onReset={resetSlot}                // ✅ chama o hook
                         />
                     </div>

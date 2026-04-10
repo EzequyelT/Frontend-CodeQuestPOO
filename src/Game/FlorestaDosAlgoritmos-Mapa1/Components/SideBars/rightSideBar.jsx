@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import mapImg from "../../../../assets/Maps/Map1.png";
-import { getLevelsByMap } from "../../../../Services/levelService";
-import { obterXPAluno } from "../../../../Services/desempenhoDesafiosService";
-import { getProgresso } from "../../../../Services/UserService";
+import { getLevelsByMap } from "../../../../Services/maps/levelService";
+import { obterXPAluno } from "../../../../Services/Gameplay/xpProgressService";
+import { getProgresso } from "../../../../Services/users/userStatsService";
 import Arrow from "../../../../assets/Maps/Arrow.png";
 import { Lock, Trophy, CheckSquare } from "lucide-react";
 

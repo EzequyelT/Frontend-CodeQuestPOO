@@ -1,8 +1,9 @@
 import DashBoardHeader from "../../Components/Header/HeaderDashBoard";
 import { useNavigate } from "react-router-dom";
-import { iniciarTempo, pararTempo, getProgresso, getProgressoDashboard } from "../../Services/UserService";
-import { obterXPAluno } from "../../Services/desempenhoDesafiosService";
-import { getMapas } from "../../Services/mapasService";
+import { getProgresso, getProgressoDashboard } from "../../Services/users/userStatsService";
+import { obterXPAluno } from "../../Services/Gameplay/xpProgressService";
+import { getMapas } from "../../Services/maps/mapasService";
+import { iniciarTempo, pararTempo } from "../../Services/gameplay/tempoService";
 import map1 from "../../assets/Maps/FirstMap.png";
 import { useState, useEffect } from "react";
 import SideBar from "../../Components/SideBar/SideBar";

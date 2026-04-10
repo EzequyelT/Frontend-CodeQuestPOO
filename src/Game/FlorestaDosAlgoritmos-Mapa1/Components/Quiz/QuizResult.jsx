@@ -18,11 +18,7 @@ const MOCK_RESULT = {
 // ─────────────────────────────────────────────
 // 🔌 CALLBACKS — conectar à API depois
 // ─────────────────────────────────────────────
-const API_HOOKS = {
-  onRepeat: () => console.log("🔁 API: reiniciar quiz"),
-  onNextChallenge: () => console.log("🚀 API: próximo desafio"),
-  onBackToMap: () => console.log("🗺️ API: voltar ao mapa"),
-};
+
 
 // ─────────────────────────────────────────────
 // Helpers
@@ -148,9 +144,9 @@ function XPBar({ xp }) {
 export default function QuizResult({
   // 🔌 Props — passar dados reais vindos da API
   result = MOCK_RESULT,
-  onRepeat = API_HOOKS.onRepeat,
-  onNextChallenge = API_HOOKS.onNextChallenge,
-  onBackToMap = API_HOOKS.onBackToMap,
+  onRepeat,
+  onNextChallenge,
+  onBackToMap,
 }) {
   const { correct, wrong, timeSeconds, hintsUsed, xpGained, score, streak, quizTitle } = result;
   const Navigate = useNavigate()

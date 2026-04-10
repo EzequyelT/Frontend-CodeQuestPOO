@@ -4,7 +4,8 @@ import logo from '../../assets/logo.png';
 import Bg from '../../assets/Login/BgLogin.jpg';
 import HeroSection from '../../assets/Login/Hero.png';
 import { useNavigate } from "react-router-dom";
-import { login as authLogin, saveToken } from "../../Services/UserService";
+import { login as authLogin } from "../../Services/auth/authService";
+import { saveToken } from "../../Services/auth/authStorage";
 
 // Componente de Notificação Toast
 const Toast = ({ message, type, onClose }) => {

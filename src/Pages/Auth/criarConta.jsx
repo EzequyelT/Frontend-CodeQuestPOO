@@ -19,7 +19,7 @@ import Bg from '../../assets/Login/BgLogin.jpg';
 import HeroSection from '../../assets/Login/HeroCreateAccount.png';
 import AvatarModal from '../../Components/Modal/AvatarModal';
 import { useNavigate } from "react-router-dom";
-import { registerUser } from '../../Services/UserService';
+import { register } from '../../Services/auth/authService';
 
 // Componente Toast Melhorado
 const Toast = ({ message, type, onClose }) => {
@@ -150,7 +150,7 @@ export default function CriarConta() {
         avatar_id: null
       };
 
-      const response = await registerUser(dataToSend);
+      const response = await register(dataToSend);
       showToast(response.message || 'Conta criada com sucesso!', 'success');
 
       // Abrir modal de avatar

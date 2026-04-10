@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Star, Gem, Trophy, Users, ChevronLeft, Lock, Settings, Volume2, Loader2 } from "lucide-react";
-import { getLevelsByMap } from "../../Services/levelService";
-import { getProgresso } from "../../Services/UserService";
+import { getLevelsByMap } from "../../Services/maps/levelService";
+import { getProgresso } from "../../Services/users/userStatsService";
 import map from "../../assets/Maps/Map1.png";
 import Banner from "../../assets/Maps/Banner.jpg";
 import Arrow from "../../assets/Maps/Arrow.png";

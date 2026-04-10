@@ -1,17 +1,25 @@
 import { useState, useEffect } from "react"
+import { concluirDesafio } from "../../Services/Gameplay/xpProgressService"
 
-export function useQuiz(perguntas = []) {
+export function useQuiz(perguntas = [], config = {}) {
   const [currentIndex, setCurrentIndex] = useState(0)   // qual pergunta estamos
-  const [respostaAtual, setRespostaAtual] = useState(null) // { item, isCorrect }
+  const [currentResponse, setCurrentResponse] = useState(null) // { item, isCorrect }
   const [correct, setCorrect] = useState(0)
   const [wrong, setWrong] = useState(0)
   const [finished, setFinished] = useState(false)
   const [startTime] = useState(() => Date.now())
   const [timeSeconds, setTimeSeconds] = useState(0)
+  const [resultadoFinal, setResultadoFinal] = useState(null)
+
+  //Estado para controlar a comunicação com a API para salvar o desempenho
+  const [desempenhoGuardado, setDesempenhoGuardado] = useState(false)
+
+
+
   // Avançar para a próxima pergunta
 
-  function avancar() {
-    setRespostaAtual(null)
+  function advanceQuestion() {
+    setCurrentResponse(null)
     if (isUltima) setFinished(true)   // ← só muda o estado
     else setCurrentIndex(i => i + 1)
   }
@@ -24,21 +32,47 @@ export function useQuiz(perguntas = []) {
   }, [finished, startTime])
 
   useEffect(() => {
-    if (!respostaAtual) return
-    const timer = setTimeout(() => avancar(), 2000)
+    if (!currentResponse) return
+    const timer = setTimeout(() => advanceQuestion(), 2000)
     return () => clearTimeout(timer)
-  }, [respostaAtual])
+  }, [currentResponse])
 
-  const perguntaAtual = perguntas[currentIndex]  // objeto { texto, opcoes, correctId }
+  useEffect(() => {
+    if (!finished) return
+    if (!config.token || !config.desafio_id) return
+    if (desempenhoGuardado) return
+
+    const score = Math.round((correct / perguntas.length) * 100)
+
+    concluirDesafio(config.desafio_id, {  
+      respostas_erradas: wrong,
+      tentativas: 1,
+      tempo_desafio: timeSeconds,
+      score: score,
+      ajudas_usadas: 0,
+    })
+      .then((resultado) => {
+        if (!resultado) return
+        setDesempenhoGuardado(true)
+        setResultadoFinal(resultado)
+        console.log("✅ Desafio concluído!", resultado)
+      })
+      .catch((err) => {
+        console.error("Erro no desempenho", err)
+      })
+
+  }, [finished])
+
+  const currentQuestion = perguntas[currentIndex]  // objeto { texto, opcoes, correctId }
   const isUltima = currentIndex + 1 >= perguntas.length
-  const progress = Math.round((currentIndex / perguntas.length) * 100)
+  const progress = Math.round(((currentIndex + 1) / perguntas.length) * 100)
 
   // Chamado quando o utilizador solta uma resposta no slot
-  function responder(item) {
-    if (respostaAtual) return // já respondeu, ignora
+  function response(item) {
+    if (currentResponse) return // já respondeu, ignora
 
-    const isCorrect = item.id === perguntaAtual.correctId
-    setRespostaAtual({ item, isCorrect })
+    const isCorrect = item.id === currentQuestion.correctId
+    setCurrentResponse({ item, isCorrect })
 
     if (isCorrect) setCorrect(c => c + 1)
     else setWrong(w => w + 1)
@@ -46,26 +80,27 @@ export function useQuiz(perguntas = []) {
 
   // Resetar o slot atual (botão RotateCcw)
   function resetSlot() {
-    if (!respostaAtual) return
-    if (respostaAtual.isCorrect) setCorrect(c => c - 1)
+    if (!currentResponse) return
+    if (currentResponse.isCorrect) setCorrect(c => c - 1)
     else setWrong(w => w - 1)
-    setRespostaAtual(null)
+    setCurrentResponse(null)
   }
 
 
   return {
-    perguntaAtual,     // { id, texto, opcoes, correctId }
+    currentQuestion,     // { id, texto, opcoes, correctId }
     currentIndex,
     progress,
-    respostaAtual,     // { item, isCorrect } ou null
+    currentResponse,     // { item, isCorrect } ou null
     correct,
     wrong,
     timeSeconds,
     finished,
     isUltima,
     totalQuestions: perguntas.length,
-    responder,
+    response,
     resetSlot,
-    avancar,
+    advanceQuestion,
+    resultadoFinal,
   }
 }

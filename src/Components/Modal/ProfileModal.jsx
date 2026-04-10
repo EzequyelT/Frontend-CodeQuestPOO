@@ -1,5 +1,5 @@
 import { LogOut, User, X, Mail, Shield, ChevronRight, Settings } from "lucide-react";
-import { pararTempo } from "../../Services/UserService";
+import { pararTempo } from "../../Services/gameplay/tempoService";
 import { useNavigate } from "react-router-dom";
 import "../../css/ProfileModal.css";
 
