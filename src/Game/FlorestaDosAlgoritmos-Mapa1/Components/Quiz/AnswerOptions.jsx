@@ -1,3 +1,5 @@
+import BgOptions from "../../../../assets/Buttons/BgOptions.png"
+
 export default function AnswerOptions({
   options = [],
   onDragStart,
@@ -17,18 +19,23 @@ export default function AnswerOptions({
       <div className="flex flex-wrap gap-3 items-center justify-center flex-row">
         {options.map((item) => (
           <button
+            className="
+           rounded-full px-7 py-4 text-sm font-semibold text-white mt-2
+           transition-transform duration-200 hover:scale-105 active:scale-95
+          bg-center bg-no-repeat
+          "
+            style={{
+              backgroundImage: `url(${BgOptions})`,
+              backgroundSize: "70%",
+              backgroundPosition: "center",
+              backgroundRepeat: "no-repeat",
+
+            }}
             key={item.id}
             draggable
             onDragStart={(e) => {
               e.dataTransfer.setData("application/json", JSON.stringify(item));
               onDragStart?.(item, e);
-            }}
-            className="rounded-full px-4 py-2 text-sm font-semibold text-white transition-transform duration-200 hover:scale-105 active:scale-95"
-            style={{
-              background: "linear-gradient(180deg, #2d1654 0%, #1e0f3d 100%)",
-              border: "1px solid rgba(255,255,255,0.08)",
-              boxShadow:
-                "0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.07)",
             }}
           >
             {item.label}

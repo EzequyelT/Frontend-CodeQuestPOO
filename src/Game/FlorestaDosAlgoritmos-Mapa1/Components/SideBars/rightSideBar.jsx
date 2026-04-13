@@ -6,6 +6,35 @@ import { getProgresso } from "../../../../Services/users/userStatsService";
 import Arrow from "../../../../assets/Maps/Arrow.png";
 import { Lock, Trophy, CheckSquare } from "lucide-react";
 
+// ─── PALETA DE CORES ────────────────────────────────────────────────────────
+
+const Color = {
+    primary: {
+        dark: "#0a2a4a",
+        main: "#1e5a8e",
+        light: "#3b7ab8",
+        lighter: "#5a96d8",
+        brightest: "#7ab8ff",
+    },
+    secondary: {
+        dark: "#3a2010",
+        main: "#8b5e1a",
+        light: "#a08060",
+        lighter: "#c4a878",
+    },
+    glow: {
+        blue: "rgba(79, 180, 255, 0.6)",
+        blueSoft: "rgba(79, 180, 255, 0.3)",
+        gold: "rgba(255, 215, 0, 0.6)",
+    },
+    neutral: {
+        bg: "#000",
+        darkBg: "#0a0a0a",
+        card: "rgba(10, 30, 50, 0.4)",
+        border: "rgba(30, 90, 142, 0.3)",
+    },
+};
+
 // ─── DADOS LOCAIS ────────────────────────────────────────────────────────────
 
 const CHALLENGEPOSITIONS = {
@@ -38,20 +67,28 @@ function XPBar({ xpAtual, xpProximo, percentagem }) {
         <div className="flex flex-col gap-1">
             <div className="flex justify-between text-[10px] rounded-full">
                 <span className="text-gray-400">XP</span>
-                <span className="text-yellow-400 font-bold">{xpAtual} / {xpProximo}</span>
+                <span style={{ color: Color.secondary.lighter }} className="font-bold">{xpAtual} / {xpProximo}</span>
             </div>
-            <div className="h-2.5 bg-gray-900 rounded-full overflow-hidden border border-gray-800">
+            <div
+                className="h-2.5 rounded-full overflow-hidden border"
+                style={{
+                    background: Color.neutral.card,
+                    borderColor: Color.neutral.border,
+                    backdropFilter: "blur(5px)",
+
+                }}
+            >
                 <div
-                    className="h-full rounded-full relative overflow-hidden"
+                    className="h-full rounded-full relative overflow-hidden transition-all"
                     style={{
                         width: `${percentagem}%`,
-                        background: "linear-gradient(90deg, #d4a017, #84cc16)",
-                        boxShadow: "0 0 8px #d4a01766",
-                        transition: "width 1s ease",
+                        background: `linear-gradient(90deg, ${Color.secondary.main}, ${Color.secondary.lighter})`,
+                        boxShadow: `0 0 8px ${Color.glow.gold}`,
                     }}
                 >
                     <div style={{
-                        position: "absolute", inset: 0,
+                        position: "absolute",
+                        inset: 0,
                         background: "linear-gradient(90deg,transparent,rgba(255,255,255,0.25) 50%,transparent)",
                         animation: "shimmer 2s infinite",
                     }} />
@@ -69,37 +106,48 @@ function ObjetivoBox({ objetivo }) {
     const done = objetivo.atual >= objetivo.total;
 
     return (
-        <div className="rounded-4xl p-3 flex flex-col gap-1 flex flex-col gap-1"
+        <div
+            className="rounded-4xl p-3 flex flex-col gap-1"
             style={{
-                background: "linear-gradient(180deg, #2d1654 0%, #1e0f3d 100%)",
-                border: "1px solid rgba(255,255,255,0.08)",
-                boxShadow: "0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.07)",
+                background: Color.neutral.card,
+                border: `1px solid ${Color.neutral.border}`,
+                boxShadow: `0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(122, 184, 255, 0.1)`,
             }}
         >
             <div className="flex items-center gap-2">
-                <span className="text-base"><CheckSquare className="h-8 w-5 text-amber-50" /></span>
+                <span className="text-base"><CheckSquare className="h-8 w-5 text-blue-300" /></span>
                 <span className="text-white text-[11px] font-semibold">Objetivo Atual</span>
             </div>
             <p className="text-gray-400 text-[10px] leading-relaxed">{objetivo.texto}</p>
             <div className="flex justify-between text-[10px]">
                 <span className="text-gray-500">Progresso</span>
-                <span style={{ color: done ? "#d4a017" : "#4fc3f7" }} className="font-bold">
+                <span style={{ color: done ? Color.secondary.lighter : Color.primary.brightest }} className="font-bold">
                     {objetivo.atual}/{objetivo.total}
                 </span>
             </div>
-            <div className="h-1.5 bg-gray-800 rounded-full overflow-hidden">
+            <div
+                className="h-1.5 rounded-full overflow-hidden"
+                style={{
+                    background: Color.neutral.card,
+                    border: `0.5px solid ${Color.neutral.border}`,
+                }}
+            >
                 <div
                     className="h-full rounded-full transition-all duration-700"
                     style={{
                         width: `${pct}%`,
-                        background: done ? "#d4a017" : "#4fc3f7",
-                        boxShadow: done ? "0 0 6px #d4a01766" : "0 0 6px #4fc3f766",
+                        background: done
+                            ? `linear-gradient(90deg, ${Color.secondary.main}, ${Color.secondary.lighter})`
+                            : `linear-gradient(90deg, ${Color.primary.light}, ${Color.primary.lighter})`,
+                        boxShadow: done
+                            ? `0 0 6px ${Color.glow.gold}`
+                            : `0 0 6px ${Color.glow.blue}`,
                     }}
                 />
             </div>
             <div className="flex justify-between items-center">
                 <span className="text-gray-600 text-[9px]">Recompensa</span>
-                <span className="text-yellow-400 text-[10px] font-bold">🪙 {objetivo.recompensa}</span>
+                <span style={{ color: Color.secondary.lighter }} className="text-[10px] font-bold">🪙 {objetivo.recompensa}</span>
             </div>
         </div>
     );
@@ -111,11 +159,12 @@ function FeedbackIA({ feedback }) {
     if (!visivel) return (
         <button
             onClick={() => setVisivel(true)}
-            className="w-full text-10px rounded-xl py-2 text-amber-400 font-bold"
+            className="w-full text-10px rounded-xl py-2 font-bold transition-all"
             style={{
-                background: "linear-gradient(180deg, #2d1654 0%, #1e0f3d 100%)",
-                border: "1px solid rgba(124,58,237,0.25)",
-                boxShadow: "0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.07)",
+                color: Color.primary.brightest,
+                background: Color.neutral.card,
+                border: `1px solid ${Color.primary.dark}`,
+                boxShadow: `0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(122, 184, 255, 0.1)`,
             }}
         >
             💡 Ver Feedback da IA
@@ -123,23 +172,30 @@ function FeedbackIA({ feedback }) {
     );
 
     return (
-        <div className="rounded-4xl p-2.5 flex flex-col gap-1"
+        <div
+            className="rounded-4xl p-2.5 flex flex-col gap-1"
             style={{
-                background: "linear-gradient(180deg, #2d1654 0%, #1e0f3d 100%)",
-                border: "1px solid rgba(255,255,255,0.08)",
-                boxShadow: "0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.07)",
+                background: Color.neutral.card,
+                border: `1px solid ${Color.neutral.border}`,
+                boxShadow: `0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(122, 184, 255, 0.1)`,
             }}
         >
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1.5">
-                    <div className="w-5 h-5 rounded-full bg-blue-600/30 border border-blue-500/50 flex items-center justify-center">
-                        <span className="text-[10px]">✓</span>
+                    <div
+                        className="w-5 h-5 rounded-full border flex items-center justify-center"
+                        style={{
+                            background: `rgba(122, 184, 255, 0.15)`,
+                            borderColor: `${Color.primary.light}`,
+                        }}
+                    >
+                        <span className="text-[10px]" style={{ color: Color.primary.brightest }}>✓</span>
                     </div>
-                    <span className="text-blue-300 text-[10px] font-semibold">{feedback.tipo}</span>
+                    <span style={{ color: Color.primary.lighter }} className="text-[10px] font-semibold">{feedback.tipo}</span>
                 </div>
                 <button
                     onClick={() => setVisivel(false)}
-                    className="text-gray-600 hover:text-gray-400 text-xs"
+                    className="text-gray-600 hover:text-gray-400 text-xs transition-colors"
                 >✕</button>
             </div>
             <p className="text-gray-300 text-[10px] leading-relaxed">
@@ -158,11 +214,12 @@ function PedirDica({ onPedir }) {
     }
 
     return (
-        <div className="rounded-4xl p-3 flex items-center justify-between gap-1"
+        <div
+            className="rounded-4xl p-3 flex items-center justify-between gap-1"
             style={{
-                background: "linear-gradient(180deg, #2d1654 0%, #1e0f3d 100%)",
-                border: "1px solid rgba(255,255,255,0.08)",
-                boxShadow: "0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.07)",
+                background: Color.neutral.card,
+                border: `1px solid ${Color.neutral.border}`,
+                boxShadow: `0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(122, 184, 255, 0.1)`,
             }}
         >
             <div>
@@ -172,15 +229,17 @@ function PedirDica({ onPedir }) {
             <button
                 onClick={handlePedir}
                 disabled={usado}
-                className="text-[10px] font-bold px-3 py-1.5 rounded-lg transition-all rounded-4xl"
+                className="text-[10px] font-bold px-3 py-1.5 rounded-4xl transition-all"
                 style={{
                     background: usado
-                        ? "rgba(255,255,255,0.05)"
-                        : "linear-gradient(135deg,#7c3aed,#4f46e5)",
-                    color: usado ? "#555" : "#fff",
-                    border: usado ? "1px solid #333" : "1px solid rgba(124,58,237,0.5)",
+                        ? `rgba(122, 184, 255, 0.1)`
+                        : `linear-gradient(135deg, ${Color.primary.light}, ${Color.primary.lighter})`,
+                    color: usado ? "#888" : "#fff",
+                    border: usado
+                        ? `1px solid ${Color.neutral.border}`
+                        : `1px solid ${Color.primary.main}`,
                     cursor: usado ? "not-allowed" : "pointer",
-                    boxShadow: usado ? "none" : "0 0 10px rgba(124,58,237,0.3)",
+                    boxShadow: usado ? "none" : `0 0 10px ${Color.glow.blueSoft}`,
                 }}
             >
                 {usado ? "Usada ✓" : "Usar 💡"}
@@ -194,7 +253,6 @@ function MiniMapa({ levels, desafiosCompletos, progressoMapa }) {
     const currentIdx = challenges.findIndex(c => c.state === "available");
     const proximo = challenges[currentIdx + 1];
 
-
     return (
         <div className="relative w-full h-[200px]">
             <img
@@ -203,7 +261,12 @@ function MiniMapa({ levels, desafiosCompletos, progressoMapa }) {
                 className="w-full h-full object-cover brightness-[0.80] saturate-[1]"
             />
 
-            <div className="absolute top-1.5 left-3 mb-6 inline-flex items-center justify-center backdrop-blur-sm bg-black/40 rounded-full shadow-lg px-4 py-[5px]">
+            <div className="absolute top-1.5 left-3 mb-6 inline-flex items-center justify-center backdrop-blur-sm rounded-full shadow-lg px-4 py-[5px]"
+                style={{
+                    background: Color.neutral.card,
+                    border: `1px solid ${Color.neutral.border}`,
+                }}
+            >
                 <span
                     className="text-white text-[10px] font-bold leading-none"
                     style={{ textShadow: "0 1px 4px rgba(0,0,0,0.9)" }}
@@ -212,7 +275,12 @@ function MiniMapa({ levels, desafiosCompletos, progressoMapa }) {
                 </span>
             </div>
 
-            <div className="absolute bottom-1.5 right-2 mb-1 inline-flex items-center justify-center backdrop-blur-sm bg-black/40 rounded-full shadow-lg px-3 py-[6px]">
+            <div className="absolute bottom-1.5 right-2 mb-1 inline-flex items-center justify-center backdrop-blur-sm rounded-full shadow-lg px-3 py-[6px]"
+                style={{
+                    background: Color.neutral.card,
+                    border: `1px solid ${Color.neutral.border}`,
+                }}
+            >
                 <span
                     className="text-gray-300 text-[9px] leading-none"
                     style={{ textShadow: "0 1px 4px rgba(0,0,0,0.9)" }}
@@ -221,33 +289,38 @@ function MiniMapa({ levels, desafiosCompletos, progressoMapa }) {
                 </span>
             </div>
 
-            <div className="absolute bottom-1.5 left-2 mb-1 inline-flex items-center justify-center backdrop-blur-sm bg-black/40 rounded-full shadow-lg px-3 py-[6px]">
+            <div className="absolute bottom-1.5 left-2 mb-1 inline-flex items-center justify-center backdrop-blur-sm rounded-full shadow-lg px-3 py-[6px]"
+                style={{
+                    background: Color.neutral.card,
+                    border: `1px solid ${Color.neutral.border}`,
+                }}
+            >
                 <span className="text-gray-400 text-[9px] font-bold leading-none">
                     {desafiosCompletos}/{progressoMapa} desafios
                 </span>
             </div>
 
             {challenges.map(ch => {
-                const S = 18; // tamanho base para mini mapa
+                const S = 18;
 
                 const styles = {
                     completed: {
-                        border: "2px solid #FFD700",
-                        bg: "radial-gradient(circle at 35% 35%, #FFD700, #b38600)",
-                        glow: "0 0 12px #FFD700aa, 0 0 25px #FFD70044",
-                        numColor: "#1a0e00",
+                        border: `2px solid ${Color.secondary.lighter}`,
+                        bg: `radial-gradient(circle at 35% 35%, ${Color.secondary.light}, ${Color.secondary.dark})`,
+                        glow: `0 0 12px ${Color.glow.gold}, 0 0 25px rgba(255, 215, 0, 0.2)`,
+                        numColor: Color.secondary.lighter,
                     },
                     available: {
-                        border: "2px solid #4fc3f7",
-                        bg: "radial-gradient(circle at 35% 35%, #4fc3f7, #0d2a3d)",
-                        glow: "0 0 15px #4fc3f7cc, 0 0 35px #4fc3f722",
+                        border: `2px solid ${Color.primary.brightest}`,
+                        bg: `radial-gradient(circle at 35% 35%, ${Color.primary.lighter}, ${Color.primary.dark})`,
+                        glow: `0 0 15px ${Color.glow.blue}, 0 0 35px ${Color.glow.blueSoft}`,
                         numColor: "#fff",
                     },
                     locked: {
-                        border: "2px solid #2a2a2a",
-                        bg: "radial-gradient(circle at 35% 35%, #444, #111)",
+                        border: `2px solid ${Color.neutral.border}`,
+                        bg: `radial-gradient(circle at 35% 35%, rgba(122, 184, 255, 0.1), ${Color.primary.dark})`,
                         glow: "none",
-                        numColor: "#555",
+                        numColor: "#888",
                     },
                 };
 
@@ -270,7 +343,8 @@ function MiniMapa({ levels, desafiosCompletos, progressoMapa }) {
                                 width: S + 12,
                                 height: S + 12,
                                 borderRadius: "50%",
-                                border: `1.5px solid rgba(79,195,247,${delay === 0 ? 0.5 : 0.25})`,
+                                border: `1.5px solid ${Color.primary.lighter}`,
+                                opacity: delay === 0 ? 0.5 : 0.25,
                                 animation: `pulseRing 2s ease-out infinite ${delay}s`,
                                 top: "50%",
                                 left: "50%",
@@ -292,7 +366,6 @@ function MiniMapa({ levels, desafiosCompletos, progressoMapa }) {
                                 zIndex: 40,
                                 filter: "drop-shadow(0 0 6px rgba(255,255,255,0.6))"
                             }}>
-                                {/* Seta SVG apontando para baixo */}
                                 <img src={Arrow} width={80} height={60} viewBox="0 0 24 24" fill="none"></img>
                             </div>
                         )}
@@ -331,7 +404,7 @@ function MiniMapa({ levels, desafiosCompletos, progressoMapa }) {
                                     alignItems: "center",
                                     justifyContent: "center",
                                 }}>
-                                    <Lock size={8} color="#444" />
+                                    <Lock size={8} color="#666" />
                                 </div>
                             )}
                             {/* Badge de completed */}
@@ -343,11 +416,11 @@ function MiniMapa({ levels, desafiosCompletos, progressoMapa }) {
                                     width: 10,
                                     height: 10,
                                     borderRadius: "50%",
-                                    background: "#FFD700",
+                                    background: Color.secondary.lighter,
                                     display: "flex",
                                     alignItems: "center",
                                     justifyContent: "center",
-                                    boxShadow: "0 0 6px rgba(255,215,0,0.9)",
+                                    boxShadow: `0 0 6px ${Color.glow.gold}`,
                                 }}>
                                     <svg width={6} height={6} viewBox="0 0 24 24" fill="none"
                                         stroke="#000" strokeWidth="4" strokeLinecap="round">
@@ -402,7 +475,6 @@ export default function RightSideBar({ time }) {
         return partes.join(" ");
     }
 
-    // Função para buscar níveis e progresso
     async function fetchLevelsData(mapaId, token) {
         const [niveisDB, progressoTotal] = await Promise.all([
             getLevelsByMap(mapaId),
@@ -436,7 +508,6 @@ export default function RightSideBar({ time }) {
                     y: pos.y,
                     state,
                     stars: state === "completed" ? 3 : 0,
-
                 };
             }),
         }));
@@ -448,7 +519,6 @@ export default function RightSideBar({ time }) {
         };
     }
 
-    // Carregar todos os dados
     useEffect(() => {
         async function loadData() {
             try {
@@ -461,13 +531,11 @@ export default function RightSideBar({ time }) {
                     return;
                 }
 
-                // Carregar dados em paralelo
                 const [levelsResult, xpResult] = await Promise.all([
                     fetchLevelsData(1, token),
                     obterXPAluno()
                 ]);
 
-                // Aqui você pode logar os dados
                 console.log("Levels Result:", levelsResult);
                 console.log("XP Result:", xpResult);
 
@@ -535,10 +603,9 @@ export default function RightSideBar({ time }) {
                 <div
                     className="rounded-4xl p-3 flex flex-col gap-1"
                     style={{
-                        background: "linear-gradient(180deg, #2d1654 0%, #1e0f3d 100%)",
-                        border: "1px solid rgba(255,255,255,0.08)",
-                        boxShadow: "0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.07)",
-
+                        background: Color.neutral.card,
+                        border: `1px solid ${Color.neutral.border}`,
+                        boxShadow: `0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(122, 184, 255, 0.1)`,
                     }}
                 >
                     <div className="flex items-center justify-between">
@@ -546,15 +613,15 @@ export default function RightSideBar({ time }) {
                             <div
                                 className="w-7 h-7 rounded-full flex items-center justify-center text-sm"
                                 style={{
-                                    background: "radial-gradient(circle,#3a2800,#1a1000)",
-                                    border: "1.5px solid #d4a017",
-                                    boxShadow: "0 0 8px rgba(212,160,23,0.4)",
+                                    background: `linear-gradient(135deg, ${Color.secondary.dark}, ${Color.secondary.main})`,
+                                    border: `1.5px solid ${Color.secondary.lighter}`,
+                                    boxShadow: `0 0 8px ${Color.glow.gold}`,
                                 }}
                             >
                                 <Trophy className="h-9 w-4 items-center text-amber-50" />
                             </div>
                             <div>
-                                <p className="text-yellow-400 text-[11px] font-bold leading-none">
+                                <p style={{ color: Color.secondary.lighter }} className="text-[11px] font-bold leading-none">
                                     Nível {progressaoXp?.progressao?.nivel ?? 1}
                                 </p>
                                 <p className="text-gray-500 text-[9px] mt-0.5">
@@ -565,9 +632,9 @@ export default function RightSideBar({ time }) {
                         <span
                             className="text-[9px] font-bold px-2 py-0.5 rounded-full"
                             style={{
-                                background: "rgba(132,204,22,0.15)",
-                                color: "#84cc16",
-                                border: "1px solid rgba(132,204,22,0.3)",
+                                background: `rgba(139, 94, 26, 0.15)`,
+                                color: Color.secondary.lighter,
+                                border: `1px solid ${Color.secondary.dark}`,
                             }}
                         >
                         </span>
@@ -599,8 +666,8 @@ export default function RightSideBar({ time }) {
                     <div
                         className="rounded-4xl px-4 py-2 flex items-center justify-between"
                         style={{
-                            background: "rgba(255,255,255,0.03)",
-                            border: "1px solid rgba(255,255,255,0.06)",
+                            background: Color.neutral.card,
+                            border: `1px solid ${Color.neutral.border}`,
                         }}
                     >
                         <span className="text-gray-500 text-[10px]">⏱ Tempo de jogo</span>
@@ -608,7 +675,6 @@ export default function RightSideBar({ time }) {
                             {formatTime(time)}
                         </span>
                     </div>
-
                 </div>
             </aside>
         </>

@@ -2,12 +2,16 @@ import { useState, useEffect } from "react"
 import RightSideBar from "../Components/SideBars/rightSideBar"
 import LeftSideBar from "../Components/SideBars/LeftSideBar"
 import QuizContainer from "../Components/Quiz/QuizContainer"
+
 import QuestionCard from "../Components/Quiz/QuestionCard"
 import { useQuiz } from "../../Hooks/useQuiz"
 import QuizResult from "../Components/Quiz/QuizResult"
 import { useNavigate } from "react-router-dom"
+
 import { getToken, getUser } from "../../../Services/auth/authStorage";
 import { getLevelsByMap } from "../../../Services/maps/levelService"
+import Bg from "../../../assets/Maps/Bg-Map1.png"
+
 
 const Dsf1 = {
     titulo: "Quiz – Classe Veículo",
@@ -74,6 +78,7 @@ const Dsf1 = {
 export default function DSF1() {
     const [levels, setLevels] = useState([]);
     const [desafioId, setDesafioId] = useState(null);
+    const [bgDim, setBgDim] = useState(0.55)
 
     const navigate = useNavigate()
 
@@ -133,7 +138,7 @@ export default function DSF1() {
                 onBackToMap={() => navigate("/Floresta")}
                 onNextChallenge={() => navigate("/nivel-1/desafio-2")}
             />
-        )
+        ) //Proximo : Nao está avançando pro proximo nivel. 
     }
 
     return (
@@ -141,8 +146,21 @@ export default function DSF1() {
             <RightSideBar time={timeSeconds} />
             <LeftSideBar />
 
-            <div className="flex flex-col">
+            <div
+                className="flex flex-col min-h-screen relative"
+                style={{
+                    backgroundImage: `
+                    linear-gradient(rgba(0,0,0,${bgDim}), rgba(0,0,0,${bgDim})),
+                     url(${Bg})
+                      `,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                    backgroundRepeat: "no-repeat",
+                }}
+            >
+
                 <QuizContainer
+
                     headerProps={{
                         children: Dsf1.titulo,
                         currentQuestion: currentIndex + 1,   // ✅ dinâmico
