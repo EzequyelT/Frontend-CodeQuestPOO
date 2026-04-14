@@ -20,13 +20,13 @@ export default function AnswerOptions({
         {options.map((item) => (
           <button
             className="
-           rounded-full px-7 py-4 text-sm font-semibold text-white mt-2
+           rounded-full px-7 py-4 text-sm font-bold text-white mt-4
            transition-transform duration-200 hover:scale-105 active:scale-95
-          bg-center bg-no-repeat
+           bg-center bg-no-repeat
           "
             style={{
               backgroundImage: `url(${BgOptions})`,
-              backgroundSize: "70%",
+              backgroundSize: "60%",
               backgroundPosition: "center",
               backgroundRepeat: "no-repeat",
 

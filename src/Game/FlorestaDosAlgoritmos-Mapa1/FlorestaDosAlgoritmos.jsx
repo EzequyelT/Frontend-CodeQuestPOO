@@ -114,27 +114,6 @@ const Color = {
 
 const NODE_SIZE = 56;
 
-const NODE_STYLES = {
-  locked: {
-    bg: "radial-gradient(circle at 35% 30%, #2a2a2a, #111)",
-    border: "2.5px solid #333",
-    glow: "none",
-    numColor: "#444",
-  },
-  available: {
-    bg: "radial-gradient(circle at 35% 30%, #1a4a6e, #0a1f35)",
-    border: "2.5px solid #4fc3f7",
-    glow: "0 0 20px rgba(79,195,247,0.55), 0 0 40px rgba(79,195,247,0.2)",
-    numColor: "#e0f7ff",
-  },
-  completed: {
-    bg: "radial-gradient(circle at 35% 30%, #3a2800, #1a1200)",
-    border: "2.5px solid #FFD700",
-    glow: "0 0 18px rgba(255,215,0,0.5), 0 0 36px rgba(255,165,0,0.2)",
-    numColor: "#FFE566",
-  },
-};
-
 // ─────────────────────────────────────────────────────────────────────────────
 // DATA FETCHING
 // ─────────────────────────────────────────────────────────────────────────────
@@ -401,7 +380,7 @@ function NodeTooltip({ challenge, onPlay }) {
             : "linear-gradient(135deg, rgba(79,195,247,0.12), rgba(20,80,140,0.08))";
           e.currentTarget.style.boxShadow = "none";
         }}
-      > 
+      >
         {isCompleted ? "⟳ Jogar Novamente" : "▶ Jogar"}
       </button>
     </div>
@@ -467,7 +446,7 @@ function ChallengeNode({ challenge, onHover, hoveredId, navigate }) {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          overflow: "hidden",
+          overflow: "visible",
         }}
       >
         {/* IMAGEM DO BOTÃO - 100% DO TAMANHO */}
@@ -866,7 +845,6 @@ export default function FlorestaDosAlgoritmos() {
           position: "relative",
           display: "flex", alignItems: "center", justifyContent: "space-between",
           padding: "10px 20px",
-          background: "linear-gradient(180deg,rgba(0,0,0,0.97),rgba(0,0,0,0.75))",
           borderBottom: "1.5px solid rgba(139,74,26,0.4)",
           zIndex: 20, flexShrink: 0,
         }}>
@@ -880,13 +858,13 @@ export default function FlorestaDosAlgoritmos() {
             onMouseLeave={e => e.currentTarget.style.filter = "brightness(1)"}
             onClick={() => navigate("/Maps")}
           >
-            <img src={ButtonImgBack} className="h-12 w-14" />
+            <img src={ButtonImgBack} className="h-12 w-12" />
           </button>
 
           <div style={{ position: "absolute", left: "50%", transform: "translateX(-50%)", textAlign: "center" }}>
             <div style={{ position: "relative", display: "inline-block" }}>
               <img src={Banner} alt="Banner" style={{
-                width: 210, height: "auto", display: "block",
+                width: 250, height: "auto", display: "block",
                 borderRadius: 10, opacity: 0.9, marginTop: 4,
               }} />
               <div style={{

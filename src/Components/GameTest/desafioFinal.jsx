@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
 import { IoExitOutline } from 'react-icons/io5';
 import { Play, Flame, Skull, Zap, Heart, Code, Sparkles } from 'lucide-react';

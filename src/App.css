@@ -63,3 +63,45 @@
 .animate-pulse-border {
   animation: pulse-border 1.6s ease-in-out infinite;
 }
+.cm-scroller::-webkit-scrollbar {
+  width: 8px;
+}
+
+.cm-scroller::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.cm-scroller::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+.cm-scroller::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* Firefox */
+.cm-scroller {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.2) transparent;
+}
+
+.cm-editor {
+  text-align: left !important;
+}
+
+.cm-content {
+  text-align: left !important;
+  padding-left: 0 !important;
+}
+
+.cm-line {
+  padding-left: 0 !important;
+}
+
+.cm-content {
+  white-space: pre-wrap !important;
+  word-break: break-word;
+}

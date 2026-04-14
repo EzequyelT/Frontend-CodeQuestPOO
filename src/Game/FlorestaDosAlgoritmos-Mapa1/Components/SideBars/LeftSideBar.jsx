@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom"
 import { useState, useEffect } from "react"
 import { getProgressoDashboard } from "../../../../Services/users/userStatsService";
-import { Settings, House, Undo2, Flame, DollarSign } from "lucide-react";
+import { Flame, DollarSign } from "lucide-react";
 
 import ButtonImgBack from "../../../../assets/Buttons/Back.png"
 import ButtonImgHouse from "../../../../assets/Buttons/House.png"

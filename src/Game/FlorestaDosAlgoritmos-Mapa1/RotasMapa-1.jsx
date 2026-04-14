@@ -5,9 +5,7 @@ import DSF1 from "./Nivel-1/dsf_1";
 
 import DSF2 from "./Nivel-1/dsf_2"
 
-const DSF3 = lazy(() =>
-  import("./Nivel-1/dsf_3")
-);
+import DSF3 from "./Nivel-1/dsf_3"
 
 
 //_______________________________Nivel 2_______________________________
@@ -41,7 +39,6 @@ const withSuspense = (element) => (
 )
 
 export const gameRoutes = [
-  //Nivel 1
   {
     path: "nivel-1/desafio-1",
     element: <DSF1 />
@@ -52,7 +49,7 @@ export const gameRoutes = [
   },
   {
     path: "nivel-1/desafio-3",
-    element: withSuspense(<DSF3 />) 
+    element: <DSF3 />
      
   },
 

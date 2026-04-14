@@ -1,7 +1,7 @@
 import QuizHeader from "./QuizHeader";
 import AnswerOptions from "./AnswerOptions";
 import QuestionCard from "./QuestionCard";
-import QuizResult from "./QuizResult"
+import QuizResult from "../Result"
 import { Children } from "react";
 
 export default function QuizContainer({

@@ -5,7 +5,7 @@ import QuizContainer from "../Components/Quiz/QuizContainer"
 
 import QuestionCard from "../Components/Quiz/QuestionCard"
 import { useQuiz } from "../../Hooks/useQuiz"
-import QuizResult from "../Components/Quiz/QuizResult"
+import Result from "../Components/Result"
 import { useNavigate } from "react-router-dom"
 
 import { getToken, getUser } from "../../../Services/auth/authStorage";
@@ -78,7 +78,7 @@ const Dsf1 = {
 export default function DSF1() {
     const [levels, setLevels] = useState([]);
     const [desafioId, setDesafioId] = useState(null);
-    const [bgDim, setBgDim] = useState(0.55)
+    const bgDim = (0.55)
 
     const navigate = useNavigate()
 
@@ -121,7 +121,7 @@ export default function DSF1() {
     // ✅ return obrigatório
     if (finished) {
         return (
-            <QuizResult
+            <Result
                 result={{
                     correct,
                     wrong,
@@ -136,7 +136,9 @@ export default function DSF1() {
                 }}
                 onRepeat={() => window.location.reload()}
                 onBackToMap={() => navigate("/Floresta")}
-                onNextChallenge={() => navigate("/nivel-1/desafio-2")}
+                onNextChallenge={() => {
+                    navigate("/floresta/nivel-1/desafio-2")
+                }}
             />
         ) //Proximo : Nao está avançando pro proximo nivel. 
     }

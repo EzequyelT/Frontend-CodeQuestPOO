@@ -2,9 +2,20 @@ import { useState, useEffect } from "react";
 import mapImg from "../../../../assets/Maps/Map1.png";
 import { getLevelsByMap } from "../../../../Services/maps/levelService";
 import { obterXPAluno } from "../../../../Services/Gameplay/xpProgressService";
+
 import { getProgresso } from "../../../../Services/users/userStatsService";
 import Arrow from "../../../../assets/Maps/Arrow.png";
 import { Lock, Trophy, CheckSquare } from "lucide-react";
+import Button1 from "../../../../assets/Buttons/1.png"
+
+import Button2 from "../../../../assets/Buttons/2.png"
+import Button3 from "../../../../assets/Buttons/3.png"
+import Button4 from "../../../../assets/Buttons/4.png"
+import Button5 from "../../../../assets/Buttons/5.png"
+
+import Button6 from "../../../../assets/Buttons/6.png"
+import Button7 from "../../../../assets/Buttons/7.png"
+import Button8 from "../../../../assets/Buttons/8.png"
 
 // ─── PALETA DE CORES ────────────────────────────────────────────────────────
 
@@ -46,6 +57,17 @@ const CHALLENGEPOSITIONS = {
     6: { x: 90, y: 30 },
     7: { x: 10, y: 35 },
     8: { x: 46, y: 18 },
+};
+
+const BUTTON_IMAGES = {
+    1: Button1,
+    2: Button2,
+    3: Button3,
+    4: Button4,
+    5: Button5,
+    6: Button6,
+    7: Button7,
+    8: Button8,
 };
 
 const OBJETIVO = {
@@ -302,6 +324,7 @@ function MiniMapa({ levels, desafiosCompletos, progressoMapa }) {
 
             {challenges.map(ch => {
                 const S = 18;
+                const buttonImage = BUTTON_IMAGES[ch.id] || Button1;
 
                 const styles = {
                     completed: {
@@ -311,10 +334,12 @@ function MiniMapa({ levels, desafiosCompletos, progressoMapa }) {
                         numColor: Color.secondary.lighter,
                     },
                     available: {
-                        border: `2px solid ${Color.primary.brightest}`,
+                        border: `3px solid ${Color.primary.brightest}`,
                         bg: `radial-gradient(circle at 35% 35%, ${Color.primary.lighter}, ${Color.primary.dark})`,
-                        glow: `0 0 15px ${Color.glow.blue}, 0 0 35px ${Color.glow.blueSoft}`,
+                        glow: `0 0 20px ${Color.glow.blue}, 0 0 40px ${Color.glow.blueSoft}, inset 0 0 15px rgba(122, 184, 255, 0.2)`,
                         numColor: "#fff",
+                        transform: "scale(1.15)",
+                        boxShadow: `0 0 25px ${Color.glow.blue}, 0 0 50px ${Color.glow.blueSoft}`,
                     },
                     locked: {
                         border: `2px solid ${Color.neutral.border}`,
@@ -325,6 +350,7 @@ function MiniMapa({ levels, desafiosCompletos, progressoMapa }) {
                 };
 
                 const style = styles[ch.state];
+                
                 return (
                     <div
                         key={ch.id}
@@ -332,100 +358,129 @@ function MiniMapa({ levels, desafiosCompletos, progressoMapa }) {
                         style={{
                             left: `${ch.x}%`,
                             top: `${ch.y}%`,
-                            transform: "translate(-50%, -50%)",
+                            transform: `translate(-50%, -50%) ${style.transform || "scale(1)"}`,
                             cursor: ch.state === "available" ? "pointer" : "default",
+                            transition: "transform 0.3s ease-in-out",
+                            zIndex: ch.state === "available" ? 40 : 10,
                         }}
                     >
                         {/* Anéis pulsantes para available */}
-                        {ch.state === "available" && [0, 0.5].map(delay => (
-                            <div key={delay} style={{
-                                position: "absolute",
-                                width: S + 12,
-                                height: S + 12,
-                                borderRadius: "50%",
-                                border: `1.5px solid ${Color.primary.lighter}`,
-                                opacity: delay === 0 ? 0.5 : 0.25,
-                                animation: `pulseRing 2s ease-out infinite ${delay}s`,
-                                top: "50%",
-                                left: "50%",
-                                transform: "translate(-50%, -50%)",
-                                pointerEvents: "none",
-                            }} />
-                        ))}
-                        {ch.state === "available" && (
-                            <div style={{
-                                position: "absolute",
-                                top: -20,
-                                left: "50%",
-                                transform: "translateX(-50%)",
+                        <div
+                            style={{
+                                width: S + 10,
+                                height: S + 10,
+                                position: "relative",
                                 display: "flex",
-                                flexDirection: "column",
                                 alignItems: "center",
-                                animation: "bounceArrow 2s ease-in-out infinite",
-                                pointerEvents: "auto",
-                                zIndex: 40,
-                                filter: "drop-shadow(0 0 6px rgba(255,255,255,0.6))"
-                            }}>
-                                <img src={Arrow} width={80} height={60} viewBox="0 0 24 24" fill="none"></img>
-                            </div>
-                        )}
-                        {/* Círculo principal */}
-                        <div style={{
-                            width: S,
-                            height: S,
-                            borderRadius: "50%",
-                            border: style.border,
-                            background: style.bg,
-                            boxShadow: style.glow,
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            position: "relative",
-                            transition: "all 0.3s ease",
-                        }}>
-                            {/* Número */}
-                            <span style={{
-                                fontFamily: "Georgia, serif",
-                                fontWeight: 900,
-                                fontSize: 9,
-                                color: style.numColor,
-                                textShadow: ch.state !== "locked" ? `0 0 6px ${style.numColor}` : "none",
-                            }}>
-                                {ch.id}
-                            </span>
-                            {/* Overlay de locked */}
-                            {ch.state === "locked" && (
-                                <div style={{
-                                    position: "absolute",
-                                    inset: 0,
-                                    borderRadius: "50%",
-                                    background: "rgba(0,0,0,0.5)",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                }}>
-                                    <Lock size={8} color="#666" />
+                                justifyContent: "center",
+                            }}
+                        >
+
+                            {/* 🔵 PULSO (só se available) - MELHORADO */}
+                            {ch.state === "available" && [0, 50].map(delay => (
+                                <div
+                                    key={delay}
+                                    style={{
+                                        position: "absolute",
+                                        width: S + 10,
+                                        height: S + 10,
+                                        borderRadius: "50%",
+                                        border: `2px solid ${Color.primary.brightest}`,
+                                        opacity: delay === 0 ? 0.7 : 0.4,
+                                        animation: `pulseRing 2s ease-out infinite ${delay}s`,
+                                        marginLeft: 25,
+                                        marginTop:28,
+                                    }}
+                                />
+                            ))}
+
+                            {/* ⬆️ SETA (Arrow) */}
+                            {ch.state === "available" && (
+                                <div
+                                    style={{
+                                        position: "absolute",
+                                        top: -30,
+                                        left: "50%",
+                                        transform: "translateX(-50%)",
+                                        animation: "bounceArrow 2s ease-in-out infinite",
+                                        zIndex: 50,
+                                        filter: "drop-shadow(0 0 8px rgba(122, 184, 255, 0.8))",
+                                    }}
+                                >
+                                    <img src={Arrow} width={70} height={50} />
                                 </div>
                             )}
-                            {/* Badge de completed */}
-                            {ch.state === "completed" && (
-                                <div style={{
-                                    position: "absolute",
-                                    top: -3,
-                                    right: -3,
-                                    width: 10,
-                                    height: 10,
+
+                            {/* 🎯 BOTÃO (imagem) */}
+                            <div
+                                style={{
+                                    position: "relative",
+                                    width: "100%",
+                                    height: "100%",
                                     borderRadius: "50%",
-                                    background: Color.secondary.lighter,
+                                    overflow: "hidden",
                                     display: "flex",
                                     alignItems: "center",
                                     justifyContent: "center",
-                                    boxShadow: `0 0 6px ${Color.glow.gold}`,
-                                }}>
-                                    <svg width={6} height={6} viewBox="0 0 24 24" fill="none"
-                                        stroke="#000" strokeWidth="4" strokeLinecap="round">
-                                        <polyline points="20 6 9 17 4 12" />
-                                    </svg>
+                                }}
+                            >
+                                <img
+                                    src={buttonImage}
+                                    alt={`Fase ${ch.id}`}
+                                    style={{
+                                        width: "85%",
+                                        height: "85%",
+                                        objectFit: "cover",
+                                        borderRadius: "50%",
+                                        filter:
+                                            ch.state === "locked"
+                                                ? "grayscale(100%) opacity(0.5)"
+                                                : ch.state === "available"
+                                                ? "brightness(1.2) contrast(1.1)"
+                                                : "brightness(1)",
+                                    }}
+                                />
+                            </div>
+
+                            {/* 🔒 LOCK */}
+                            {ch.state === "locked" && (
+                                <div
+                                    style={{
+                                        position: "absolute",
+                                        inset: 0,
+                                        borderRadius: "50%",
+                                        background: "rgba(0,0,0,0.6)",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        border: `2px solid ${Color.neutral.border}`,
+                                    }}
+                                >
+                                    <Lock size={10} color="#666" />
+                                </div>
+                            )}
+
+                            {/* ✔ COMPLETED */}
+                            {ch.state === "completed" && (
+                                <div
+                                    style={{
+                                        position: "absolute",
+                                        top: -4,
+                                        right: -4,
+                                        width: 14,
+                                        height: 14,
+                                        borderRadius: "50%",
+                                        background: Color.secondary.lighter,
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        fontSize: "10px",
+                                        fontWeight: "bold",
+                                        color: Color.secondary.dark,
+                                        boxShadow: `0 0 8px ${Color.glow.gold}`,
+                                    }}
+                                >
+                                    ✓
                                 </div>
                             )}
                         </div>
@@ -443,6 +498,15 @@ function MiniMapa({ levels, desafiosCompletos, progressoMapa }) {
               transform: translate(-50%, -50%) scale(1.8);
               opacity: 0;
                }
+           }
+
+           @keyframes bounceArrow {
+             0%, 100% {
+               transform: translateX(-50%) translateY(0);
+             }
+             50% {
+               transform: translateX(-50%) translateY(-10px);
+             }
            }
           `}</style>
         </div>

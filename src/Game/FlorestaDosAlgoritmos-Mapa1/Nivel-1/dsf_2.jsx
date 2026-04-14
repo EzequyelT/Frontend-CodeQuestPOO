@@ -2,12 +2,16 @@ import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import RightSideBar from "../Components/SideBars/rightSideBar"
 import LeftSideBar from "../Components/SideBars/LeftSideBar"
+
 import QuizContainer from "../Components/Quiz/QuizContainer"
 import QuestionCard from "../Components/Quiz/QuestionCard"
 import { useQuiz } from "../../Hooks/useQuiz"
-import QuizResult from "../Components/Quiz/QuizResult"
+import Result from "../Components/Result"
+
 import { getToken, getUser } from "../../../Services/auth/authStorage";
 import { getLevelsByMap } from "../../../Services/maps/levelService"
+import Bg from "../../../assets/Maps/Bg-Map1.png"
+
 
 const Dsf2 = {
   titulo: "Desafio 2",
@@ -71,9 +75,14 @@ const Dsf2 = {
   ]
 }
 
+
+
 export default function DSF2() {
   const [levels, setLevels] = useState([])
-  const [desafioId, setDesafioId] = useState([])
+  const [desafioId, setDesafioId] = useState(null)
+  const bgDim = (0.55)
+
+  console.log("desafioId:", desafioId);
 
   const Navigate = useNavigate()
 
@@ -87,7 +96,7 @@ export default function DSF2() {
       const data = await getLevelsByMap(mapaId);
       setLevels(data);
 
-      setDesafioId(data[0]?.id);
+      setDesafioId(data[1]?.id);
     }
 
     loadLevels();
@@ -114,7 +123,7 @@ export default function DSF2() {
 
   if (finished) {
     return (
-      <QuizResult
+      <Result
         result={{
           correct,
           wrong,
@@ -129,7 +138,7 @@ export default function DSF2() {
         }}
         onRepeat={() => window.location.reload()}
         onBackToMap={() => Navigate("/Floresta")}
-        onNextChallenge={() => Navigate("/nivel-1/desafio-3")}
+        onNextChallenge={() => Navigate("/floresta/nivel-1/desafio-3")}
       />
     )
   }
@@ -140,7 +149,17 @@ export default function DSF2() {
       <RightSideBar time={timeSeconds} />
       <LeftSideBar />
 
-      <div className="flex flex-col">
+      <div className="flex flex-col"
+        style={{
+          backgroundImage: `
+           linear-gradient(rgba(0,0,0,${bgDim}), rgba(0,0,0,${bgDim})),
+           url(${Bg})
+           `,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+        }}
+      >
         <QuizContainer
           headerProps={{
             children: Dsf2.titulo,
