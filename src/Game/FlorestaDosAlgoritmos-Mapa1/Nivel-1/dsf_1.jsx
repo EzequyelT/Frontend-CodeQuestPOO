@@ -11,69 +11,10 @@ import { useNavigate } from "react-router-dom"
 import { getToken, getUser } from "../../../Services/auth/authStorage";
 import { getLevelsByMap } from "../../../Services/maps/levelService"
 import Bg from "../../../assets/Maps/Bg-Map1.png"
+import dsf_1 from "../../Data/Mapa-1/Nivel-1/dsf_1"
 
 
-const Dsf1 = {
-    titulo: "Quiz – Classe Veículo",
-    streak: 4,
-    perguntas: [
-        {
-            id: 1,
-            texto: "Como se define o construtor em Python?",
-            opcoes: [
-                { id: "a", label: "def construtor(self)" },
-                { id: "b", label: "def __init__(self, marca, modelo)" },
-                { id: "c", label: "function __init__(self)" },
-                { id: "d", label: "def __str__(self)" },
-            ],
-            correctId: "b",
-        },
-        {
-            id: 2,
-            texto: "O que é 'self' em Python?",
-            opcoes: [
-                { id: "a", label: "Uma variável global" },
-                { id: "b", label: "O nome da classe" },
-                { id: "c", label: "Referência ao objeto atual" },
-                { id: "d", label: "Um parâmetro opcional" },
-            ],
-            correctId: "c",
-        },
-        {
-            id: 3,
-            texto: "Qual método retorna a representação em string?",
-            opcoes: [
-                { id: "a", label: "def __str__(self)" },
-                { id: "b", label: "def toString(self)" },
-                { id: "c", label: "def __init__(self)" },
-                { id: "d", label: "def repr(self)" },
-            ],
-            correctId: "a",
-        },
-        {
-            id: 4,
-            texto: "Como se cria um objeto da classe Veículo?",
-            opcoes: [
-                { id: "a", label: "Veículo.criar('Ford', 'Ka')" },
-                { id: "b", label: "new Veículo('Ford', 'Ka')" },
-                { id: "c", label: "meu_carro = Veículo('Ford', 'Ka')" },
-                { id: "d", label: "Veículo.instanciar()" },
-            ],
-            correctId: "c",
-        },
-        {
-            id: 5,
-            texto: "Onde ficam os atributos de um objeto?",
-            opcoes: [
-                { id: "a", label: "Dentro do __str__" },
-                { id: "b", label: "Fora da classe" },
-                { id: "c", label: "No __init__, usando self" },
-                { id: "d", label: "Em variáveis globais" },
-            ],
-            correctId: "c",
-        },
-    ],
-}
+const dsf = dsf_1
 
 export default function DSF1() {
     const [levels, setLevels] = useState([]);
@@ -109,8 +50,8 @@ export default function DSF1() {
         totalQuestions,
         response,       // ← chamado pelo QuestionCard no onDrop
         resetSlot,
-        resultadoFinal,      // ← chamado pelo botão RotateCcw
-    } = useQuiz(Dsf1.perguntas, { //Estou a terminar de conectar a rota do desempenho agora preciso de coloca o id do mapa e ver se esta registrado certo. Depois arrumar todo o fichero Service
+        finalResult,      // ← chamado pelo botão RotateCcw
+    } = useQuiz(dsf.perguntas, { //Estou a terminar de conectar a rota do desempenho agora preciso de coloca o id do mapa e ver se esta registrado certo. Depois arrumar todo o fichero Service
         token: token,
         aluno_id: userId,
         desafio_id: desafioId,
@@ -127,12 +68,12 @@ export default function DSF1() {
                     wrong,
                     timeSeconds,
                     hintsUsed: 0,
-                    xpGained: resultadoFinal?.xpGanho?.total ?? correct * 80,
+                    xpGained: finalResult?.xpGanho?.total ?? correct * 80,
                     score: Math.round((correct / totalQuestions) * 100),
-                    streak: Dsf1.streak,
-                    quizTitle: Dsf1.titulo,
-                    desafioCompleto: resultadoFinal?.desafioCompleto ?? false,
-                    primeiraVez: resultadoFinal?.primeiraVez ?? true,
+                    streak: dsf.streak,
+                    quizTitle: dsf.titulo,
+                    desafioCompleto: finalResult?.desafioCompleto ?? false,
+                    primeiraVez: finalResult?.primeiraVez ?? true,
                 }}
                 onRepeat={() => window.location.reload()}
                 onBackToMap={() => navigate("/Floresta")}
@@ -164,10 +105,10 @@ export default function DSF1() {
                 <QuizContainer
 
                     headerProps={{
-                        children: Dsf1.titulo,
+                        children: dsf.titulo,
                         currentQuestion: currentIndex + 1,   // ✅ dinâmico
                         totalQuestions: totalQuestions,
-                        streak: Dsf1.streak,
+                        streak: dsf.streak,
                     }}
                     answerOptionsProps={{
                         options: currentQuestion.opcoes,        // ✅ opções da pergunta atual

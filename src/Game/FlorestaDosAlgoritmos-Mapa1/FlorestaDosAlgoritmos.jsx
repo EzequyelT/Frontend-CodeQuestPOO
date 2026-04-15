@@ -730,7 +730,7 @@ const MAP_EXTRA = 1.8;
 export default function FlorestaDosAlgoritmos() {
   const [data, setData] = useState(null);
   const [progressaoXp, setProgressaoXp] = useState({
-    xp: 0,
+    xpTotal: 0,
     xpProximoNivel: 320,
     nivel: 1,
   });
@@ -774,10 +774,11 @@ export default function FlorestaDosAlgoritmos() {
           const progressaoDados = resultado.progressao || resultado;
 
           setProgressaoXp({
-            xp: progressaoDados.xp || 0,
-            xpProximoNivel: progressaoDados.xpProximoNivel || 320,
-            nivel: progressaoDados.nivel || 1,
+            xpTotal: progressaoDados?.xpTotal || 0,
+            xpProximoNivel: progressaoDados?.xpProximoNivel || 320,
+            nivel: progressaoDados?.nivel || 1,
           });
+
         }
       } catch (err) {
         console.error("Erro ao carregar progressão", err);
@@ -1062,7 +1063,7 @@ export default function FlorestaDosAlgoritmos() {
           {/* XP Bar */}
           <div style={{ flex: 1, paddingLeft: 20 }}>
             <XPBar
-              xp={progressaoXp.xp}
+              xp={progressaoXp.xpTotal}
               xpMax={progressaoXp.xpProximoNivel}
               level={progressaoXp.nivel}
             />

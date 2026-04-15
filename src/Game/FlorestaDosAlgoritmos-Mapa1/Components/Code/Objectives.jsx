@@ -1,12 +1,12 @@
 export default function Objectives({ items = [] }) {
   return (
-    <div className="px-4 py-3 bg-gray-900/60 border-t border-gray-800 rounded-b-xl">
+    <div className="px-4 py-5 bg-gray-800 border-t border-gray-800 rounded-4xl border-4 ">
       
-      <p className="text-xs text-gray-500 font-mono mb-2 uppercase tracking-wider">
+      <p className="text-xs text-gray-500 font-mono mb-2 border-b-2 border-white uppercase tracking-wider">
         Objetivos da fase
       </p>
 
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-2 mt-4 animate-pulse">
         {items.map((item, i) => (
           <div key={i} className="flex items-center gap-2">
 

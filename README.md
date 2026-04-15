@@ -160,3 +160,77 @@ s
                                                                                         |
 ________________________________________________________________________________________|
 
+🌲 MAPA 1 — Floresta dos Algoritmos
+
+👉 Aprender a programar
+
+Conteúdo:
+
+Variáveis
+Tipos de dados
+Operadores
+Condições (if)
+
+Objetivo:
+👉 Entender lógica básica e como o código funciona
+
+Resultado:
+✔ O aluno consegue escrever código simples
+✔ Consegue tomar decisões no código
+
+🏘️ MAPA 2 — Vila da Lógica
+
+👉 Introdução à POO (objetos)
+
+Conteúdo:
+
+Classes (class)
+Objetos (instâncias)
+__init__
+Atributos
+Métodos
+
+Objetivo:
+👉 Entender que código representa coisas do mundo real
+
+Resultado:
+✔ Sabe criar objetos
+✔ Entende dados + comportamento
+✔ Começa a “pensar em objetos”
+
+🏰 MAPA 3 — Castelo do Caos
+
+👉 POO na prática (pensamento real)
+
+Conteúdo:
+
+Encapsulamento (básico)
+Estado do objeto
+Interação entre objetos
+Herança
+Polimorfismo
+
+Objetivo:
+👉 Modelar sistemas reais com código
+
+Resultado:
+✔ Consegue estruturar sistemas
+✔ Entende relações entre objetos
+✔ Pensa como programador
+
+🐉 BOSS FINAL
+
+👉 Projeto prático (RPG / sistema simples)
+
+Objetivo:
+
+Aplicar tudo junto
+Criar algo funcional
+
+Resultado:
+✔ Consolidação total do aprendizado
+
+🧠 RESUMO FINAL (1 linha)
+🌲 Mapa 1 → lógica
+🏘️ Mapa 2 → objetos
+🏰 Mapa 3 → sistemas

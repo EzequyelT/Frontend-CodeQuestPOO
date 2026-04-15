@@ -233,7 +233,7 @@ function MainCard({ player, calculoXp, currentDayOfWeek }) {
 
                     <WeeklyBars activity={player.weekActivity} currentDayOfWeek={currentDayOfWeek} />
                     <div className="border-t border-gray-800" />
-                    <XPBar current={progressaoXp.xp} total={progressaoXp.xpProximoNivel} />
+                    <XPBar current={progressaoXp.xpTotal} total={progressaoXp.xpProximoNivel} />
                     <div className="grid grid-cols-3 gap-2 text-xs mt-1">
                         <div className="bg-gray-800/50 rounded-lg p-2 text-center border border-gray-700/30">
                             <p className="text-white font-bold text-base">{player.desafios}</p>

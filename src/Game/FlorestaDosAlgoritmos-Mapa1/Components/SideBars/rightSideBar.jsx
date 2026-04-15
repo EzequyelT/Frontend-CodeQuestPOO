@@ -705,11 +705,11 @@ export default function RightSideBar({ time }) {
                     </div>
 
                     <XPBar
-                        xpAtual={progressaoXp?.progressao?.xp ?? 0}
+                        xpAtual={progressaoXp?.progressao?.xpAtual ?? 0}
                         xpProximo={progressaoXp?.progressao?.xpProximoNivel ?? 100}
                         percentagem={
                             progressaoXp?.progressao?.xpProximoNivel
-                                ? (progressaoXp.progressao.xp / progressaoXp.progressao.xpProximoNivel) * 100
+                                ? (progressaoXp.progressao.xpAtual / progressaoXp.progressao.xpProximoNivel) * 100
                                 : 0
                         }
                     />

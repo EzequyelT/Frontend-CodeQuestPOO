@@ -9,11 +9,10 @@ export function useQuiz(perguntas = [], config = {}) {
   const [finished, setFinished] = useState(false)
   const [startTime] = useState(() => Date.now())
   const [timeSeconds, setTimeSeconds] = useState(0)
-  const [resultadoFinal, setResultadoFinal] = useState(null)
+  const [finalResult, setFinalResult] = useState(null)
 
   //Estado para controlar a comunicação com a API para salvar o desempenho
   const [desempenhoGuardado, setDesempenhoGuardado] = useState(false)
-
 
 
   // Avançar para a próxima pergunta
@@ -54,7 +53,7 @@ export function useQuiz(perguntas = [], config = {}) {
       .then((resultado) => {
         if (!resultado) return
         setDesempenhoGuardado(true)
-        setResultadoFinal(resultado)
+        setFinalResult(resultado)
         console.log("✅ Desafio concluído!", resultado)
       })
       .catch((err) => {
@@ -101,6 +100,6 @@ export function useQuiz(perguntas = [], config = {}) {
     response,
     resetSlot,
     advanceQuestion,
-    resultadoFinal,
+    finalResult,
   }
 }

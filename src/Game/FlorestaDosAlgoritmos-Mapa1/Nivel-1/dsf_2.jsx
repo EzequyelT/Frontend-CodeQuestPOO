@@ -11,71 +11,9 @@ import Result from "../Components/Result"
 import { getToken, getUser } from "../../../Services/auth/authStorage";
 import { getLevelsByMap } from "../../../Services/maps/levelService"
 import Bg from "../../../assets/Maps/Bg-Map1.png"
+import dsf_2 from "../../Data/Mapa-1/Nivel-1/dsf_2"
 
-
-const Dsf2 = {
-  titulo: "Desafio 2",
-  streak: 3,
-  perguntas: [
-    {
-      id: 1,
-      texto: "Essa aqui é a primeira pergunta",
-      opcoes: [
-        { id: "a", label: "def construtor(self)" },
-        { id: "b", label: "def __init__(self, marca, modelo)" },
-        { id: "c", label: "function __init__(self)" },
-        { id: "d", label: "def __str__(self)" },
-      ],
-      correctId: "b",
-    },
-    {
-      id: 2,
-      texto: "O que é 'self' em Python?",
-      opcoes: [
-        { id: "a", label: "Uma variável global" },
-        { id: "b", label: "O nome da classe" },
-        { id: "c", label: "Referência ao objeto atual" },
-        { id: "d", label: "Um parâmetro opcional" },
-      ],
-      correctId: "c",
-    },
-    {
-      id: 3,
-      texto: "Qual método retorna a representação em string?",
-      opcoes: [
-        { id: "a", label: "def __str__(self)" },
-        { id: "b", label: "def toString(self)" },
-        { id: "c", label: "def __init__(self)" },
-        { id: "d", label: "def repr(self)" },
-      ],
-      correctId: "a",
-    },
-    {
-      id: 4,
-      texto: "Como se cria um objeto da classe Veículo?",
-      opcoes: [
-        { id: "a", label: "Veículo.criar('Ford', 'Ka')" },
-        { id: "b", label: "new Veículo('Ford', 'Ka')" },
-        { id: "c", label: "meu_carro = Veículo('Ford', 'Ka')" },
-        { id: "d", label: "Veículo.instanciar()" },
-      ],
-      correctId: "c",
-    },
-    {
-      id: 5,
-      texto: "Onde ficam os atributos de um objeto?",
-      opcoes: [
-        { id: "a", label: "Dentro do __str__" },
-        { id: "b", label: "Fora da classe" },
-        { id: "c", label: "No __init__, usando self" },
-        { id: "d", label: "Em variáveis globais" },
-      ],
-      correctId: "c",
-    },
-  ]
-}
-
-
+const dsf = dsf_2
 
 export default function DSF2() {
   const [levels, setLevels] = useState([])
@@ -113,8 +51,8 @@ export default function DSF2() {
     totalQuestions,
     response,
     resetSlot,
-    resultadoFinal,
-  } = useQuiz(Dsf2.perguntas, {
+    finalResult,
+  } = useQuiz(dsf.perguntas, {
     token: token,
     aluno_id: userId,
     desafio_id: desafioId,
@@ -129,12 +67,12 @@ export default function DSF2() {
           wrong,
           timeSeconds,
           hintsUsed: 0,
-          xpGained: resultadoFinal?.xpGanho?.total ?? correct * 80,
+          xpGained: finalResult?.xpGanho?.total ?? correct * 80,
           score: Math.round((correct / totalQuestions) * 100),
-          streak: Dsf2.streak,
-          quizTitle: Dsf2.titulo,
-          desafioCompleto: resultadoFinal?.desafioCompleto ?? false,
-          primeiraVez: resultadoFinal?.primeiraVez ?? true,
+          streak: dsf.streak,
+          quizTitle: dsf.titulo,
+          desafioCompleto: finalResult?.desafioCompleto ?? false,
+          primeiraVez: finalResult?.primeiraVez ?? true,
         }}
         onRepeat={() => window.location.reload()}
         onBackToMap={() => Navigate("/Floresta")}
@@ -162,10 +100,10 @@ export default function DSF2() {
       >
         <QuizContainer
           headerProps={{
-            children: Dsf2.titulo,
+            children: dsf.titulo,
             currentQuestion: currentIndex + 1,   // ✅ dinâmico
             totalQuestions: totalQuestions,
-            streak: Dsf2.streak,
+            streak: dsf.streak,
           }}
           answerOptionsProps={{
             options: currentQuestion.opcoes,        // ✅ opções da pergunta atual

@@ -36,12 +36,6 @@ const Color = {
 };
 
 // ── Mock ────────────────────────────────────────────────────
-const MOCK_RESULT = {
-  correct: 4, wrong: 1, timeSeconds: 87,
-  hintsUsed: 2, xpGained: 320, score: 84,
-  streak: 5, quizTitle: "Classe Veículo",
-};
-
 function formatTime(s) {
   const m = Math.floor(s / 60);
   return m > 0 ? `${m}m ${s % 60}s` : `${s}s`;
@@ -205,7 +199,7 @@ function ActionBtn({ onClick, children, primary = false }) {
 
 // ── Main ─────────────────────────────────────────────────────
 export default function QuizResult({
-  result = MOCK_RESULT,
+  result ,
   onRepeat,
   onNextChallenge,
   onBackToMap,
@@ -217,6 +211,8 @@ export default function QuizResult({
   return (
     <>
       <div style={{
+        minHeight: "100vh",
+        width: "100%",
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
@@ -227,7 +223,7 @@ export default function QuizResult({
 
       }}>
         <div style={{
-          maxWidth: 400,
+          maxWidth: 500,
           margin: "0 auto",
           padding: "28px 22px",
           display: "flex",
@@ -281,7 +277,7 @@ export default function QuizResult({
           <div style={{ width: "100%", height: 1, background: `linear-gradient(90deg, transparent, ${Color.neutral.border}, transparent)` }} />
 
           {/* Buttons */}
-          <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 10 }}>
+          <div style={{ width: "65%", display: "flex", flexDirection: "column", gap: 10 }}>
             <ActionBtn onClick={onNextChallenge} primary>
               Próximo Desafio 🚀
             </ActionBtn>
