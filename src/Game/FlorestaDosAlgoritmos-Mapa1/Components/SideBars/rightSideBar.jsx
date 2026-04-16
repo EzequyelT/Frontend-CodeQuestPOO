@@ -4,7 +4,6 @@ import { getLevelsByMap } from "../../../../Services/maps/levelService";
 import { obterXPAluno } from "../../../../Services/Gameplay/xpProgressService";
 
 import { getProgresso } from "../../../../Services/users/userStatsService";
-import Arrow from "../../../../assets/Maps/Arrow.png";
 import { Lock, Trophy, CheckSquare } from "lucide-react";
 import Button1 from "../../../../assets/Buttons/1.png"
 
@@ -394,22 +393,6 @@ function MiniMapa({ levels, desafiosCompletos, progressoMapa }) {
                                 />
                             ))}
 
-                            {/* ⬆️ SETA (Arrow) */}
-                            {ch.state === "available" && (
-                                <div
-                                    style={{
-                                        position: "absolute",
-                                        top: -30,
-                                        left: "50%",
-                                        transform: "translateX(-50%)",
-                                        animation: "bounceArrow 2s ease-in-out infinite",
-                                        zIndex: 50,
-                                        filter: "drop-shadow(0 0 8px rgba(122, 184, 255, 0.8))",
-                                    }}
-                                >
-                                    <img src={Arrow} width={70} height={50} />
-                                </div>
-                            )}
 
                             {/* 🎯 BOTÃO (imagem) */}
                             <div
@@ -705,11 +688,11 @@ export default function RightSideBar({ time }) {
                     </div>
 
                     <XPBar
-                        xpAtual={progressaoXp?.progressao?.xpAtual ?? 0}
+                        xpAtual={progressaoXp?.progressao?.xpAtualNivel ?? 0}
                         xpProximo={progressaoXp?.progressao?.xpProximoNivel ?? 100}
                         percentagem={
                             progressaoXp?.progressao?.xpProximoNivel
-                                ? (progressaoXp.progressao.xpAtual / progressaoXp.progressao.xpProximoNivel) * 100
+                                ? (progressaoXp.progressao.xpAtualNivel / progressaoXp.progressao.xpProximoNivel) * 100
                                 : 0
                         }
                     />

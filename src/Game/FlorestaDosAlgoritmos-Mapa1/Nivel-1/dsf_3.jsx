@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
-import RightSideBar from "../Components/SideBars/rightSideBar"
+import RightSideBar from "../Components/SideBars/RightSideBar"
 import LeftSideBar from "../Components/SideBars/LeftSideBar"
 
 import CodeComponent from "../Components/Code/CodeComponent"
@@ -11,13 +11,26 @@ import { getToken, getUser } from "../../../Services/auth/authStorage";
 import { getLevelsByMap } from "../../../Services/maps/levelService"
 import Bg from "../../../assets/Maps/Bg-Map1.png"
 import dsf_3 from "../../Data/Mapa-1/Nivel-1/dsf_3"
+import ModalService from '../Components/Modal/ModalService'
 
 const dsf = dsf_3
+
+const challenge = {
+    nome: "Operadores Básicos",
+    descricao: "Os operadores são o que permite ao código realizar cálculos e tomar decisões. Aqui vais aprender a usar operações matemáticas e lógicas para manipular valores e resolver problemas simples. Este é o primeiro passo para começares a pensar como um verdadeiro programador.",
+    xp: 10,
+    nivel: 1,
+    dificuldade: "Fácil"
+};
+
+
 
 export default function DSF3() {
 
     const [levels, setLevels] = useState([]);
     const [desafioId, setDesafioId] = useState(null);
+    const [showModal, setShowModal] = useState(true);
+
 
     const token = getToken()
     const userId = getUser()
@@ -98,7 +111,11 @@ export default function DSF3() {
 
     return (
         <>
-
+            <ModalService
+                isOpen={showModal}
+                setIsOpen={setShowModal}
+                challenge={challenge}
+            />
             <RightSideBar time={timeSeconds} />
             <LeftSideBar />
 
@@ -123,6 +140,7 @@ export default function DSF3() {
                     objectives={objectives}
                     runCode={runCode}
                     addLog={addLog}
+                    hints={currentQuestion?.hints}
                 />
             </div>
 

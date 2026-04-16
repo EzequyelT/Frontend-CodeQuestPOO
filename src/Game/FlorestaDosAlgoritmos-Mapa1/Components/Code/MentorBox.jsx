@@ -19,13 +19,17 @@ const DEFAULT_MESSAGES = {
 }
 
 export default function MentorBox({ status = "idle", messages = {} }) {
+
   const bubbleRef = useRef(null)
   const cfg = CONFIG[status]
   const phaseMessages = messages?.phase || {}
+
   const mergedMessages = {
     ...DEFAULT_MESSAGES,
     ...phaseMessages,
   }
+
+  const text = mergedMessages[status] ?? DEFAULT_MESSAGES[status]
 
   // re-anima o balão sempre que o status muda
   useEffect(() => {
@@ -134,7 +138,7 @@ export default function MentorBox({ status = "idle", messages = {} }) {
                 </div>
               ) : (
                 <p className="text-xs text-slate-300 font-mono leading-relaxed">
-                  {mergedMessages[status]}
+                   {text}
                 </p>
               )}
             </div>

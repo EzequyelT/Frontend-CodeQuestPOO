@@ -20,16 +20,16 @@ export default function AnswerOptions({
         {options.map((item) => (
           <button
             className="
-           rounded-full px-7 py-4 text-sm font-bold text-white mt-4
-           transition-transform duration-200 hover:scale-105 active:scale-95
-           bg-center bg-no-repeat
-          "
+            rounded-full text-sm font-bold text-white mt-1 ml-5
+            transition-transform duration-200 hover:scale-105 active:scale-95
+            "
             style={{
               backgroundImage: `url(${BgOptions})`,
-              backgroundSize: "60%",
-              backgroundPosition: "center",
+              backgroundSize: "100% 100%",   // ✅ stretches to fill the whole button
               backgroundRepeat: "no-repeat",
-
+              backgroundPosition: "center",
+              padding: "18px 35px",          // ✅ bigger padding = bigger button = bigger bg
+              minWidth: "140px",             // ✅ prevents very short labels from collapsing
             }}
             key={item.id}
             draggable

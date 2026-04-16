@@ -48,8 +48,8 @@ export function useCode(fases = [], config = {}) {
     if (finished) return
 
     const t = setInterval(() => {
-      setTimeSeconds(Math.floor((Date.now() - startTime) / 1000))
-    }, 1000)
+      setTimeSeconds(Math.floor((Date.now() - startTime) / 3500))
+    }, 3500)
 
     return () => clearInterval(t)
   }, [finished, startTime])
@@ -153,7 +153,7 @@ export function useCode(fases = [], config = {}) {
         setTimeout(() => {
           if (isUltima) setFinished(true)
           else setCurrentIndex(i => i + 1)
-        }, 1200)
+        }, 1500)
 
         return { success: true, output }
       } else {

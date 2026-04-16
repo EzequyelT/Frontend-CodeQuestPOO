@@ -32,9 +32,9 @@ export function useQuiz(perguntas = [], config = {}) {
 
   useEffect(() => {
     if (!currentResponse) return
-    const timer = setTimeout(() => advanceQuestion(), 2000)
+    const timer = setTimeout(() => advanceQuestion(), 2500)
     return () => clearTimeout(timer)
-  }, [currentResponse])
+  }, [currentResponse, currentIndex])
 
   useEffect(() => {
     if (!finished) return
@@ -43,7 +43,7 @@ export function useQuiz(perguntas = [], config = {}) {
 
     const score = Math.round((correct / perguntas.length) * 100)
 
-    concluirDesafio(config.desafio_id, {  
+    concluirDesafio(config.desafio_id, {
       respostas_erradas: wrong,
       tentativas: 1,
       tempo_desafio: timeSeconds,
@@ -61,6 +61,21 @@ export function useQuiz(perguntas = [], config = {}) {
       })
 
   }, [finished])
+
+  function resetQuiz() {
+    setCurrentIndex(0)
+    setCurrentResponse(null)
+    setCorrect(0)
+    setWrong(0)
+    setFinished(false)
+    setFinalResult(null)
+    setDesempenhoGuardado(false)
+  }
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    resetQuiz()
+  }, [config.desafio_id])
 
   const currentQuestion = perguntas[currentIndex]  // objeto { texto, opcoes, correctId }
   const isUltima = currentIndex + 1 >= perguntas.length

@@ -11,6 +11,7 @@ export default function CodeComponent({
   objectives,
   runCode,
   addLog,
+  hints,
 }) {
   return (
     <div className="flex flex-col justify-center items-center h-screen mr-15">
@@ -24,10 +25,15 @@ export default function CodeComponent({
       />
 
       <div className="flex flex-row mt-2 gap-4 mb-2">
-        <MentorBox 
-         status={mentorStatus}
-          messages={currentQuestion?.hints?.mentorMessages}
-         />
+        <MentorBox
+          status={mentorStatus}
+          messages={{
+            phase: {
+              error: hints?.error,
+              success: hints?.success,
+            }
+          }}
+        />
         <div className="flex flex-col gap-2">
           <Objectives items={objectives} />       {/* ← vem do hook */}
           <ConsoleBox logs={logs} loading={loading} />

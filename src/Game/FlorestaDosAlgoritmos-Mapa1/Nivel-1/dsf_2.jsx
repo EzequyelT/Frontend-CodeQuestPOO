@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
-import RightSideBar from "../Components/SideBars/rightSideBar"
+import RightSideBar from "../Components/SideBars/RightSideBar"
 import LeftSideBar from "../Components/SideBars/LeftSideBar"
 
 import QuizContainer from "../Components/Quiz/QuizContainer"
@@ -13,14 +13,27 @@ import { getLevelsByMap } from "../../../Services/maps/levelService"
 import Bg from "../../../assets/Maps/Bg-Map1.png"
 import dsf_2 from "../../Data/Mapa-1/Nivel-1/dsf_2"
 
+import ModalService from '../Components/Modal/ModalService'
+
 const dsf = dsf_2
+
+const challenge = {
+  nome: "Tipos de Dados",
+  descricao: "Nem toda a informação é igual na programação e , neste desafio ,  vais aprender a identificar diferentes tipos de dados, como números, texto e valores lógicos. Saber distingui-los é essencial para evitar erros e criar programas mais organizados e eficientes.",
+  xp: 10,
+  nivel: 1,
+  dificuldade: "Fácil"
+};
 
 export default function DSF2() {
   const [levels, setLevels] = useState([])
   const [desafioId, setDesafioId] = useState(null)
+  const [showModal, setShowModal] = useState(true);
+
   const bgDim = (0.55)
 
   console.log("desafioId:", desafioId);
+
 
   const Navigate = useNavigate()
 
@@ -30,14 +43,20 @@ export default function DSF2() {
   const mapaId = 1
 
   useEffect(() => {
-    async function loadLevels() {
-      const data = await getLevelsByMap(mapaId);
-      setLevels(data);
 
-      setDesafioId(data[1]?.id);
+    try {
+      async function loadLevels() {
+        const data = await getLevelsByMap(mapaId);
+        setLevels(data);
+
+        setDesafioId(data[1]?.id);
+      }
+
+      loadLevels();
+    } catch (err) {
+      console.error(err)
+      throw (err)
     }
-
-    loadLevels();
   }, []);
 
   const {
@@ -84,6 +103,13 @@ export default function DSF2() {
   return (
 
     <>
+
+      <ModalService
+        isOpen={showModal}
+        setIsOpen={setShowModal}
+        challenge={challenge}
+      />
+
       <RightSideBar time={timeSeconds} />
       <LeftSideBar />
 

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import RightSideBar from "../Components/SideBars/rightSideBar"
+import RightSideBar from "../Components/SideBars/RightSideBar"
 import LeftSideBar from "../Components/SideBars/LeftSideBar"
 import QuizContainer from "../Components/Quiz/QuizContainer"
 
@@ -13,12 +13,22 @@ import { getLevelsByMap } from "../../../Services/maps/levelService"
 import Bg from "../../../assets/Maps/Bg-Map1.png"
 import dsf_1 from "../../Data/Mapa-1/Nivel-1/dsf_1"
 
+import ModalService from '../Components/Modal/ModalService'
 
 const dsf = dsf_1
+
+const challenge = {
+    nome: "Variáveis Misteriosas",
+    descricao: "As variáveis são a base da programação. Neste desafio vais aprender a criar espaços na memória para guardar informação, como números e textos. São essenciais para construir lógica e resolver problemas no código.",
+    xp: 10,
+    nivel: 1,
+    dificuldade: "Fácil"
+};
 
 export default function DSF1() {
     const [levels, setLevels] = useState([]);
     const [desafioId, setDesafioId] = useState(null);
+    const [showModal, setShowModal] = useState(true);
     const bgDim = (0.55)
 
     const navigate = useNavigate()
@@ -29,14 +39,25 @@ export default function DSF1() {
     const mapaId = 1
 
     useEffect(() => {
-        async function loadLevels() {
-            const data = await getLevelsByMap(mapaId);
-            setLevels(data);
 
-            setDesafioId(data[0]?.id);
+        try {
+
+            async function loadLevels() {
+                const data = await getLevelsByMap(mapaId);
+                setLevels(data);
+
+                setDesafioId(data[0]?.id);
+            }
+
+            loadLevels();
+
+        } catch (err) {
+
+            console.error(err)
+            throw (err)
         }
 
-        loadLevels();
+
     }, []);
 
     const {
@@ -86,6 +107,13 @@ export default function DSF1() {
 
     return (
         <>
+
+            <ModalService
+                isOpen={showModal}
+                setIsOpen={setShowModal}
+                challenge={challenge}
+            />
+
             <RightSideBar time={timeSeconds} />
             <LeftSideBar />
 
