@@ -21,7 +21,7 @@ const challenge = {
   descricao:
     "As estruturas de decisão como if, else e elif permitem controlar o fluxo do programa com base em condições. Neste desafio vais aprender a fazer o código tomar decisões diferentes dependendo dos valores recebidos, criando lógica mais inteligente e dinâmica. Estas estruturas são fundamentais para programas que reagem a diferentes situações.",
   xp: 10,
-  nivel: 1,
+  nivel: 2,
   dificuldade: "Fácil",
 };
 

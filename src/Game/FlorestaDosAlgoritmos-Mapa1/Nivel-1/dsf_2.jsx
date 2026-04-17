@@ -71,6 +71,8 @@ export default function DSF2() {
     response,
     resetSlot,
     finalResult,
+    resetQuiz,
+    showFailModal,
   } = useQuiz(dsf.perguntas, {
     token: token,
     aluno_id: userId,
@@ -112,6 +114,13 @@ export default function DSF2() {
 
       <RightSideBar time={timeSeconds} />
       <LeftSideBar />
+
+      {showFailModal && (
+        <ModalService
+          isOpen={showFailModal}
+          onRepetir={() => resetQuiz()}
+        />
+      )}
 
       <div className="flex flex-col"
         style={{

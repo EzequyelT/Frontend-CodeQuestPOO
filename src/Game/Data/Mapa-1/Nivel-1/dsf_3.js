@@ -38,7 +38,7 @@ const dsf_3 = [
     validate: (output) => output.trim() === "True",
     hints: {
       error: "Algo não está correto na comparação. Verifica se estás a usar > ou == corretamente.",
-      success: "Boa! Multiplicaste corretamente 🎉"
+      success: "Boa! Comparaste corretamente 🎉"
     }
   },
 ]

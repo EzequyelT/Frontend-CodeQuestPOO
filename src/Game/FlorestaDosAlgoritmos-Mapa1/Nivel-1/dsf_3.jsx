@@ -13,6 +13,8 @@ import Bg from "../../../assets/Maps/Bg-Map1.png"
 import dsf_3 from "../../Data/Mapa-1/Nivel-1/dsf_3"
 import ModalService from '../Components/Modal/ModalService'
 
+import ModalNivelConcluido from "../Components/Modal/LevelModal"
+
 const dsf = dsf_3
 
 const challenge = {
@@ -30,7 +32,7 @@ export default function DSF3() {
     const [levels, setLevels] = useState([]);
     const [desafioId, setDesafioId] = useState(null);
     const [showModal, setShowModal] = useState(true);
-
+    const [modalNivelConcluido, setModalNivelConcluido] = useState(null);
 
     const token = getToken()
     const userId = getUser()
@@ -45,15 +47,18 @@ export default function DSF3() {
             const data = await getLevelsByMap(mapaId);
             setLevels(data);
 
-            setDesafioId(data[2]?.id);
+          setDesafioId(data[2]?.id);
         }
 
         loadLevels()
     }, [])
 
+    console.log(desafioId)
+
     const {
         currentQuestion,
         logs,
+        currentIndex,
         loading,
         mentorStatus,
         objectives,
@@ -72,8 +77,28 @@ export default function DSF3() {
         level_Id: levels
     })
 
+    useEffect(() => {
+        if (!finished || !finalResult) return;
+
+        // ✅ proteção extra (evita crash)
+        if (!finalResult?.primeiraVez) return;
+
+        if (finalResult?.nivelCompleto) {
+            setModalNivelConcluido({
+                nivelNome: `Nível ${challenge.nivel} Concluído!`,
+                xpGanho: finalResult?.xpGanho?.total ?? 0,
+                proximoNivel: finalResult?.proximoNivel ?? null,
+                nivelMaximo: finalResult?.nivelMaximo ?? false
+            });
+        }
+
+    }, [finished, finalResult]);
+
+    console.log("FINAL RESULT:", finalResult);
+
+
     if (finished && saving) {
-        return <div>Salvando resultado...</div>
+        return <div className="text-white text-4xl font-bold">Salvando resultado...</div>
     }
 
     const score = Math.max(
@@ -84,29 +109,56 @@ export default function DSF3() {
     if (finished && !saving) {
         console.log("FINAL RESULT:", finalResult)
         return (
+            <>
+                <Result
+                    result={{
+                        correct,
+                        wrong,
+                        timeSeconds,
 
-            <Result
-                result={{
-                    correct,
-                    wrong,
-                    timeSeconds,
+                        xpGained: finalResult?.xpGanho?.total ?? correct * 80,
+                        xpNextLevel: finalResult?.xpProximoNivel ?? 0,
+                        nivelAtual: finalResult?.nivel_atual ?? 1,
 
-                    xpGained: finalResult?.xpGanho?.total ?? correct * 80,
-                    xpNextLevel: finalResult?.xpProximoNivel ?? 0,
-                    nivelAtual: finalResult?.nivel_atual ?? 1,
+                        score: score,
+                        desafioCompleto: finalResult?.desafioCompleto ?? false,
+                        primeiraVez: finalResult?.primeiraVez ?? true,
 
-                    score: score,
-                    desafioCompleto: finalResult?.desafioCompleto ?? false,
-                    primeiraVez: finalResult?.primeiraVez ?? true,
+                    }}
+                    onRepeat={() => window.location.reload()}
+                    onBackToMap={() => navigate("/Floresta")}
+                    onNextChallenge={() => {
+                        navigate("/floresta/nivel-2/desafio-4")
+                    }}
+                />
 
-                }}
-                onRepeat={() => window.location.reload()}
-                onBackToMap={() => navigate("/Floresta")}
-                onNextChallenge={() => {
-                    navigate("/floresta/nivel-2/desafio-4")
-                }}
-            />
+
+                {modalNivelConcluido && (
+                    <ModalNivelConcluido
+                        isOpen={!!modalNivelConcluido}
+                        onClose={() => setModalNivelConcluido(null)}
+                        onContinuar={() => {
+                            setModalNivelConcluido(null);
+
+                            if (modalNivelConcluido?.nivelMaximo) {
+                                navigate("/mapa-final");
+                            }
+                            else if (modalNivelConcluido.proximoNivel) {
+                                navigate("/floresta/nivel-2/desafio-4")
+
+                            } else {
+                                navigate("/Floresta");
+                            }
+                        }}
+                        nivelNome={modalNivelConcluido.nivelNome}
+                        xpGanho={modalNivelConcluido.xpGanho}
+                        proximoNivel={modalNivelConcluido.proximoNivel}
+                    />
+                )}
+            </>
+
         )
+
     }
 
     return (
@@ -133,6 +185,7 @@ export default function DSF3() {
 
             >
                 <CodeComponent
+                    key={currentIndex}
                     currentQuestion={currentQuestion}
                     logs={logs}
                     loading={loading}

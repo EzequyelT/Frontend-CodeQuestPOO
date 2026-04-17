@@ -2,27 +2,26 @@ import { useState, useEffect } from "react"
 import { concluirDesafio } from "../../Services/Gameplay/xpProgressService"
 
 export function useQuiz(perguntas = [], config = {}) {
-  const [currentIndex, setCurrentIndex] = useState(0)   // qual pergunta estamos
-  const [currentResponse, setCurrentResponse] = useState(null) // { item, isCorrect }
+  const [currentIndex, setCurrentIndex] = useState(0)
+  const [currentResponse, setCurrentResponse] = useState(null)
   const [correct, setCorrect] = useState(0)
   const [wrong, setWrong] = useState(0)
   const [finished, setFinished] = useState(false)
   const [startTime] = useState(() => Date.now())
   const [timeSeconds, setTimeSeconds] = useState(0)
   const [finalResult, setFinalResult] = useState(null)
-
-  //Estado para controlar a comunicação com a API para salvar o desempenho
   const [desempenhoGuardado, setDesempenhoGuardado] = useState(false)
 
-
-  // Avançar para a próxima pergunta
+  // ✅ Novos estados
+  const [consecutiveWrong, setConsecutiveWrong] = useState(0)
+  const [showFailModal, setShowFailModal] = useState(false)
 
   function advanceQuestion() {
     setCurrentResponse(null)
-    if (isUltima) setFinished(true)   // ← só muda o estado
+    if (isUltima) setFinished(true)
     else setCurrentIndex(i => i + 1)
   }
-  // Timer
+
   useEffect(() => {
     if (finished) return
     const t = setInterval(() =>
@@ -32,7 +31,7 @@ export function useQuiz(perguntas = [], config = {}) {
 
   useEffect(() => {
     if (!currentResponse) return
-    const timer = setTimeout(() => advanceQuestion(), 2500)
+    const timer = setTimeout(() => advanceQuestion(), 2000)
     return () => clearTimeout(timer)
   }, [currentResponse, currentIndex])
 
@@ -70,29 +69,38 @@ export function useQuiz(perguntas = [], config = {}) {
     setFinished(false)
     setFinalResult(null)
     setDesempenhoGuardado(false)
+    // ✅ Reset dos novos estados
+    setConsecutiveWrong(0)
+    setShowFailModal(false)
   }
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     resetQuiz()
   }, [config.desafio_id])
 
-  const currentQuestion = perguntas[currentIndex]  // objeto { texto, opcoes, correctId }
+  const currentQuestion = perguntas[currentIndex]
   const isUltima = currentIndex + 1 >= perguntas.length
   const progress = Math.round(((currentIndex + 1) / perguntas.length) * 100)
 
-  // Chamado quando o utilizador solta uma resposta no slot
   function response(item) {
-    if (currentResponse) return // já respondeu, ignora
+    if (currentResponse) return
 
     const isCorrect = item.id === currentQuestion.correctId
     setCurrentResponse({ item, isCorrect })
 
-    if (isCorrect) setCorrect(c => c + 1)
-    else setWrong(w => w + 1)
+    if (isCorrect) {
+      setCorrect(c => c + 1)
+      setConsecutiveWrong(0) // ✅ acertou, reset do contador
+    } else {
+      setWrong(w => w + 1)
+      setConsecutiveWrong(prev => {
+        const next = prev + 1
+        if (next >= 4) setShowFailModal(true) // ✅ 4 erros consecutivos
+        return next
+      })
+    }
   }
 
-  // Resetar o slot atual (botão RotateCcw)
   function resetSlot() {
     if (!currentResponse) return
     if (currentResponse.isCorrect) setCorrect(c => c - 1)
@@ -100,12 +108,11 @@ export function useQuiz(perguntas = [], config = {}) {
     setCurrentResponse(null)
   }
 
-
   return {
-    currentQuestion,     // { id, texto, opcoes, correctId }
+    currentQuestion,
     currentIndex,
     progress,
-    currentResponse,     // { item, isCorrect } ou null
+    currentResponse,
     correct,
     wrong,
     timeSeconds,
@@ -116,5 +123,7 @@ export function useQuiz(perguntas = [], config = {}) {
     resetSlot,
     advanceQuestion,
     finalResult,
+    showFailModal,
+    resetQuiz,
   }
 }

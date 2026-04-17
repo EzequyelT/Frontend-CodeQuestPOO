@@ -20,7 +20,7 @@ const challenge = {
     descricao:
         "As comparações são uma das bases da lógica em programação. Neste desafio vais aprender a usar operadores como >, < e == para comparar valores e tomar decisões no código. Estas comparações permitem que o programa responda de forma diferente consoante as condições, sendo essenciais para criar lógica dinâmica e inteligente.",
     xp: 10,
-    nivel: 1,
+    nivel: 2,
     dificuldade: "Fácil",
 };
 
@@ -60,6 +60,7 @@ export default function DSF5() {
 
     const {
         currentQuestion,
+        currentIndex,
         logs,
         loading,
         mentorStatus,
@@ -142,6 +143,7 @@ export default function DSF5() {
 
             >
                 <CodeComponent
+                    key={currentIndex}
                     currentQuestion={currentQuestion}
                     logs={logs}
                     loading={loading}

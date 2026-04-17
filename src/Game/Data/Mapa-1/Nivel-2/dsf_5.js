@@ -22,7 +22,10 @@ export function dsf_5() {
         { label: "Mostrar 'Par' se for verdadeiro" },
         { label: "Usar else para mostrar 'Ímpar'" },
       ],
-      validate: (output) => output.trim() === "Ímpar",
+      validate: (output) => {
+        const value = output.trim().toLowerCase();
+        return value === "par" || value === "ímpar";
+      },
       hints: {
         error: "Dica: números ímpares dão resto diferente de 0 quando divididos por 2",
         success: "Boa! Sabes identificar pares e ímpares 🎉",

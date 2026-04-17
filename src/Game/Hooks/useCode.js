@@ -14,7 +14,7 @@ export function useCode(fases = [], config = {}) {
 
   const [correct, setCorrect] = useState(0)
   const [wrong, setWrong] = useState(0)
-  const [attempts, setAttempts] = useState(0) // ✅ NOVO
+  const [attempts, setAttempts] = useState(0) 
 
   const [startTime] = useState(() => Date.now())
   const [timeSeconds, setTimeSeconds] = useState(0)
@@ -106,7 +106,7 @@ export function useCode(fases = [], config = {}) {
 
     setLoading(true)
     setMentorStatus("typing")
-    setAttempts(a => a + 1) // ✅ conta tentativa
+    setAttempts(a => a + 1) 
 
     addLog("info", "🐍 Executando código...")
 
@@ -180,6 +180,7 @@ export function useCode(fases = [], config = {}) {
       setLoading(false)
     }
   }
+  
 
   return {
     currentQuestion,
@@ -192,7 +193,7 @@ export function useCode(fases = [], config = {}) {
     timeSeconds,
     correct,
     wrong,
-    attempts, // ✅ novo
+    attempts, 
     finalResult,
     saving,
     addLog,

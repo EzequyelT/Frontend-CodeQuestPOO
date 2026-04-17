@@ -47,9 +47,9 @@ function getDayofWeek() {
 
         console.log(`Dia: ${shortDay}, Índice: ${currentDayOfWeek}`);
         return currentDayOfWeek;
-    } catch(erro) {
+    } catch (erro) {
         console.error("Erro ao obter dia da semana:", erro);
-        return -1; 
+        return -1;
     }
 }
 
@@ -168,12 +168,18 @@ function LoginRewardBanner() {
 // 🔷 XP Bar
 // ============================================================
 function XPBar({ current = 0, total = 0 }) {
-    const pct = Math.min((current / total) * 100, 100);
+
+    const safeCurrent = current ?? 0
+    const safeTotal = total ?? 0
+    const pct = safeTotal > 0 ? Math.min((safeCurrent / safeTotal) * 100, 100) : 100;
+
     return (
         <div className="flex flex-col gap-1 mt-1">
             <div className="flex justify-between text-xs">
                 <span className="text-gray-500">Nível</span>
-                <span className="text-yellow-400 font-bold">{current.toLocaleString()} / {total.toLocaleString()} XP</span>
+                <span className="text-yellow-400 font-bold">
+                    {safeCurrent.toLocaleString()} / {safeTotal > 0 ? safeTotal.toLocaleString() : "MAX"} XP
+                </span>
             </div>
             <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
                 <div
@@ -185,7 +191,11 @@ function XPBar({ current = 0, total = 0 }) {
                     }}
                 />
             </div>
-            <span className="text-gray-600 text-[10px] text-right">Faltam {(total - current).toLocaleString()} XP para o próximo nível</span>
+            <span className="text-gray-600 text-[10px] text-right">
+                {safeTotal > 0
+                    ? `Faltam ${(safeTotal - safeCurrent).toLocaleString()} XP para o próximo nível`
+                    : "👑 Nível Máximo Atingido!"}
+            </span>
         </div>
     );
 }

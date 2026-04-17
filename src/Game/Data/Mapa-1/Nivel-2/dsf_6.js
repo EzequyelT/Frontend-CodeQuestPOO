@@ -1,7 +1,7 @@
 const dsf_6 = [
   {
     titulo: "Fase 1 – Contagem Simples",
-    initialCode: "# Usa um loop para contar de 0 a 4\n",
+    initialCode: "# Usa um loop for para contar de 0 a 4\n",
     objectives: [
       { label: "Criar um loop for com range(5)" },
       { label: "Imprimir cada valor com print(i)" },
@@ -23,7 +23,7 @@ const dsf_6 = [
     ],
     validate: (output) => output.trim() === "15",
     hints: {
-      error: "Dica: soma += i dentro do loop",
+      error: "Dica: a operação soma += i deve ser feita dentro do loop, e o print(soma) tem de estar fora do loop.",
       success: "Boa! Conseguiste acumular valores 🎉"
     }
   },
@@ -37,7 +37,7 @@ const dsf_6 = [
     ],
     validate: (output) => output.trim() === "24",
     hints: {
-      error: "Dica: resultado *= i dentro do loop",
+      error: "Dica: A variável do resultado tem de começar em 1, e depois deves fazer resultado *= i dentro do ciclo.",
       success: "Excelente! Já dominas multiplicação em loops 💪"
     }
  }

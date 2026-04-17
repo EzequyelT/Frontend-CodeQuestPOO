@@ -81,42 +81,66 @@ const FEEDBACK_IA = {
     tipo: "💡 Feedback Inteligente",
 };
 
+
 // ────────────────────────────────────────────────────────────────────────────
 
 function XPBar({ xpAtual, xpProximo, percentagem }) {
+
+    const safeCurrent = Number(xpAtual ?? 0);
+
+    // tenta converter o xpProximo para número
+    const parsedTotal = Number(xpProximo);
+    const safeTotal = Number.isFinite(parsedTotal) ? parsedTotal : null;
+
+    // garante percentagem válida
+    const safePercent =
+        typeof percentagem === "number" && Number.isFinite(percentagem)
+            ? Math.min(percentagem, 100)
+            : 100;
+
     return (
         <div className="flex flex-col gap-1">
             <div className="flex justify-between text-[10px] rounded-full">
                 <span className="text-gray-400">XP</span>
-                <span style={{ color: Color.secondary.lighter }} className="font-bold">{xpAtual} / {xpProximo}</span>
+
+                <span style={{ color: Color.secondary.lighter }} className="font-bold">
+                    {safeCurrent.toLocaleString()} /{" "}
+                    {safeTotal ? safeTotal.toLocaleString() : "MAX"} XP
+                </span>
             </div>
+
             <div
                 className="h-2.5 rounded-full overflow-hidden border"
                 style={{
                     background: Color.neutral.card,
                     borderColor: Color.neutral.border,
                     backdropFilter: "blur(5px)",
-
                 }}
             >
                 <div
                     className="h-full rounded-full relative overflow-hidden transition-all"
                     style={{
-                        width: `${percentagem}%`,
+                        width: `${safePercent}%`,
                         background: `linear-gradient(90deg, ${Color.secondary.main}, ${Color.secondary.lighter})`,
                         boxShadow: `0 0 8px ${Color.glow.gold}`,
                     }}
                 >
-                    <div style={{
-                        position: "absolute",
-                        inset: 0,
-                        background: "linear-gradient(90deg,transparent,rgba(255,255,255,0.25) 50%,transparent)",
-                        animation: "shimmer 2s infinite",
-                    }} />
+                    <div
+                        style={{
+                            position: "absolute",
+                            inset: 0,
+                            background:
+                                "linear-gradient(90deg,transparent,rgba(255,255,255,0.25) 50%,transparent)",
+                            animation: "shimmer 2s infinite",
+                        }}
+                    />
                 </div>
             </div>
-            <span className="text-gray-600 text-[9px] text-right">
-                Faltam {xpProximo - xpAtual} XP para o próximo nível
+
+            <span className="text-gray-600 text-[10px] text-right">
+                {safeTotal
+                    ? `Faltam ${(safeTotal - safeCurrent).toLocaleString()} XP para o próximo nível`
+                    : "👑 Nível Máximo Atingido!"}
             </span>
         </div>
     );
@@ -349,7 +373,7 @@ function MiniMapa({ levels, desafiosCompletos, progressoMapa }) {
                 };
 
                 const style = styles[ch.state];
-                
+
                 return (
                     <div
                         key={ch.id}
@@ -388,7 +412,7 @@ function MiniMapa({ levels, desafiosCompletos, progressoMapa }) {
                                         opacity: delay === 0 ? 0.7 : 0.4,
                                         animation: `pulseRing 2s ease-out infinite ${delay}s`,
                                         marginLeft: 25,
-                                        marginTop:28,
+                                        marginTop: 28,
                                     }}
                                 />
                             ))}
@@ -419,8 +443,8 @@ function MiniMapa({ levels, desafiosCompletos, progressoMapa }) {
                                             ch.state === "locked"
                                                 ? "grayscale(100%) opacity(0.5)"
                                                 : ch.state === "available"
-                                                ? "brightness(1.2) contrast(1.1)"
-                                                : "brightness(1)",
+                                                    ? "brightness(1.2) contrast(1.1)"
+                                                    : "brightness(1)",
                                     }}
                                 />
                             </div>
@@ -508,6 +532,9 @@ export default function RightSideBar({ time }) {
 
     const objetivo = OBJETIVO;
     const feedbackIA = FEEDBACK_IA;
+
+    console.log("XP RAW:", progressaoXp)
+    console.log("XP PROGRESSAO:", progressaoXp?.progressao)
 
     function formatTime(totalSeconds) {
         const horas = Math.floor(totalSeconds / 3600);
@@ -628,6 +655,19 @@ export default function RightSideBar({ time }) {
         );
     }
 
+    const xpAtual = Number(progressaoXp?.progressao?.xpAtualNivel ?? 0);
+    const xpProximoRaw = progressaoXp?.progressao?.xpProximoNivel;
+
+    const xpProximo =
+        Number.isFinite(Number(xpProximoRaw))
+            ? Number(xpProximoRaw)
+            : null;
+
+    const percentagem =
+        xpProximo && xpProximo > 0
+            ? Math.min((xpAtual / xpProximo) * 100, 100)
+            : 100;
+
     return (
         <>
             <style>{`
@@ -687,15 +727,15 @@ export default function RightSideBar({ time }) {
                         </span>
                     </div>
 
+
+
+
                     <XPBar
                         xpAtual={progressaoXp?.progressao?.xpAtualNivel ?? 0}
-                        xpProximo={progressaoXp?.progressao?.xpProximoNivel ?? 100}
-                        percentagem={
-                            progressaoXp?.progressao?.xpProximoNivel
-                                ? (progressaoXp.progressao.xpAtualNivel / progressaoXp.progressao.xpProximoNivel) * 100
-                                : 0
-                        }
+                        xpProximo={progressaoXp?.progressao?.xpProximoNivel ?? "👑 Nível Máximo Atingido!"}
+                        percentagem={percentagem}
                     />
+
                 </div>
 
                 <ObjetivoBox objetivo={objetivo} />

@@ -64,7 +64,7 @@ const CHALLENGE_POSITIONS = {
   5: { x: 65, y: 42 },
   6: { x: 90, y: 30 },
   7: { x: 10, y: 35 },
-  8: { x: 46, y: 10 },
+  8: { x: 46, y: 22 },
 };
 
 const BUTTON_IMAGES = {
@@ -580,10 +580,11 @@ function LevelBanner({ level }) {
 
 function XPBar({ xp, xpMax, level }) {
   const xpValido = xp ?? 0;
-  const xpMaxValido = xpMax ?? 320;
   const nivelValido = level ?? 1;
 
-  const pct = Math.min((xpValido / xpMaxValido) * 100, 100);
+  const isMax = !xpMax || xpMax <= 0;
+  const xpMaxValido = isMax ? xpValido : xpMax;          // nunca null na divisão
+  const pct = isMax ? 100 : Math.min((xpValido / xpMaxValido) * 100, 100);
 
   return (
     <div style={{
@@ -635,7 +636,7 @@ function XPBar({ xp, xpMax, level }) {
             fontWeight: "600",
             letterSpacing: "0.02em",
           }}>
-            {xpValido}/{xpMaxValido} XP
+            {isMax ? "👑 MAX" : `${xpValido} / ${xpMaxValido} XP`}
           </span>
         </div>
 
@@ -745,6 +746,7 @@ export default function FlorestaDosAlgoritmos() {
   const dragStartTrans = useRef(0);
   const navigate = useNavigate();
 
+
   useEffect(() => {
     async function carregar() {
       try {
@@ -775,7 +777,7 @@ export default function FlorestaDosAlgoritmos() {
 
           setProgressaoXp({
             xpTotal: progressaoDados?.xpTotal || 0,
-            xpProximoNivel: progressaoDados?.xpProximoNivel || 320,
+            xpProximoNivel: progressaoDados?.xpProximoNivel || null,
             nivel: progressaoDados?.nivel || 1,
           });
 
