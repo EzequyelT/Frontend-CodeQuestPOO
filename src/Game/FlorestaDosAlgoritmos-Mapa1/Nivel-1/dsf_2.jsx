@@ -14,6 +14,7 @@ import Bg from "../../../assets/Maps/Bg-Map1.png"
 import dsf_2 from "../../Data/Mapa-1/Nivel-1/dsf_2"
 
 import ModalService from '../Components/Modal/ModalService'
+import ModalFalha from '../Components/Modal/ModalFalha'
 
 const dsf = dsf_2
 
@@ -33,7 +34,6 @@ export default function DSF2() {
   const bgDim = (0.55)
 
   console.log("desafioId:", desafioId);
-
 
   const Navigate = useNavigate()
 
@@ -96,29 +96,33 @@ export default function DSF2() {
           primeiraVez: finalResult?.primeiraVez ?? true,
         }}
         onRepeat={() => window.location.reload()}
-        onBackToMap={() => Navigate("/Floresta")}
+        onBackToMap={() => Navigate("/FlorestaDosAlgoritmos")}
         onNextChallenge={() => Navigate("/floresta/nivel-1/desafio-3")}
       />
     )
   }
 
   return (
-
     <>
 
       <ModalService
         isOpen={showModal}
         setIsOpen={setShowModal}
         challenge={challenge}
+        time={timeSeconds}
       />
 
-      <RightSideBar time={timeSeconds} />
+      <RightSideBar time={timeSeconds} wrong={wrong} />
       <LeftSideBar />
 
       {showFailModal && (
-        <ModalService
-          isOpen={showFailModal}
-          onRepetir={() => resetQuiz()}
+        <ModalFalha
+          isOpen={true}
+          onRepetir={resetQuiz}
+          onVoltar={() => Navigate("/FlorestaDosAlgoritmos")}
+          correct={correct}
+          wrong={wrong}
+          time={timeSeconds}
         />
       )}
 

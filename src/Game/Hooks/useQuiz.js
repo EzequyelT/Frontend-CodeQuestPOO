@@ -12,7 +12,6 @@ export function useQuiz(perguntas = [], config = {}) {
   const [finalResult, setFinalResult] = useState(null)
   const [desempenhoGuardado, setDesempenhoGuardado] = useState(false)
 
-  // ✅ Novos estados
   const [consecutiveWrong, setConsecutiveWrong] = useState(0)
   const [showFailModal, setShowFailModal] = useState(false)
 
@@ -23,22 +22,27 @@ export function useQuiz(perguntas = [], config = {}) {
   }
 
   useEffect(() => {
-    if (finished) return
+    if (finished || showFailModal) return
+
     const t = setInterval(() =>
       setTimeSeconds(Math.floor((Date.now() - startTime) / 1000)), 1000)
     return () => clearInterval(t)
-  }, [finished, startTime])
+    
+  }, [finished, startTime, showFailModal])
 
   useEffect(() => {
     if (!currentResponse) return
+
     const timer = setTimeout(() => advanceQuestion(), 2000)
     return () => clearTimeout(timer)
+    
   }, [currentResponse, currentIndex])
 
   useEffect(() => {
     if (!finished) return
     if (!config.token || !config.desafio_id) return
     if (desempenhoGuardado) return
+    if (showFailModal) return
 
     const score = Math.round((correct / perguntas.length) * 100)
 
@@ -59,7 +63,7 @@ export function useQuiz(perguntas = [], config = {}) {
         console.error("Erro no desempenho", err)
       })
 
-  }, [finished])
+  }, [finished, showFailModal])
 
   function resetQuiz() {
     setCurrentIndex(0)
@@ -69,7 +73,6 @@ export function useQuiz(perguntas = [], config = {}) {
     setFinished(false)
     setFinalResult(null)
     setDesempenhoGuardado(false)
-    // ✅ Reset dos novos estados
     setConsecutiveWrong(0)
     setShowFailModal(false)
   }
@@ -95,7 +98,8 @@ export function useQuiz(perguntas = [], config = {}) {
       setWrong(w => w + 1)
       setConsecutiveWrong(prev => {
         const next = prev + 1
-        if (next >= 4) setShowFailModal(true) // ✅ 4 erros consecutivos
+        const perguntasRestantes = perguntas.length - currentIndex  
+        if (next >= 4 && perguntasRestantes <= 2) setShowFailModal(true) // ✅ 4 erros + perto do fim
         return next
       })
     }
@@ -125,5 +129,6 @@ export function useQuiz(perguntas = [], config = {}) {
     finalResult,
     showFailModal,
     resetQuiz,
+    consecutiveWrong,
   }
 }

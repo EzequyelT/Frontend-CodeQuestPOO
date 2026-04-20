@@ -14,6 +14,8 @@ import Bg from "../../../assets/Maps/Bg-Map1.png"
 import dsf_1 from "../../Data/Mapa-1/Nivel-1/dsf_1"
 
 import ModalService from '../Components/Modal/ModalService'
+import ModalFalha from '../Components/Modal/ModalFalha'
+
 
 const dsf = dsf_1
 
@@ -71,7 +73,9 @@ export default function DSF1() {
         totalQuestions,
         response,       // ← chamado pelo QuestionCard no onDrop
         resetSlot,
-        finalResult,      // ← chamado pelo botão RotateCcw
+        finalResult, 
+        resetQuiz,  
+        showFailModal,   // ← chamado pelo botão RotateCcw
     } = useQuiz(dsf.perguntas, { //Estou a terminar de conectar a rota do desempenho agora preciso de coloca o id do mapa e ver se esta registrado certo. Depois arrumar todo o fichero Service
         token: token,
         aluno_id: userId,
@@ -97,7 +101,7 @@ export default function DSF1() {
                     primeiraVez: finalResult?.primeiraVez ?? true,
                 }}
                 onRepeat={() => window.location.reload()}
-                onBackToMap={() => navigate("/Floresta")}
+                onBackToMap={() => navigate("/FlorestaDosAlgoritmos")}
                 onNextChallenge={() => {
                     navigate("/floresta/nivel-1/desafio-2")
                 }}
@@ -114,8 +118,19 @@ export default function DSF1() {
                 challenge={challenge}
             />
 
-            <RightSideBar time={timeSeconds} />
+            <RightSideBar time={timeSeconds} wrong={wrong} />
             <LeftSideBar />
+
+            {showFailModal && (
+                <ModalFalha
+                    isOpen={true}
+                    onRepetir={resetQuiz}
+                    onVoltar={() => navigate("/FlorestaDosAlgoritmos")}
+                    correct={correct}
+                    wrong={wrong}
+                    time={timeSeconds}
+                />
+            )}
 
             <div
                 className="flex flex-col min-h-screen relative"

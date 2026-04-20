@@ -12,7 +12,10 @@ import { getLevelsByMap } from "../../../Services/maps/levelService"
 import Bg from "../../../assets/Maps/Bg-Map1-Nivel-2.jpg"
 import dsf_6 from "../../Data/Mapa-1/Nivel-2/dsf_6"
 import ModalService from '../Components/Modal/ModalService'
+
 import ModalNivelConcluido from "../Components/Modal/LevelModal"  // ✅ adicionado
+import ModalFalha from '../Components/Modal/ModalFalha'
+
 
 const dsf = dsf_6
 
@@ -73,6 +76,8 @@ export default function DSF6() {
         wrong,
         finalResult,
         saving,
+        showFailModal,
+        attempts,
     } = useCode(dsf, {
         token,
         aluno_id: userId,
@@ -80,7 +85,6 @@ export default function DSF6() {
         level_Id: levels
     })
 
-    // ✅ adicionado
     useEffect(() => {
         if (!finished || !finalResult) return;
         if (!finalResult?.primeiraVez) return;
@@ -120,11 +124,10 @@ export default function DSF6() {
                         primeiraVez: finalResult?.primeiraVez ?? true,
                     }}
                     onRepeat={() => window.location.reload()}
-                    onBackToMap={() => navigate("/Floresta")}
+                    onBackToMap={() => navigate("/FlorestaDosAlgoritmos")}
                     onNextChallenge={() => navigate("/floresta/nivel-3/desafio-7")}
                 />
 
-                {/* ✅ adicionado */}
                 {modalNivelConcluido && (
                     <ModalNivelConcluido
                         isOpen={!!modalNivelConcluido}
@@ -137,7 +140,7 @@ export default function DSF6() {
                             } else if (modalNivelConcluido.proximoNivel) {
                                 navigate("/floresta/nivel-3/desafio-7");
                             } else {
-                                navigate("/Floresta");
+                                navigate("/FlorestaDosAlgoritmos");
                             }
                         }}
                         nivelNome={modalNivelConcluido.nivelNome}
@@ -156,8 +159,19 @@ export default function DSF6() {
                 setIsOpen={setShowModal}
                 challenge={challenge}
             />
-            <RightSideBar time={timeSeconds} />
+            <RightSideBar time={timeSeconds} attempts={attempts} />
             <LeftSideBar />
+
+            {showFailModal && (
+                <ModalFalha
+                    isOpen={true}
+                    onRepetir={() => window.location.reload()}
+                    onVoltar={() => navigate("/FlorestaDosAlgoritmos")}
+                    correct={correct}
+                    wrong={wrong}
+                    time={timeSeconds}
+                />
+            )}
 
             <div className="scrollbar"
                 style={{

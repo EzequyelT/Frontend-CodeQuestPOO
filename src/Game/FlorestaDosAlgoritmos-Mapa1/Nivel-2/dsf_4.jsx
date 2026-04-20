@@ -12,7 +12,9 @@ import { getToken, getUser } from "../../../Services/auth/authStorage";
 import { getLevelsByMap } from "../../../Services/maps/levelService"
 import Bg from "../../../assets/Maps/Bg-Map1-Nivel-2.jpg"
 import dsf_4 from "../../Data/Mapa-1/Nivel-2/dsf_4"
+
 import ModalService from '../Components/Modal/ModalService'
+import ModalFalha from '../Components/Modal/ModalFalha'
 
 const dsf = dsf_4
 
@@ -70,6 +72,8 @@ export default function DSF4() {
     response,
     resetSlot,
     finalResult,
+    resetQuiz,
+    showFailModal,
   } = useQuiz(dsf.perguntas, {
     token: token,
     aluno_id: userId,
@@ -93,7 +97,7 @@ export default function DSF4() {
           primeiraVez: finalResult?.primeiraVez ?? true,
         }}
         onRepeat={() => window.location.reload()}
-        onBackToMap={() => Navigate("/Floresta")}
+        onBackToMap={() => Navigate("/FlorestaDosAlgoritmos")}
         onNextChallenge={() => Navigate("/floresta/nivel-2/desafio-5")}
       />
     )
@@ -112,7 +116,18 @@ export default function DSF4() {
         challenge={challenge}
       />
 
-      <RightSideBar time={timeSeconds} />
+      {showFailModal && (
+        <ModalFalha
+          isOpen={true}
+          onRepetir={resetQuiz}
+          onVoltar={() => Navigate("/FlorestaDosAlgoritmos")}
+          correct={correct}
+          wrong={wrong}
+          time={timeSeconds}
+        />
+      )}
+
+      <RightSideBar time={timeSeconds} wrong={wrong} />
       <LeftSideBar />
 
       <div className="flex flex-col"

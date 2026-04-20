@@ -522,7 +522,7 @@ function MiniMapa({ levels, desafiosCompletos, progressoMapa }) {
 
 // ─── COMPONENTE PRINCIPAL ────────────────────────────────────────────────────
 
-export default function RightSideBar({ time }) {
+export default function RightSideBar({ time, attempts, wrong = 0 }) {
     const [loading, setLoading] = useState(true);
     const [erro, setErro] = useState(null);
     const [desafiosCompletos, setDesafiosCompletos] = useState(0);
@@ -761,7 +761,20 @@ export default function RightSideBar({ time }) {
                         <span className="text-white text-[10px] font-bold">
                             {formatTime(time)}
                         </span>
+                        <span className="text-gray-600 text-[10px]">|</span>
+                        {attempts !== undefined ? (
+                            <>
+                                <span className="text-gray-500 text-[10px]">🎯 Tentativas</span>
+                                <span className="text-white text-[10px] font-bold">{attempts}</span>
+                            </>
+                        ) : (
+                            <>
+                                <span className="text-gray-500 text-[10px]">❌ Erradas</span>
+                                <span className="text-[#e05a5a] text-[10px] font-bold">{wrong ?? 0}</span>
+                            </>
+                        )}
                     </div>
+
                 </div>
             </aside>
         </>

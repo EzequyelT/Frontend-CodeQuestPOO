@@ -14,7 +14,7 @@ export function useCode(fases = [], config = {}) {
 
   const [correct, setCorrect] = useState(0)
   const [wrong, setWrong] = useState(0)
-  const [attempts, setAttempts] = useState(0) 
+  const [attempts, setAttempts] = useState(0)
 
   const [startTime] = useState(() => Date.now())
   const [timeSeconds, setTimeSeconds] = useState(0)
@@ -27,6 +27,9 @@ export function useCode(fases = [], config = {}) {
   const isUltima = currentIndex + 1 >= fases.length
   const currentHint = currentQuestion?.hints || {}
 
+  const [consecutiveWrong, setConsecutiveWrong] = useState(0)
+  const [showFailModal, setShowFailModal] = useState(false)
+
   // RESET DA FASE
   useEffect(() => {
     if (!currentQuestion) return
@@ -37,6 +40,7 @@ export function useCode(fases = [], config = {}) {
 
     setLogs([])
     setMentorStatus("idle")
+    setConsecutiveWrong(0)
 
     if (currentHint.start) {
       addLog("info", currentHint.start)
@@ -45,20 +49,21 @@ export function useCode(fases = [], config = {}) {
 
   // TIMER
   useEffect(() => {
-    if (finished) return
+    if (finished || showFailModal) return
 
     const t = setInterval(() => {
-      setTimeSeconds(Math.floor((Date.now() - startTime) / 3500))
-    }, 3500)
+      setTimeSeconds(Math.floor((Date.now() - startTime) / 1000))
+    }, 1000)
 
     return () => clearInterval(t)
-  }, [finished, startTime])
+  }, [finished, showFailModal, startTime])
 
   // SALVAR RESULTADO FINAL
   useEffect(() => {
     if (!finished) return
     if (!config.token || !config.desafio_id) return
     if (desempenhoGuardado) return
+    if (showFailModal) return
 
     setSaving(true)
 
@@ -87,7 +92,7 @@ export function useCode(fases = [], config = {}) {
       .finally(() => {
         setSaving(false)
       })
-  }, [finished])
+  }, [finished, showFailModal])
 
   // LOGS
   function addLog(type, message) {
@@ -106,7 +111,7 @@ export function useCode(fases = [], config = {}) {
 
     setLoading(true)
     setMentorStatus("typing")
-    setAttempts(a => a + 1) 
+    setAttempts(a => a + 1)
 
     addLog("info", "🐍 Executando código...")
 
@@ -146,6 +151,8 @@ export function useCode(fases = [], config = {}) {
 
         setCorrect(c => c + 1)
 
+        setConsecutiveWrong(0)
+
         setObjectives(prev =>
           prev.map(obj => ({ ...obj, done: true }))
         )
@@ -165,6 +172,12 @@ export function useCode(fases = [], config = {}) {
             : `❌ ${finalOutput || "Output vazio"}`
         )
 
+        setConsecutiveWrong(prev => {
+          const next = wrong + 1
+          if (next >= 5) setShowFailModal(true)
+          return next
+        })
+
         return { success: false, output: finalOutput }
       }
 
@@ -180,7 +193,7 @@ export function useCode(fases = [], config = {}) {
       setLoading(false)
     }
   }
-  
+
 
   return {
     currentQuestion,
@@ -193,10 +206,11 @@ export function useCode(fases = [], config = {}) {
     timeSeconds,
     correct,
     wrong,
-    attempts, 
+    attempts,
     finalResult,
     saving,
     addLog,
     runCode,
+    showFailModal,
   }
 }

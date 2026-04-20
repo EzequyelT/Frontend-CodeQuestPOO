@@ -12,6 +12,8 @@ import { getLevelsByMap } from "../../../Services/maps/levelService"
 import Bg from "../../../assets/Maps/Bg-Map1-Nivel-2.jpg"
 import dsf_5 from "../../Data/Mapa-1/Nivel-2/dsf_5"
 import ModalService from '../Components/Modal/ModalService'
+import ModalFalha from '../Components/Modal/ModalFalha'
+
 
 const dsf = dsf_5()
 
@@ -73,6 +75,8 @@ export default function DSF5() {
         wrong,
         finalResult,
         saving,
+        showFailModal,
+        attempts,
     } = useCode(dsf, {
         token,
         aluno_id: userId,
@@ -109,7 +113,7 @@ export default function DSF5() {
 
                 }}
                 onRepeat={() => window.location.reload()}
-                onBackToMap={() => navigate("/Floresta")}
+                onBackToMap={() => navigate("/FlorestaDosAlgoritmos")}
                 onNextChallenge={() => {
                     navigate("/floresta/nivel-2/desafio-6")
                 }}
@@ -126,8 +130,19 @@ export default function DSF5() {
                 setIsOpen={setShowModal}
                 challenge={challenge}
             />
-            <RightSideBar time={timeSeconds} />
+            <RightSideBar time={timeSeconds} attempts={attempts} />
             <LeftSideBar />
+
+            {showFailModal && (
+                <ModalFalha
+                    isOpen={true}
+                    onRepetir={() => window.location.reload()}
+                    onVoltar={() => navigate("/FlorestaDosAlgoritmos")}
+                    correct={correct}
+                    wrong={wrong}
+                    time={timeSeconds}
+                />
+            )}
 
             <div className="scrollbar"
 

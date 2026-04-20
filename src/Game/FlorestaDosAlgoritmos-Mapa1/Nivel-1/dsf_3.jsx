@@ -14,6 +14,7 @@ import dsf_3 from "../../Data/Mapa-1/Nivel-1/dsf_3"
 import ModalService from '../Components/Modal/ModalService'
 
 import ModalNivelConcluido from "../Components/Modal/LevelModal"
+import ModalFalha from '../Components/Modal/ModalFalha'
 
 const dsf = dsf_3
 
@@ -24,8 +25,6 @@ const challenge = {
     nivel: 1,
     dificuldade: "Fácil"
 };
-
-
 
 export default function DSF3() {
 
@@ -47,7 +46,7 @@ export default function DSF3() {
             const data = await getLevelsByMap(mapaId);
             setLevels(data);
 
-          setDesafioId(data[2]?.id);
+            setDesafioId(data[2]?.id);
         }
 
         loadLevels()
@@ -70,6 +69,8 @@ export default function DSF3() {
         wrong,
         finalResult,
         saving,
+        showFailModal,
+        attempts,
     } = useCode(dsf, {
         token,
         aluno_id: userId,
@@ -147,7 +148,7 @@ export default function DSF3() {
                                 navigate("/floresta/nivel-2/desafio-4")
 
                             } else {
-                                navigate("/Floresta");
+                                navigate("/FlorestaDosAlgoritmos");
                             }
                         }}
                         nivelNome={modalNivelConcluido.nivelNome}
@@ -168,8 +169,20 @@ export default function DSF3() {
                 setIsOpen={setShowModal}
                 challenge={challenge}
             />
-            <RightSideBar time={timeSeconds} />
+            <RightSideBar time={timeSeconds} attempts={attempts}/>
             <LeftSideBar />
+
+
+            {showFailModal && (
+                <ModalFalha
+                    isOpen={true}
+                    onRepetir={() => window.location.reload()}
+                    onVoltar={() => navigate("/FlorestaDosAlgoritmos")}
+                    correct={correct}
+                    wrong={wrong}
+                    time={timeSeconds}
+                />
+            )}
 
             <div className="scrollbar"
 

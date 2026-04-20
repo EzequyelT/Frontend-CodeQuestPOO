@@ -18,6 +18,8 @@ import Bg from "../../../assets/Maps/Bg-Map1-Nivel-2.jpg"
 import dsf_7 from "../../Data/Mapa-1/Nivel-3/dsf_7"
 
 import ModalService from '../Components/Modal/ModalService'
+import ModalFalha from '../Components/Modal/ModalFalha'
+
 
 // ─────────────────────────────────────────────
 // Separar os dados por tipo UMA vez fora do componente
@@ -122,7 +124,7 @@ export default function DSF7() {
                     primeiraVez: finalResult?.primeiraVez ?? true,
                 }}
                 onRepeat={() => window.location.reload()}
-                onBackToMap={() => navigate("/Floresta")}
+                onBackToMap={() => navigate("/FlorestaDosAlgoritmos")}
                 onNextChallenge={() => navigate("/floresta/nivel-3/desafio-8")}
             />
         )
@@ -137,8 +139,19 @@ export default function DSF7() {
                 challenge={challenge}
             />
 
+            {(quiz.showFailModal || code.showFailModal) && (
+                <ModalFalha
+                    isOpen={true}
+                    onRepetir={() => window.location.reload()}
+                    onVoltar={() => navigate("/FlorestaDosAlgoritmos")}
+                    correct={totalCorrect}
+                    wrong={totalWrong}
+                    time={phase === "quiz" ? quiz.timeSeconds : code.timeSeconds}
+                />
+            )}
 
-            <RightSideBar time={phase === "quiz" ? quiz.timeSeconds : code.timeSeconds} />
+
+            <RightSideBar time={phase === "quiz" ? quiz.timeSeconds : code.timeSeconds} attempts={code.attempts} wrong={quiz.wrong}  />
             <LeftSideBar />
 
             <div
