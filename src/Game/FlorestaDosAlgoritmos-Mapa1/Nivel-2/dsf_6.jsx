@@ -27,6 +27,23 @@ const challenge = {
     dificuldade: "Médio"
 };
 
+const animationStyles = `
+  @keyframes slideDownFadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-40px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .slide-in {
+    animation: slideDownFadeIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+`;
+
 export default function DSF6() {
 
     const [levels, setLevels] = useState([]);

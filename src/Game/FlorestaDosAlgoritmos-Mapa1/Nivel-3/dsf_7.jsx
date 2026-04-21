@@ -14,7 +14,7 @@ import { useQuiz } from "../../Hooks/useQuiz"
 import { getToken, getUser } from "../../../Services/auth/authStorage"
 import { getLevelsByMap } from "../../../Services/maps/levelService"
 
-import Bg from "../../../assets/Maps/Bg-Map1-Nivel-2.jpg"
+import Bg from "../../../assets/Maps/Bg-Map1-Nivel3.png"
 import dsf_7 from "../../Data/Mapa-1/Nivel-3/dsf_7"
 
 import ModalService from '../Components/Modal/ModalService'
@@ -48,7 +48,7 @@ export default function DSF7() {
     const token = getToken()
     const userId = getUser()
     const navigate = useNavigate()
-    const bgDim = 0.60
+    const bgDim = 0.40
     const mapaId = 1
 
     useEffect(() => {

@@ -41,6 +41,7 @@ export function useCode(fases = [], config = {}) {
     setLogs([])
     setMentorStatus("idle")
     setConsecutiveWrong(0)
+    setShowFailModal(false)
 
     if (currentHint.start) {
       addLog("info", currentHint.start)
@@ -139,7 +140,14 @@ export function useCode(fases = [], config = {}) {
       const error = stderr.trim()
       const finalOutput = error ? formatError(error) : output
 
-      const isValid = currentQuestion?.validate?.(output) ?? false
+      const isValid = currentQuestion?.validate?.(finalOutput) ?? false
+
+      console.log({
+        output,
+        finalOutput,
+        isValid,
+        consecutiveWrong,
+      })
 
       if (isValid) {
         setMentorStatus("success")
@@ -173,8 +181,8 @@ export function useCode(fases = [], config = {}) {
         )
 
         setConsecutiveWrong(prev => {
-          const next = wrong + 1
-          if (next >= 5) setShowFailModal(true)
+          const next = prev + 1
+          if (next === 5) setShowFailModal(true)
           return next
         })
 
