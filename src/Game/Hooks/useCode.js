@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { concluirDesafio } from "../../Services/Gameplay/xpProgressService"
 import { getPyodide } from "../../Python/pyodideEngine"
 import formatError from "../../Python/ErrorPyton"
@@ -30,6 +30,12 @@ export function useCode(fases = [], config = {}) {
   const [consecutiveWrong, setConsecutiveWrong] = useState(0)
   const [showFailModal, setShowFailModal] = useState(false)
 
+  const [totalWrong, setTotalWrong] = useState(0)
+  const [totalAttempts, setTotalAttempts] = useState(0)
+
+  const totalWrongRef = useRef(0)
+  const totalAttemptsRef = useRef(0)
+
   // RESET DA FASE
   useEffect(() => {
     if (!currentQuestion) return
@@ -42,6 +48,8 @@ export function useCode(fases = [], config = {}) {
     setMentorStatus("idle")
     setConsecutiveWrong(0)
     setShowFailModal(false)
+    setWrong(0)
+    setAttempts(0)
 
     if (currentHint.start) {
       addLog("info", currentHint.start)
@@ -68,15 +76,21 @@ export function useCode(fases = [], config = {}) {
 
     setSaving(true)
 
-    const totalTentativas = correct + wrong
+    const totalTentativas = correct + totalWrongRef.current
     const score =
       totalTentativas > 0
         ? Math.round((correct / totalTentativas) * 100)
         : 0
 
+    console.log("SAVE →", {          // ← log aqui para confirmar
+      erradas: totalWrongRef.current,
+      tentativas: totalAttemptsRef.current,
+      score,
+    })
+
     concluirDesafio(config.desafio_id, {
-      respostas_erradas: wrong,
-      tentativas: attempts,
+      respostas_erradas: totalWrong,
+      tentativas: totalAttempts,
       tempo_desafio: timeSeconds,
       score,
       ajudas_usadas: 0,
@@ -95,6 +109,8 @@ export function useCode(fases = [], config = {}) {
       })
   }, [finished, showFailModal])
 
+  console.log("Aqui", totalWrongRef.current, totalAttemptsRef.current)
+
   // LOGS
   function addLog(type, message) {
     const time = new Date().toLocaleTimeString()
@@ -102,7 +118,12 @@ export function useCode(fases = [], config = {}) {
   }
 
   function addErrorLog(message) {
+    totalWrongRef.current += 1
+    totalAttemptsRef.current += 1
     setWrong(w => w + 1)
+    setAttempts(a => a + 1)
+    setTotalAttempts(a => a + 1)
+    setTotalWrong(t => t + 1)
     addLog("error", message)
   }
 
@@ -112,7 +133,6 @@ export function useCode(fases = [], config = {}) {
 
     setLoading(true)
     setMentorStatus("typing")
-    setAttempts(a => a + 1)
 
     addLog("info", "🐍 Executando código...")
 
@@ -214,6 +234,8 @@ export function useCode(fases = [], config = {}) {
     timeSeconds,
     correct,
     wrong,
+    totalWrong,
+    totalAttempts,
     attempts,
     finalResult,
     saving,

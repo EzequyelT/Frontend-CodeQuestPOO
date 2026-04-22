@@ -2,32 +2,32 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Star, Gem, Trophy, Users, ChevronLeft, Settings, Volume2, Loader2 } from "lucide-react";
 import { getLevelsByMap } from "../../Services/maps/levelService";
-
+ 
 import { getProgresso } from "../../Services/users/userStatsService";
 import { obterXPAluno } from "../../Services/Gameplay/xpProgressService";
 import map from "../../assets/Maps/Map1.png";
 import Banner from "../../assets/Maps/Banner.jpg";
-
+ 
 import Arrow from "../../assets/Maps/Arrow.png";
 import ButtonImgtrophy from "../../assets/Buttons/Trofeu.png"
 import ButtonImgHero from "../../assets/Buttons/Game.png"
 import ButtonImgBack from "../../assets/Buttons/Back.png"
 import Button1 from "../../assets/Buttons/1.png"
-
+ 
 import Button2 from "../../assets/Buttons/2.png"
 import Button3 from "../../assets/Buttons/3.png"
 import Button4 from "../../assets/Buttons/4.png"
 import Button5 from "../../assets/Buttons/5.png"
-
+ 
 import Button6 from "../../assets/Buttons/6.png"
 import Button7 from "../../assets/Buttons/7.png"
 import Button8 from "../../assets/Buttons/8.png"
-
+ 
 // ... (GLOBAL_CSS e CONSTANTS permanecem iguais)
-
+ 
 const GLOBAL_CSS = `
 @import url('https://fonts.googleapis.com/css2?family=IM+Fell+English&family=DM+Sans:wght@400;600&display=swap');
-
+ 
 @keyframes pulseRing {
   0%   { transform: translate(-50%,-56%) scale(0.85); opacity: 0.7; }
   100% { transform: translate(-50%,-56%) scale(1.55); opacity: 0; }
@@ -55,7 +55,7 @@ const GLOBAL_CSS = `
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 `;
-
+ 
 const CHALLENGE_POSITIONS = {
   1: { x: 22, y: 88 },
   2: { x: 42, y: 78 },
@@ -66,7 +66,7 @@ const CHALLENGE_POSITIONS = {
   7: { x: 10, y: 35 },
   8: { x: 46, y: 22 },
 };
-
+ 
 const BUTTON_IMAGES = {
   1: Button1,
   2: Button2,
@@ -77,8 +77,8 @@ const BUTTON_IMAGES = {
   7: Button7,
   8: Button8,
 };
-
-
+ 
+ 
 const Color = {
   primary: {
     dark: "#0a2a4a",      // Fundo escuro do botão
@@ -87,7 +87,7 @@ const Color = {
     lighter: "#5a96d8",    // Azul mais claro
     brightest: "#7ab8ff",  // Azul brilhante
   },
-
+ 
   // Secundário (Ouro/Bronze - mantém o tema)
   secondary: {
     dark: "#3a2010",
@@ -95,14 +95,14 @@ const Color = {
     light: "#a08060",
     lighter: "#c4a878",
   },
-
+ 
   // Glow/Shadow
   glow: {
     blue: "rgba(79, 180, 255, 0.6)",
     blueSoft: "rgba(79, 180, 255, 0.3)",
     gold: "rgba(255, 215, 0, 0.6)",
   },
-
+ 
   // Neutros
   neutral: {
     bg: "#000",
@@ -111,35 +111,35 @@ const Color = {
     border: "rgba(30, 90, 142, 0.3)",
   },
 };
-
+ 
 const NODE_SIZE = 56;
-
+ 
 // ─────────────────────────────────────────────────────────────────────────────
 // DATA FETCHING
 // ─────────────────────────────────────────────────────────────────────────────
-
+ 
 async function fetchLevels(mapaId, token) {
   const [niveisDB, progressoTotal] = await Promise.all([
     getLevelsByMap(mapaId),
     getProgresso(token),
   ]);
-
+ 
   const progressoMapa = progressoTotal.find(p => p.mapa === mapaId) || {};
   const desafiosCompletos = progressoMapa.desafios_completos || 0;
   let posicaoGlobal = 0;
-
+ 
   const levels = niveisDB.map(nivel => ({
     id: nivel.id,
     name: nivel.nome,
     challenges: nivel.desafios.map(desafio => {
       const pos = CHALLENGE_POSITIONS[desafio.id] ?? { x: 50, y: 50 };
       const minhaPosicao = posicaoGlobal++;
-
+ 
       let state;
       if (minhaPosicao < desafiosCompletos) state = "completed";
       else if (minhaPosicao === desafiosCompletos) state = "available";
       else state = "locked";
-
+ 
       return {
         id: desafio.id,
         name: desafio.nome,
@@ -153,25 +153,25 @@ async function fetchLevels(mapaId, token) {
       };
     }),
   }));
-
+ 
   return {
     player: { stars: 0, gems: 0, xp: 0, xpMax: 500, level: 1 },
     levels,
   };
 }
-
+ 
 // ─────────────────────────────────────────────────────────────────────────────
 // HELPERS
 // ─────────────────────────────────────────────────────────────────────────────
-
+ 
 function allChallenges(levels) {
   return levels.flatMap(l => l.challenges);
 }
-
+ 
 // ─────────────────────────────────────────────────────────────────────────────
 // SUB-COMPONENTS — Challenge Node
 // ─────────────────────────────────────────────────────────────────────────────
-
+ 
 function NodeStars({ count }) {
   return (
     <div style={{ display: "flex", gap: 3, marginTop: 3 }}>
@@ -188,7 +188,7 @@ function NodeStars({ count }) {
     </div>
   );
 }
-
+ 
 function CompletedBadge() {
   return (
     <div style={{ position: "absolute", top: -10, right: -10, width: 26, height: 26, zIndex: 20 }}>
@@ -218,7 +218,7 @@ function CompletedBadge() {
     </div>
   );
 }
-
+ 
 function AvailableArrow() {
   return (
     <div style={{
@@ -232,7 +232,7 @@ function AvailableArrow() {
     </div>
   );
 }
-
+ 
 function PulseRings({ color }) {
   return (
     <>
@@ -251,11 +251,11 @@ function PulseRings({ color }) {
     </>
   );
 }
-
+ 
 function NodeTooltip({ challenge, onPlay }) {
   const isCompleted = challenge.state === "completed";
   const accentColor = isCompleted ? "#c8860a" : "#1e6fa8";
-
+ 
   return (
     <div
       onMouseEnter={e => e.stopPropagation()}
@@ -281,7 +281,7 @@ function NodeTooltip({ challenge, onPlay }) {
           ? "linear-gradient(90deg, transparent, #FFD700, transparent)"
           : "linear-gradient(90deg, transparent, #4fc3f7, transparent)",
       }} />
-
+ 
       {/* Arrow tip */}
       <div style={{
         position: "absolute", bottom: -7, left: "50%",
@@ -290,7 +290,7 @@ function NodeTooltip({ challenge, onPlay }) {
         background: accentColor,
         clipPath: "polygon(0 0, 100% 0, 50% 100%)",
       }} />
-
+ 
       {/* Completed badge label */}
       {isCompleted && (
         <div style={{
@@ -307,7 +307,7 @@ function NodeTooltip({ challenge, onPlay }) {
           </span>
         </div>
       )}
-
+ 
       <p style={{
         margin: "0 0 4px",
         fontFamily: "Georgia, serif", fontWeight: "bold", fontSize: 13,
@@ -319,7 +319,7 @@ function NodeTooltip({ challenge, onPlay }) {
       <p style={{ margin: 0, fontSize: 11, color: "#7a6045", lineHeight: 1.5 }}>
         {challenge.description}
       </p>
-
+ 
       <div style={{
         marginTop: 9, paddingTop: 8,
         borderTop: "1px solid rgba(255,255,255,0.05)",
@@ -349,7 +349,7 @@ function NodeTooltip({ challenge, onPlay }) {
           ))}
         </div>
       </div>
-
+ 
       <button
         onClick={onPlay}
         style={{
@@ -393,10 +393,10 @@ function ChallengeNode({ challenge, onHover, hoveredId, navigate }) {
   const isAvailable = challenge.state === "available";
   const isCompleted = challenge.state === "completed";
   const buttonImage = BUTTON_IMAGES[challenge.id] || Button1;
-
-
+ 
+ 
   useEffect(() => () => clearTimeout(hoverTimeout.current), []);
-
+ 
   const handleMouseEnter = () => {
     clearTimeout(hoverTimeout.current);
     if (!isLocked) onHover(challenge.id);
@@ -404,7 +404,7 @@ function ChallengeNode({ challenge, onHover, hoveredId, navigate }) {
   const handleMouseLeave = () => {
     hoverTimeout.current = setTimeout(() => onHover(null), 400);
   };
-
+ 
   return (
     <div
       onMouseEnter={handleMouseEnter}
@@ -427,11 +427,11 @@ function ChallengeNode({ challenge, onHover, hoveredId, navigate }) {
       }}
     >
       {isAvailable && <AvailableArrow />}
-
+ 
       {(isAvailable || isCompleted) && (
         <PulseRings color={isCompleted ? "rgba(255,215,0,0.3)" : "rgba(79,195,247,0.35)"} />
       )}
-
+ 
       {/* ════════════════════════════════════════════════════════════ */}
       {/* 🎮 BOTÃO DO DESAFIO - SÓ A IMAGEM (SEM BORDERS) */}
       {/* ════════════════════════════════════════════════════════════ */}
@@ -463,7 +463,7 @@ function ChallengeNode({ challenge, onHover, hoveredId, navigate }) {
           }}
           alt={`Fase ${challenge.id}`}
         />
-
+ 
         {/* Lock overlay - aparece por cima da imagem */}
         {isLocked && (
           <div
@@ -497,14 +497,14 @@ function ChallengeNode({ challenge, onHover, hoveredId, navigate }) {
             </svg>
           </div>
         )}
-
+ 
         {/* Badge de concluído no canto */}
         {isCompleted && <CompletedBadge />}
       </div>
-
+ 
       {/* Stars abaixo do botão */}
       {!isLocked && <NodeStars count={challenge.stars} />}
-
+ 
       {/* Tooltip ao passar o mouse */}
       {isHovered && !isLocked && (
         <NodeTooltip
@@ -515,15 +515,15 @@ function ChallengeNode({ challenge, onHover, hoveredId, navigate }) {
     </div>
   );
 }
-
+ 
 // ─────────────────────────────────────────────────────────────────────────────
 // SUB-COMPONENTS — Map decorations
 // ─────────────────────────────────────────────────────────────────────────────
-
+ 
 function LevelPath({ challenges }) {
   if (challenges.length < 2) return null;
   const pts = challenges.map(c => ({ x: c.x, y: c.y }));
-
+ 
   const buildD = upTo => {
     let d = `M ${pts[0].x} ${pts[0].y}`;
     for (let i = 0; i < Math.min(upTo, pts.length - 1); i++) {
@@ -532,11 +532,11 @@ function LevelPath({ challenges }) {
     }
     return d;
   };
-
+ 
   const fullD = buildD(pts.length - 1);
   const litEnd = challenges.findIndex(c => c.state === "available");
   const litD = buildD(litEnd >= 0 ? litEnd : challenges.filter(c => c.state === "completed").length - 1);
-
+ 
   return (
     <svg viewBox="0 0 100 100" preserveAspectRatio="none"
       style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none", zIndex: 4 }}>
@@ -547,7 +547,7 @@ function LevelPath({ challenges }) {
     </svg>
   );
 }
-
+ 
 function LevelBanner({ level }) {
   const first = level.challenges[0];
   return (
@@ -572,20 +572,20 @@ function LevelBanner({ level }) {
     </div>
   );
 }
-
+ 
 // ─────────────────────────────────────────────────────────────────────────────
 // SUB-COMPONENTS — HUD
 // ─────────────────────────────────────────────────────────────────────────────
-
-
+ 
+ 
 function XPBar({ xp, xpMax, level }) {
   const xpValido = xp ?? 0;
   const nivelValido = level ?? 1;
-
+ 
   const isMax = !xpMax || xpMax <= 0;
   const xpMaxValido = isMax ? xpValido : xpMax;          // nunca null na divisão
   const pct = isMax ? 100 : Math.min((xpValido / xpMaxValido) * 100, 100);
-
+ 
   return (
     <div style={{
       display: "flex",
@@ -612,7 +612,7 @@ function XPBar({ xp, xpMax, level }) {
       }}>
         {nivelValido}
       </div>
-
+ 
       {/* Barra e Textos */}
       <div style={{ flex: 1 }}>
         {/* Labels */}
@@ -639,7 +639,7 @@ function XPBar({ xp, xpMax, level }) {
             {isMax ? "👑 MAX" : `${xpValido} / ${xpMaxValido} XP`}
           </span>
         </div>
-
+ 
         {/* Barra de Progresso */}
         <div style={{
           height: 12,
@@ -654,7 +654,7 @@ function XPBar({ xp, xpMax, level }) {
               height: "100%",
               width: `${pct}%`,
               borderRadius: 5,
-              background: `linear-gradient(90deg, 
+              background: `linear-gradient(90deg,
                 ${Color.primary.dark} 0%,
                 ${Color.primary.main} 30%,
                 ${Color.primary.light} 50%,
@@ -675,7 +675,7 @@ function XPBar({ xp, xpMax, level }) {
                 animation: "shimmer 2.5s infinite",
               }}
             />
-
+ 
             {/* Pulsing Light */}
             <div
               style={{
@@ -691,12 +691,12 @@ function XPBar({ xp, xpMax, level }) {
     </div>
   )
 }
-
+ 
 function ProgressBar({ levels }) {
   const all = allChallenges(levels);
   const done = all.filter(c => c.state === "completed").length;
   const pct = Math.round((done / all.length) * 100);
-
+ 
   return (
     <div style={{
       position: "absolute", right: 12, top: "50%",
@@ -721,13 +721,13 @@ function ProgressBar({ levels }) {
     </div>
   );
 }
-
+ 
 // ─────────────────────────────────────────────────────────────────────────────
 // MAIN PAGE
 // ─────────────────────────────────────────────────────────────────────────────
-
+ 
 const MAP_EXTRA = 1.8;
-
+ 
 export default function FlorestaDosAlgoritmos() {
   const [data, setData] = useState(null);
   const [progressaoXp, setProgressaoXp] = useState({
@@ -740,13 +740,13 @@ export default function FlorestaDosAlgoritmos() {
   const [hoveredId, setHoveredId] = useState(null);
   const [translateY, setTranslateY] = useState(0);
   const [dragging, setDragging] = useState(false);
-
+ 
   const mainRef = useRef(null);
   const dragStartY = useRef(0);
   const dragStartTrans = useRef(0);
   const navigate = useNavigate();
-
-
+ 
+ 
   useEffect(() => {
     async function carregar() {
       try {
@@ -763,7 +763,7 @@ export default function FlorestaDosAlgoritmos() {
     }
     carregar();
   }, []);
-
+ 
   // ✅ CORRIGIDO: Extrai corretamente os dados da progressão
   useEffect(() => {
     async function fetchProgressao() {
@@ -771,16 +771,16 @@ export default function FlorestaDosAlgoritmos() {
         const resultado = await obterXPAluno();
         if (resultado) {
           console.log("[Dashboard] Progressão carregada:", resultado);
-
+ 
           // Acessa a estrutura aninhada corretamente
           const progressaoDados = resultado.progressao || resultado;
-
+ 
           setProgressaoXp({
             xpTotal: progressaoDados?.xpTotal || 0,
             xpProximoNivel: progressaoDados?.xpProximoNivel || null,
             nivel: progressaoDados?.nivel || 1,
           });
-
+ 
         }
       } catch (err) {
         console.error("Erro ao carregar progressão", err);
@@ -794,12 +794,12 @@ export default function FlorestaDosAlgoritmos() {
     }
     fetchProgressao();
   }, []);
-
+ 
   function clampY(y) {
     const mainH = mainRef.current?.offsetHeight ?? 600;
     return Math.max(-(MAP_EXTRA - 1) * mainH, Math.min(0, y));
   }
-
+ 
   function onPointerDown(e) {
     if (e.target.closest("button")) return;
     setDragging(true);
@@ -812,13 +812,13 @@ export default function FlorestaDosAlgoritmos() {
     setTranslateY(clampY(dragStartTrans.current + (e.clientY - dragStartY.current)));
   }
   function onPointerUp() { setDragging(false); }
-
+ 
   if (error) return (
     <div style={{ height: "100dvh", background: "#000", display: "flex", alignItems: "center", justifyContent: "center" }}>
       <p style={{ color: "#f87171", fontFamily: "Georgia,serif" }}>Erro: {error}</p>
     </div>
   );
-
+ 
   if (loading) return (
     <div style={{ height: "100dvh", background: "#000", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 14 }}>
       <style>{`@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}`}</style>
@@ -826,15 +826,15 @@ export default function FlorestaDosAlgoritmos() {
       <p style={{ fontFamily: "Georgia,serif", color: "#a08060", fontSize: 14 }}>A carregar o mapa…</p>
     </div>
   );
-
+ 
   const { player, levels } = data;
   const challenges = allChallenges(levels);
   const done = challenges.filter(c => c.state === "completed").length;
-
+ 
   return (
     <>
       <style>{GLOBAL_CSS}</style>
-
+ 
       <div style={{
         fontFamily: "DM Sans, sans-serif",
         background: "#000",
@@ -842,7 +842,7 @@ export default function FlorestaDosAlgoritmos() {
         display: "flex", flexDirection: "column",
         overflow: "hidden",
       }}>
-
+ 
         {/* ── HEADER ── */}
         <header style={{
           position: "relative",
@@ -863,7 +863,7 @@ export default function FlorestaDosAlgoritmos() {
           >
             <img src={ButtonImgBack} className="h-12 w-12" />
           </button>
-
+ 
           <div style={{ position: "absolute", left: "50%", transform: "translateX(-50%)", textAlign: "center" }}>
             <div style={{ position: "relative", display: "inline-block" }}>
               <img src={Banner} alt="Banner" style={{
@@ -894,7 +894,7 @@ export default function FlorestaDosAlgoritmos() {
               </div>
             </div>
           </div>
-
+ 
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             {[
               { icon: <Star size={13} style={{ fill: "#FFD700", color: "#FFD700" }} />, val: player.stars, border: "rgba(255,215,0,0.5)", color: "#f5e090" },
@@ -923,14 +923,17 @@ export default function FlorestaDosAlgoritmos() {
             </button>
           </div>
         </header>
-
+ 
         {/* ── MAP ── */}
         <main
           ref={mainRef}
           style={{
-            flex: 1, position: "relative", overflow: "hidden",
+            flex: 1,
+            position: "relative",
+            overflow: "hidden",
             cursor: dragging ? "grabbing" : "grab",
             touchAction: "none",
+            userSelect:"none",
           }}
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
@@ -943,19 +946,27 @@ export default function FlorestaDosAlgoritmos() {
             transform: `translateY(${translateY}px)`,
             transition: dragging ? "none" : "transform 1.6s cubic-bezier(0.4,0,0.2,1)",
           }}>
-            <img src={map} alt="Mapa" style={{
-              width: "100%", height: "100%",
-              objectFit: "cover", objectPosition: "center",
+            <img src={map}
+            alt="Mapa"
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              objectPosition: "center",
               filter: "brightness(0.75) saturate(0.90)",
-              display: "block", position: "absolute", inset: 0,
+              display: "block",
+              position: "absolute",
+              inset: 0,
+              userSelect: "none",
+              pointerEvents: "none",
             }} />
-
+ 
             <div style={{
               position: "absolute", inset: 0,
               background: "radial-gradient(ellipse at center,transparent 35%,rgba(0,0,0,0.65) 100%)",
               pointerEvents: "none",
             }} />
-
+ 
             {levels.map(level => (
               <div key={level.id} style={{ position: "absolute", inset: 0 }}>
                 <LevelPath challenges={level.challenges} />
@@ -971,7 +982,7 @@ export default function FlorestaDosAlgoritmos() {
                 ))}
               </div>
             ))}
-
+ 
             {/* Floating particles */}
             {[...Array(10)].map((_, i) => (
               <div key={i} style={{
@@ -986,7 +997,7 @@ export default function FlorestaDosAlgoritmos() {
               }} />
             ))}
           </div>
-
+ 
           {/* Edge fades */}
           <div style={{
             position: "absolute", top: 0, left: 0, right: 0, height: 70,
@@ -998,9 +1009,9 @@ export default function FlorestaDosAlgoritmos() {
             background: "linear-gradient(0deg,rgba(0,0,0,0.8),transparent)",
             pointerEvents: "none", zIndex: 15,
           }} />
-
+ 
           <ProgressBar levels={levels} />
-
+ 
           {!dragging && (
             <div style={{
               position: "absolute", bottom: 90, left: "50%",
@@ -1017,7 +1028,7 @@ export default function FlorestaDosAlgoritmos() {
             </div>
           )}
         </main>
-
+ 
         {/* ── FOOTER ── */}
         <footer style={{
           display: "flex",
@@ -1061,7 +1072,7 @@ export default function FlorestaDosAlgoritmos() {
               <img src={icon} style={{ width: 80, height: 65, objectFit: "contain" }} alt={id} />
             </button>
           ))}
-
+ 
           {/* XP Bar */}
           <div style={{ flex: 1, paddingLeft: 20 }}>
             <XPBar

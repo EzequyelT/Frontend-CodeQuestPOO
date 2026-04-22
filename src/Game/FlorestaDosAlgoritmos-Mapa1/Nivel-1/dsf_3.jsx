@@ -66,6 +66,7 @@ export default function DSF3() {
         addLog,
         timeSeconds,
         correct,
+        totalWrong,
         wrong,
         finalResult,
         saving,
@@ -104,7 +105,7 @@ export default function DSF3() {
 
     const score = Math.max(
         0,
-        Math.round((correct / (correct + wrong)) * 100)
+        Math.round((correct / (correct + totalWrong)) * 100)
     )
 
     if (finished && !saving) {
@@ -114,7 +115,7 @@ export default function DSF3() {
                 <Result
                     result={{
                         correct,
-                        wrong,
+                        wrong: totalWrong,
                         timeSeconds,
 
                         xpGained: finalResult?.xpGanho?.total ?? correct * 80,

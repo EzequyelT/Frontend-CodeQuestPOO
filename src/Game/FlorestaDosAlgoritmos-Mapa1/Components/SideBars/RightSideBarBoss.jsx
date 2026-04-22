@@ -375,7 +375,7 @@ function BossBanner({ correct = 0, totalFases = 5 }) {
             {/* Barra de vida */}
             <div className="absolute bottom-23 left-6 right-40">
                 <div
-                    className={`boss-bar-track h-4 rounded-full overflow-hidden border relative ${shaking ? "shaking" : ""}`}
+                    className={`boss-bar-track h-5 rounded-full overflow-hidden border relative ${shaking ? "shaking" : ""}`}
                     style={{
                         background: Color.neutral.card,
                         borderColor: "rgba(224, 90, 90, 0.3)",

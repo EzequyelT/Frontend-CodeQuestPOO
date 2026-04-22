@@ -77,7 +77,7 @@ const OBJETIVO = {
 };
 
 const FEEDBACK_IA = {
-    dica: "Lembra-te de usar self como primeiro parâmetro em métodos de instância.",
+    dica: "Em desenvolvimento.",
     tipo: "💡 Feedback Inteligente",
 };
 
@@ -520,6 +520,16 @@ function MiniMapa({ levels, desafiosCompletos, progressoMapa }) {
     );
 }
 
+function getWrongStyle(wrong, limit = 5) {
+    const ratio = wrong / limit
+
+    if (ratio === 0) return { color: "text-white", pulse: "", glow: "" }
+    if (ratio <= 0.4) return { color: "text-yellow-300", pulse: "animate-pulse", glow: "" }
+    if (ratio <= 0.6) return { color: "text-orange-400", pulse: "animate-pulse", glow: "drop-shadow-[0_0_4px_rgba(251,146,60,0.8)]" }
+    if (ratio < 1) return { color: "text-red-400", pulse: "animate-[pulse_0.6s_ease-in-out_infinite]", glow: "drop-shadow-[0_0_6px_rgba(239,68,68,0.9)]" }
+    return { color: "text-red-500", pulse: "animate-[pulse_0.3s_ease-in-out_infinite]", glow: "drop-shadow-[0_0_8px_rgba(239,68,68,1)]" }
+}
+
 // ─── COMPONENTE PRINCIPAL ────────────────────────────────────────────────────
 
 export default function RightSideBar({ time, attempts, wrong = 0 }) {
@@ -532,9 +542,6 @@ export default function RightSideBar({ time, attempts, wrong = 0 }) {
 
     const objetivo = OBJETIVO;
     const feedbackIA = FEEDBACK_IA;
-
-    console.log("XP RAW:", progressaoXp)
-    console.log("XP PROGRESSAO:", progressaoXp?.progressao)
 
     function formatTime(totalSeconds) {
         const horas = Math.floor(totalSeconds / 3600);
@@ -609,9 +616,6 @@ export default function RightSideBar({ time, attempts, wrong = 0 }) {
                     fetchLevelsData(1, token),
                     obterXPAluno()
                 ]);
-
-                console.log("Levels Result:", levelsResult);
-                console.log("XP Result:", xpResult);
 
                 setLevels(levelsResult.levels);
                 setDesafiosCompletos(levelsResult.desafiosCompletos);
@@ -767,12 +771,17 @@ export default function RightSideBar({ time, attempts, wrong = 0 }) {
                                 <span className="text-gray-500 text-[10px]">🎯 Tentativas</span>
                                 <span className="text-white text-[10px] font-bold">{attempts}</span>
                             </>
-                        ) : (
-                            <>
-                                <span className="text-gray-500 text-[10px]">❌ Erradas</span>
-                                <span className="text-[#e05a5a] text-[10px] font-bold">{wrong ?? 0}</span>
-                            </>
-                        )}
+                        ) : (() => {
+                            const { color, pulse, glow } = getWrongStyle(wrong)
+                            return (
+                                <>
+                                    <span className="text-gray-500 text-[10px]">❌ Erradas</span>
+                                    <span className={`text-[10px] font-bold transition-colors duration-500 ${color} ${pulse} ${glow}`}>
+                                        {wrong ?? 0}
+                                    </span>
+                                </>
+                            )
+                        })()}
                     </div>
 
                 </div>
