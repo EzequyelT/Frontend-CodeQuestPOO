@@ -32,6 +32,7 @@ export default function DSF3() {
     const [desafioId, setDesafioId] = useState(null);
     const [showModal, setShowModal] = useState(true);
     const [modalNivelConcluido, setModalNivelConcluido] = useState(null);
+    const [showResult, setShowResult] = useState(false);
 
     const token = getToken()
     const userId = getUser()
@@ -108,7 +109,7 @@ export default function DSF3() {
         Math.round((correct / (correct + totalWrong)) * 100)
     )
 
-    if (finished && !saving) {
+    if ((finished && !saving) || showResult) {
         console.log("FINAL RESULT:", finalResult)
         return (
             <>
@@ -128,7 +129,7 @@ export default function DSF3() {
 
                     }}
                     onRepeat={() => window.location.reload()}
-                    onBackToMap={() => navigate("/Floresta")}
+                    onBackToMap={() => navigate("/FlorestaDosAlgoritmos")}
                     onNextChallenge={() => {
                         navigate("/floresta/nivel-2/desafio-4")
                     }}
@@ -178,7 +179,7 @@ export default function DSF3() {
                 <ModalFalha
                     isOpen={true}
                     onRepetir={() => window.location.reload()}
-                    onVoltar={() => navigate("/FlorestaDosAlgoritmos")}
+                    onVoltar={() => setShowModal(true)}
                     correct={correct}
                     wrong={wrong}
                     time={timeSeconds}

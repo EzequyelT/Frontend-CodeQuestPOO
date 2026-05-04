@@ -49,7 +49,8 @@ export default function DSF6() {
     const [levels, setLevels] = useState([]);
     const [desafioId, setDesafioId] = useState(null);
     const [showModal, setShowModal] = useState(true);
-    const [modalNivelConcluido, setModalNivelConcluido] = useState(null);  // ✅ adicionado
+    const [modalNivelConcluido, setModalNivelConcluido] = useState(null);
+    const [showResult, setShowResult] = useState(false);
 
     const token = getToken()
     const userId = getUser()
@@ -125,7 +126,7 @@ export default function DSF6() {
         Math.round((correct / (correct + wrong)) * 100)
     )
 
-    if (finished && !saving) {
+    if ((finished && !saving) || showResult) {
         return (
             <>
                 <Result
@@ -183,7 +184,7 @@ export default function DSF6() {
                 <ModalFalha
                     isOpen={true}
                     onRepetir={() => window.location.reload()}
-                    onVoltar={() => navigate("/FlorestaDosAlgoritmos")}
+                    onVoltar={() => setShowResult(true)}
                     correct={correct}
                     wrong={wrong}
                     time={timeSeconds}

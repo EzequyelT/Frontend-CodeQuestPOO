@@ -2,18 +2,6 @@ import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import BgModal from "../../../../assets/Maps/ModalChallenge.png"; // mesma imagem
 
-/*
-  Props:
-    isOpen       – boolean
-    onClose      – () => void
-    onContinuar  – () => void  → navega para o próximo nível
-    nivelNome    – string      → ex: "Nível 1 — Fundamentos"
-    xpGanho      – number      → total de XP ganho
-    proximoNivel – {
-      nivel: number,
-      desafios: Array<{ id, titulo, descricao, xp_recompensa, ordem }>
-    } | null     → null = fim do jogo
-*/
 export default function ModalNivelConcluido({
     isOpen,
     onClose,
@@ -252,7 +240,7 @@ export default function ModalNivelConcluido({
                                 onClick={handleClose}
                                 className="nc-btn-secondary text-amber-700 text-sm"
                             >
-                                Descansar na taverna
+                                Ver Resultado
                             </button>
 
                         </div>

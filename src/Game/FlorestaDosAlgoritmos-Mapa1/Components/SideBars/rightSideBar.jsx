@@ -357,12 +357,11 @@ function MiniMapa({ levels, desafiosCompletos, progressoMapa }) {
                         numColor: Color.secondary.lighter,
                     },
                     available: {
-                        border: `3px solid ${Color.primary.brightest}`,
+                        border: `2px solid ${Color.secondary.lighter}`,
                         bg: `radial-gradient(circle at 35% 35%, ${Color.primary.lighter}, ${Color.primary.dark})`,
                         glow: `0 0 20px ${Color.glow.blue}, 0 0 40px ${Color.glow.blueSoft}, inset 0 0 15px rgba(122, 184, 255, 0.2)`,
                         numColor: "#fff",
                         transform: "scale(1.15)",
-                        boxShadow: `0 0 25px ${Color.glow.blue}, 0 0 50px ${Color.glow.blueSoft}`,
                     },
                     locked: {
                         border: `2px solid ${Color.neutral.border}`,

@@ -28,8 +28,6 @@ export default function ModalModalFalha({
             requestAnimationFrame(() => setAnimatingOut(false));
         } else {
             setAnimatingOut(true);
-            const t = setTimeout(() => setVisible(false), 300);
-            return () => clearTimeout(t);
         }
     }, [isOpen]);
 
@@ -48,7 +46,7 @@ export default function ModalModalFalha({
     return createPortal(
         <div
             className={`fixed inset-0 z-100 flex items-center justify-center
-                     backdrop-blur-md bg-black/60
+                     backdrop-blur-md bg-black/80
                      ${animatingOut ? "nc-backdrop-out" : "nc-backdrop-in"}`}
             onClick={handleClose}
         >
