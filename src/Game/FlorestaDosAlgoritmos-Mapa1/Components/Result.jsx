@@ -6,7 +6,6 @@ import buttonRemake from "../../../assets/Buttons/Refazer.png";
 import Bg from "../../../assets/Maps/Bg-Map1.png"
 
 
-// ── Paleta idêntica ao LeftSideBar ──────────────────────────
 const Color = {
   primary: {
     dark: "#0a2a4a",
@@ -35,7 +34,8 @@ const Color = {
   },
 };
 
-// ── Mock ────────────────────────────────────────────────────
+
+
 function formatTime(s) {
   const m = Math.floor(s / 60);
   return m > 0 ? `${m}m ${s % 60}s` : `${s}s`;
@@ -48,7 +48,6 @@ function getScoreLabel(score) {
   return { label: "Continue tentando!", color: "#e05c5c" };
 }
 
-// ── Score Ring ──────────────────────────────────────────────
 function ScoreRing({ score }) {
   const [displayed, setDisplayed] = useState(0);
   const radius = 52;
@@ -71,7 +70,6 @@ function ScoreRing({ score }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
       <div style={{ position: "relative", width: 128, height: 128 }}>
-        {/* glow ring por baixo */}
         <div style={{
           position: "absolute", inset: -4, borderRadius: "50%",
           boxShadow: `0 0 24px 6px ${Color.glow.goldSoft}, 0 0 48px 12px ${Color.glow.blueSoft}`,
@@ -197,14 +195,13 @@ function ActionBtn({ onClick, children, primary = false }) {
   );
 }
 
-// ── Main ─────────────────────────────────────────────────────
 export default function QuizResult({
-  result ,
+  result,
   onRepeat,
   onNextChallenge,
-  onBackToMap,
 }) {
   const { correct, wrong, timeSeconds, hintsUsed, xpGained, score, streak, quizTitle } = result;
+  const isPerfect = result.wrong === 0;
   const navigate = useNavigate();
   const bgDim = (0.65)
 
@@ -233,7 +230,6 @@ export default function QuizResult({
           fontFamily: "system-ui, sans-serif",
         }}>
 
-          {/* Header */}
           <div style={{ textAlign: "center", width: "100%" }}>
             <p style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", letterSpacing: "0.14em", margin: "0 0 5px" }}>
               RESULTADO FINAL
@@ -241,6 +237,32 @@ export default function QuizResult({
             <h2 style={{ color: "#fff", margin: 0, fontSize: 17, fontWeight: 700 }}>
               {quizTitle}
             </h2>
+            {isPerfect && (
+              <div style={{
+                width: "100%",
+                background: "linear-gradient(135deg, rgba(255,215,0,0.08), rgba(79,180,255,0.08))",
+                border: "1px solid rgba(255,215,0,0.3)",
+                borderRadius: 16,
+                padding: "16px 20px",
+                textAlign: "center",
+              }}>
+                <p style={{ color: "#ffe08a", fontSize: 15, fontWeight: 700, margin: "0 0 4px" }}>
+                  Pontuação Perfeita!
+                </p>
+                <p style={{ color: "rgba(255,255,255,0.55)", fontSize: 12, margin: "0 0 8px", lineHeight: 1.5 }}>
+                  Acertaste todas as questões sem errar nenhuma. Impressionante!
+                </p>
+                <span style={{
+                  display: "inline-block",
+                  background: `linear-gradient(135deg, ${Color.secondary.dark}, ${Color.secondary.main})`,
+                  color: Color.secondary.lighter,
+                  fontSize: 11, fontWeight: 700, padding: "4px 16px", borderRadius: 999,
+                  border: "1px solid rgba(255,185,0,0.25)",
+                }}>
+                  🔥 +1 Streak conquistado!
+                </span>
+              </div>
+            )}
 
             {streak > 1 && (
               <span style={{
@@ -251,7 +273,7 @@ export default function QuizResult({
                 border: `1px solid rgba(255,185,0,0.25)`,
                 boxShadow: `0 0 10px ${Color.glow.goldSoft}`,
               }}>
-                🔥 Streak {streak} dias
+                🔥 Streak {streak} desafios seguidos!
               </span>
             )}
           </div>

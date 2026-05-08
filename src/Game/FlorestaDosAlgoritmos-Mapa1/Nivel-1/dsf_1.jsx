@@ -73,18 +73,17 @@ export default function DSF1() {
         totalQuestions,
         response,       // ← chamado pelo QuestionCard no onDrop
         resetSlot,
-        finalResult, 
-        resetQuiz,  
+        finalResult,
+        resetQuiz,
         showFailModal,   // ← chamado pelo botão RotateCcw
+        streakAtual
     } = useQuiz(dsf.perguntas, { //Estou a terminar de conectar a rota do desempenho agora preciso de coloca o id do mapa e ver se esta registrado certo. Depois arrumar todo o fichero Service
         token: token,
         aluno_id: userId,
         desafio_id: desafioId,
-        level_Id: levels
+        level_Id: levels,
     })
 
-
-    // ✅ return obrigatório
     if (finished) {
         return (
             <Result
@@ -95,7 +94,7 @@ export default function DSF1() {
                     hintsUsed: 0,
                     xpGained: finalResult?.xpGanho?.total ?? correct * 80,
                     score: Math.round((correct / totalQuestions) * 100),
-                    streak: dsf.streak,
+                    streak: streakAtual,
                     quizTitle: dsf.titulo,
                     desafioCompleto: finalResult?.desafioCompleto ?? false,
                     primeiraVez: finalResult?.primeiraVez ?? true,
@@ -106,7 +105,7 @@ export default function DSF1() {
                     navigate("/floresta/nivel-1/desafio-2")
                 }}
             />
-        ) //Proximo : Nao está avançando pro proximo nivel. 
+        )
     }
 
     return (

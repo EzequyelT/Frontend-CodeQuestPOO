@@ -29,11 +29,10 @@ const dsf_1 = {
       texto: "Qual destas é uma variável válida?",
       opcoes: [
         { id: "a", label: "1nome" },
-        { id: "b", label: "nome_1" },
-        { id: "c", label: "nome-1" },
-        { id: "d", label: "nome 1" },
+        { id: "b", label: "nome-1" },
+        { id: "c", label: "nome 1" },
       ],
-      correctId: "b",
+      correctId: "a",
     },
     {
       id: 4,

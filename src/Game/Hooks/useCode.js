@@ -36,7 +36,6 @@ export function useCode(fases = [], config = {}) {
   const totalWrongRef = useRef(0)
   const totalAttemptsRef = useRef(0)
 
-  // RESET DA FASE
   useEffect(() => {
     if (!currentQuestion) return
 
@@ -56,7 +55,6 @@ export function useCode(fases = [], config = {}) {
     }
   }, [currentIndex])
 
-  // TIMER
   useEffect(() => {
     if (finished || showFailModal) return
 
@@ -67,7 +65,6 @@ export function useCode(fases = [], config = {}) {
     return () => clearInterval(t)
   }, [finished, showFailModal, startTime])
 
-  // SALVAR RESULTADO FINAL
   useEffect(() => {
     if (!finished) return
     if (!config.token || !config.desafio_id) return
@@ -109,7 +106,6 @@ export function useCode(fases = [], config = {}) {
       })
   }, [finished, showFailModal])
 
-  console.log("Aqui", totalWrongRef.current, totalAttemptsRef.current)
 
   // LOGS
   function addLog(type, message) {

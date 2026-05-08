@@ -731,8 +731,6 @@ export default function RightSideBar({ time, attempts, wrong = 0 }) {
                     </div>
 
 
-
-
                     <XPBar
                         xpAtual={progressaoXp?.progressao?.xpAtualNivel ?? 0}
                         xpProximo={progressaoXp?.progressao?.xpProximoNivel ?? "👑 Nível Máximo Atingido!"}

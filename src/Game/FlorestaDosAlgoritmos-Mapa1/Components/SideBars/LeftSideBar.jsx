@@ -8,8 +8,6 @@ import ButtonImgHouse from "../../../../assets/Buttons/House.png"
 import ButtonImgInfo from "../../../../assets/Buttons/Info.png"
 import ButtonImgConfig from "../../../../assets/Buttons/Config.png"
 
-
-
 const Color = {
     primary: {
         dark: "#0a2a4a",
@@ -64,6 +62,7 @@ export default function LeftSideBar() {
         fetchStats();
     }, []);
 
+
     return (
         <aside
             className="fixed top-0 mt-6 flex flex-col items-center gap-3 left-38 py-5 px-2"
@@ -77,7 +76,6 @@ export default function LeftSideBar() {
                 backdropFilter: "blur(5px)",
             }}
         >
-            {/* Avatar Button com novo gradiente */}
             <button
                 type="button"
                 className="w-10 h-10 mb-2 rounded-full flex items-center justify-center font-bold text-white shrink-0 transition-all duration-200 hover:scale-105 active:scale-95"
@@ -90,7 +88,6 @@ export default function LeftSideBar() {
                 U
             </button>
 
-            {/* Coins Badge */}
             <div
                 className="text-white font-bold text-[10px] tracking-wider px-2 py-0.5 rounded-xl flex items-center gap-1 transition-all duration-200 hover:scale-105"
                 style={{
@@ -103,7 +100,6 @@ export default function LeftSideBar() {
                 {stats.coins}
             </div>
 
-            {/* Streak Badge */}
             <div
                 className="text-white font-bold text-[10px] tracking-wider px-2 py-0.5 rounded-xl flex items-center gap-1 transition-all duration-200 hover:scale-105"
                 style={{
@@ -116,7 +112,6 @@ export default function LeftSideBar() {
                 {stats.streak}
             </div>
 
-            {/* Divider */}
             <div
                 className="w-8 shrink-0"
                 style={{
@@ -125,26 +120,22 @@ export default function LeftSideBar() {
                 }}
             />
 
-            {/* Settings Button */}
             <SidebarButton onClick={() => { }}>
-                <img src={ButtonImgConfig} size={18}  />
+                <img src={ButtonImgConfig} size={18} />
             </SidebarButton>
 
-              <SidebarButton onClick={() => { }}>
-                <img src={ButtonImgInfo} size={18}  />
+            <SidebarButton onClick={() => { }}>
+                <img src={ButtonImgInfo} size={18} />
             </SidebarButton>
 
-            {/* Spacer */}
             <div className="flex-1" />
 
-            {/* Voltar / Undo Button */}
             <SidebarButton onClick={() => navigate(-1)}>
-                <img src={ButtonImgBack} size={18}  />
+                <img src={ButtonImgBack} size={18} />
             </SidebarButton>
 
-            {/* Home Button */}
             <SidebarButton onClick={() => navigate("/dashboard")}>
-                <img src={ButtonImgHouse} size={18}  />
+                <img src={ButtonImgHouse} size={18} />
             </SidebarButton>
         </aside>
     );

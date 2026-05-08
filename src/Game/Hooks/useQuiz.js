@@ -27,7 +27,7 @@ export function useQuiz(perguntas = [], config = {}) {
     const t = setInterval(() =>
       setTimeSeconds(Math.floor((Date.now() - startTime) / 1000)), 1000)
     return () => clearInterval(t)
-    
+
   }, [finished, startTime, showFailModal])
 
   useEffect(() => {
@@ -35,7 +35,7 @@ export function useQuiz(perguntas = [], config = {}) {
 
     const timer = setTimeout(() => advanceQuestion(), 2000)
     return () => clearTimeout(timer)
-    
+
   }, [currentResponse, currentIndex])
 
   useEffect(() => {
@@ -47,6 +47,7 @@ export function useQuiz(perguntas = [], config = {}) {
     const score = Math.round((correct / perguntas.length) * 100)
 
     concluirDesafio(config.desafio_id, {
+      respostas_certas: correct,
       respostas_erradas: wrong,
       tentativas: 1,
       tempo_desafio: timeSeconds,
@@ -63,7 +64,16 @@ export function useQuiz(perguntas = [], config = {}) {
         console.error("Erro no desempenho", err)
       })
 
-  }, [finished, showFailModal])
+  }, [
+    finished,
+    showFailModal,
+    correct,
+    wrong,
+    timeSeconds,
+    perguntas.length,
+    desempenhoGuardado,
+    config
+  ])
 
   function resetQuiz() {
     setCurrentIndex(0)
@@ -77,7 +87,9 @@ export function useQuiz(perguntas = [], config = {}) {
     setShowFailModal(false)
   }
 
+  // Este efeito é intencional: precisamos sincronizar o estado local
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     resetQuiz()
   }, [config.desafio_id])
 
@@ -93,13 +105,13 @@ export function useQuiz(perguntas = [], config = {}) {
 
     if (isCorrect) {
       setCorrect(c => c + 1)
-      setConsecutiveWrong(0) // ✅ acertou, reset do contador
+      setConsecutiveWrong(0)
     } else {
       setWrong(w => w + 1)
       setConsecutiveWrong(prev => {
         const next = prev + 1
-        const perguntasRestantes = perguntas.length - currentIndex  
-        if (next >= 4 && perguntasRestantes <= 2) setShowFailModal(true) // ✅ 4 erros + perto do fim
+        const perguntasRestantes = perguntas.length - currentIndex
+        if (next >= 4 && perguntasRestantes <= 2) setShowFailModal(true)
         return next
       })
     }
@@ -111,6 +123,9 @@ export function useQuiz(perguntas = [], config = {}) {
     else setWrong(w => w - 1)
     setCurrentResponse(null)
   }
+
+  const streakExibida = finalResult ?
+    (finalResult.novoStreak ?? 0) : (config.streakInicial ?? 0);
 
   return {
     currentQuestion,
@@ -130,5 +145,6 @@ export function useQuiz(perguntas = [], config = {}) {
     showFailModal,
     resetQuiz,
     consecutiveWrong,
+    streakAtual: streakExibida,
   }
 }
