@@ -35,11 +35,11 @@ const Color = {
     },
 };
 
-export default function LeftSideBar() {
+export default function LeftSideBar({ streak }) {
     const navigate = useNavigate();
     const [stats, setStats] = useState({
         coins: 0,
-        streak: 0,
+        streak: streak,
     });
 
     useEffect(() => {
@@ -54,7 +54,6 @@ export default function LeftSideBar() {
                 console.error("Erro ao carregar stats:", err);
                 setStats({
                     coins: 0,
-                    streak: 0,
                 });
             }
         };
@@ -109,7 +108,7 @@ export default function LeftSideBar() {
                 }}
             >
                 <Flame className="h-4 w-4" />
-                {stats.streak}
+                {streak !== undefined ? streak : stats.streak}
             </div>
 
             <div

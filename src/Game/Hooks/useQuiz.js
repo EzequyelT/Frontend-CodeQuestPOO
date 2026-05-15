@@ -14,6 +14,7 @@ export function useQuiz(perguntas = [], config = {}) {
 
   const [consecutiveWrong, setConsecutiveWrong] = useState(0)
   const [showFailModal, setShowFailModal] = useState(false)
+  const [streakAtual, setStreakAtual] = useState(config.streakInicial ?? 0);
 
   function advanceQuestion() {
     setCurrentResponse(null)
@@ -38,6 +39,7 @@ export function useQuiz(perguntas = [], config = {}) {
 
   }, [currentResponse, currentIndex])
 
+
   useEffect(() => {
     if (!finished) return
     if (!config.token || !config.desafio_id) return
@@ -53,6 +55,7 @@ export function useQuiz(perguntas = [], config = {}) {
       tempo_desafio: timeSeconds,
       score: score,
       ajudas_usadas: 0,
+      novo_streak: streakAtual,
     })
       .then((resultado) => {
         if (!resultado) return
@@ -72,7 +75,8 @@ export function useQuiz(perguntas = [], config = {}) {
     timeSeconds,
     perguntas.length,
     desempenhoGuardado,
-    config
+    config,
+    streakAtual
   ])
 
   function resetQuiz() {
@@ -85,6 +89,7 @@ export function useQuiz(perguntas = [], config = {}) {
     setDesempenhoGuardado(false)
     setConsecutiveWrong(0)
     setShowFailModal(false)
+    setStreakAtual(config.streakInicial ?? 0)
   }
 
   // Este efeito é intencional: precisamos sincronizar o estado local
@@ -92,6 +97,11 @@ export function useQuiz(perguntas = [], config = {}) {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     resetQuiz()
   }, [config.desafio_id])
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setStreakAtual(config.streakInicial ?? 0)
+  }, [config.streakInicial])
 
   const currentQuestion = perguntas[currentIndex]
   const isUltima = currentIndex + 1 >= perguntas.length
@@ -106,8 +116,10 @@ export function useQuiz(perguntas = [], config = {}) {
     if (isCorrect) {
       setCorrect(c => c + 1)
       setConsecutiveWrong(0)
+      setStreakAtual(s => s + 1)
     } else {
       setWrong(w => w + 1)
+      setStreakAtual(0)
       setConsecutiveWrong(prev => {
         const next = prev + 1
         const perguntasRestantes = perguntas.length - currentIndex
@@ -123,9 +135,6 @@ export function useQuiz(perguntas = [], config = {}) {
     else setWrong(w => w - 1)
     setCurrentResponse(null)
   }
-
-  const streakExibida = finalResult ?
-    (finalResult.novoStreak ?? 0) : (config.streakInicial ?? 0);
 
   return {
     currentQuestion,
@@ -145,6 +154,6 @@ export function useQuiz(perguntas = [], config = {}) {
     showFailModal,
     resetQuiz,
     consecutiveWrong,
-    streakAtual: streakExibida,
+    streakAtual,
   }
 }

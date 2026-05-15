@@ -10,6 +10,7 @@ import Result from "../Components/Result"
 
 import { getToken, getUser } from "../../../Services/auth/authStorage";
 import { getLevelsByMap } from "../../../Services/maps/levelService"
+import { getProgressoDashboard } from "../../../Services/users/userStatsService"
 import Bg from "../../../assets/Maps/Bg-Map1.png"
 import dsf_2 from "../../Data/Mapa-1/Nivel-1/dsf_2"
 
@@ -30,6 +31,7 @@ export default function DSF2() {
   const [levels, setLevels] = useState([])
   const [desafioId, setDesafioId] = useState(null)
   const [showModal, setShowModal] = useState(true);
+  const [initialStreak, setInitialStreak] = useState(0);
 
   const bgDim = (0.55)
 
@@ -52,12 +54,19 @@ export default function DSF2() {
         setDesafioId(data[1]?.id);
       }
 
+      async function loadStats() {
+        if (!token) return;
+        const stats = await getProgressoDashboard(token);
+        setInitialStreak(stats.streak || 0);
+      }
+
       loadLevels();
+      loadStats();
     } catch (err) {
       console.error(err)
       throw (err)
     }
-  }, []);
+  }, [token]);
 
   const {
     currentQuestion,
@@ -73,11 +82,13 @@ export default function DSF2() {
     finalResult,
     resetQuiz,
     showFailModal,
+    streakAtual
   } = useQuiz(dsf.perguntas, {
     token: token,
     aluno_id: userId,
     desafio_id: desafioId,
-    level_Id: levels
+    level_Id: levels,
+    streakInicial: initialStreak,
   })
 
   if (finished) {
@@ -90,7 +101,7 @@ export default function DSF2() {
           hintsUsed: 0,
           xpGained: finalResult?.xpGanho?.total ?? correct * 80,
           score: Math.round((correct / totalQuestions) * 100),
-          streak: dsf.streak,
+          streak: streakAtual,
           quizTitle: dsf.titulo,
           desafioCompleto: finalResult?.desafioCompleto ?? false,
           primeiraVez: finalResult?.primeiraVez ?? true,
@@ -113,7 +124,7 @@ export default function DSF2() {
       />
 
       <RightSideBar time={timeSeconds} wrong={wrong} />
-      <LeftSideBar />
+      <LeftSideBar streak={streakAtual} />
 
       {showFailModal && (
         <ModalFalha
@@ -140,22 +151,21 @@ export default function DSF2() {
         <QuizContainer
           headerProps={{
             children: dsf.titulo,
-            currentQuestion: currentIndex + 1,   // ✅ dinâmico
+            currentQuestion: currentIndex + 1,
             totalQuestions: totalQuestions,
             streak: dsf.streak,
           }}
           answerOptionsProps={{
-            options: currentQuestion.opcoes,        // ✅ opções da pergunta atual
+            options: currentQuestion.opcoes,
           }}
         >
-          {/* 1 slot único por pergunta */}
           <div className="flex justify-center">
             <QuestionCard
               label="Arraste a resposta correta"
               pergunta={currentQuestion.texto}
-              dropped={currentResponse}            // ✅ estado controlado pelo hook
-              onDrop={(item) => response(item)} // ✅ chama o hook
-              onReset={resetSlot}                // ✅ chama o hook
+              dropped={currentResponse}
+              onDrop={(item) => response(item)}
+              onReset={resetSlot}
             />
           </div>
 

@@ -32,6 +32,7 @@ export function useCode(fases = [], config = {}) {
 
   const [totalWrong, setTotalWrong] = useState(0)
   const [totalAttempts, setTotalAttempts] = useState(0)
+  const [streakAtual, setStreakAtual] = useState(config.streakInicial ?? 0);
 
   const totalWrongRef = useRef(0)
   const totalAttemptsRef = useRef(0)
@@ -91,6 +92,7 @@ export function useCode(fases = [], config = {}) {
       tempo_desafio: timeSeconds,
       score,
       ajudas_usadas: 0,
+      novo_streak: streakAtual,
     })
       .then((resultado) => {
         if (!resultado) return
@@ -176,6 +178,7 @@ export function useCode(fases = [], config = {}) {
         setCorrect(c => c + 1)
 
         setConsecutiveWrong(0)
+        setStreakAtual(s => s + 1)
 
         setObjectives(prev =>
           prev.map(obj => ({ ...obj, done: true }))
@@ -201,6 +204,7 @@ export function useCode(fases = [], config = {}) {
           if (next === 5) setShowFailModal(true)
           return next
         })
+        setStreakAtual(0)
 
         return { success: false, output: finalOutput }
       }
@@ -210,6 +214,7 @@ export function useCode(fases = [], config = {}) {
 
       setMentorStatus("error")
       addErrorLog(clean)
+      setStreakAtual(0)
 
       return { success: false, message: clean }
 
@@ -238,5 +243,6 @@ export function useCode(fases = [], config = {}) {
     addLog,
     runCode,
     showFailModal,
+    streakAtual,
   }
 }
