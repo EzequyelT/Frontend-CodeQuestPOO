@@ -33,6 +33,8 @@ export default function DSF3() {
     const [showModal, setShowModal] = useState(true);
     const [modalNivelConcluido, setModalNivelConcluido] = useState(null);
     const [showResult, setShowResult] = useState(false);
+    const [loadingState, setLoadingState] = useState(true);
+    
 
     const token = getToken()
     const userId = getUser()
@@ -46,7 +48,7 @@ export default function DSF3() {
         async function loadLevels() {
             const data = await getLevelsByMap(mapaId);
             setLevels(data);
-
+            setLoadingState(false)
             setDesafioId(data[2]?.id);
         }
 
@@ -95,10 +97,11 @@ export default function DSF3() {
             });
         }
 
+        setLoadingState(false)
+
     }, [finished, finalResult]);
 
     console.log("FINAL RESULT:", finalResult);
-
 
     if (finished && saving) {
         return <div className="text-white text-4xl font-bold">Salvando resultado...</div>
@@ -162,6 +165,18 @@ export default function DSF3() {
 
         )
 
+    }
+
+     
+    if (loadingState) {
+        return (
+            <div className="relative min-h-screen bg-black animate-fadeIn flex items-center justify-center">
+                <div className="text-white text-center">
+                    <div className="w-12 h-12 border-4 border-yellow-600 border-t-yellow-400 rounded-full animate-spin mx-auto mb-4"></div>
+                    <p>Carregando desafio 3...</p>
+                </div>
+            </div>
+        );
     }
 
     return (

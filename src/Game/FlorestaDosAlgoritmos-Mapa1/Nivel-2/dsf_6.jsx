@@ -13,7 +13,7 @@ import Bg from "../../../assets/Maps/Bg-Map1-Nivel-2.jpg"
 import dsf_6 from "../../Data/Mapa-1/Nivel-2/dsf_6"
 import ModalService from '../Components/Modal/ModalService'
 
-import ModalNivelConcluido from "../Components/Modal/LevelModal"  // ✅ adicionado
+import ModalNivelConcluido from "../Components/Modal/LevelModal"
 import ModalFalha from '../Components/Modal/ModalFalha'
 
 
@@ -27,23 +27,6 @@ const challenge = {
     dificuldade: "Médio"
 };
 
-const animationStyles = `
-  @keyframes slideDownFadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(-40px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  .slide-in {
-    animation: slideDownFadeIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
-  }
-`;
-
 export default function DSF6() {
 
     const [levels, setLevels] = useState([]);
@@ -51,6 +34,7 @@ export default function DSF6() {
     const [showModal, setShowModal] = useState(true);
     const [modalNivelConcluido, setModalNivelConcluido] = useState(null);
     const [showResult, setShowResult] = useState(false);
+    const [loadingState, setLoadingState] = useState(true);
 
     const token = getToken()
     const userId = getUser()
@@ -65,7 +49,7 @@ export default function DSF6() {
             async function loadLevels() {
                 const data = await getLevelsByMap(mapaId);
                 setLevels(data);
-
+                setLoadingState(false);
                 if (data?.[1]?.desafios?.length > 0) {
                     setDesafioId(data[1].desafios[2].id)
                 }
@@ -114,6 +98,7 @@ export default function DSF6() {
                 proximoNivel: finalResult?.proximoNivel ?? null,
                 nivelMaximo: finalResult?.nivelMaximo ?? false
             });
+            setLoadingState(false);
         }
     }, [finished, finalResult]);
 
@@ -168,6 +153,18 @@ export default function DSF6() {
                 )}
             </>
         )
+    }
+
+
+    if (loadingState) {
+        return (
+            <div className="relative min-h-screen bg-black animate-fadeIn flex items-center justify-center">
+                <div className="text-white text-center">
+                    <div className="w-12 h-12 border-4 border-yellow-600 border-t-yellow-400 rounded-full animate-spin mx-auto mb-4"></div>
+                    <p>Carregando desafio 6...</p>
+                </div>
+            </div>
+        );
     }
 
     return (

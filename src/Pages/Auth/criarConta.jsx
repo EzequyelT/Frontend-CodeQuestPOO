@@ -19,9 +19,8 @@ import Bg from '../../assets/Login/BgLogin.jpg';
 import HeroSection from '../../assets/Login/HeroCreateAccount.png';
 import AvatarModal from '../../Components/Modal/AvatarModal';
 import { useNavigate } from "react-router-dom";
-import { register } from '../../Services/auth/authService';
+import { registerUser } from '../../Services/users/userService';
 
-// Componente Toast Melhorado
 const Toast = ({ message, type, onClose }) => {
   const isSuccess = type === 'success';
   return (
@@ -51,7 +50,7 @@ const Toast = ({ message, type, onClose }) => {
   );
 };
 
-// Componente Input Reutilizável - VERSÃO MODERNA
+
 const InputField = ({ label, icon: Icon, type = 'text', name, value, onChange, placeholder, required = true }) => {
   const [focused, setFocused] = useState(false);
 
@@ -102,7 +101,6 @@ export default function CriarConta() {
   const [step, setStep] = useState(1);
   const navigate = useNavigate();
 
-  // Mostrar Toast
   const showToast = (message, type = 'error') => {
     setToast({ message, type });
     setTimeout(() => setToast(null), 5000);
@@ -115,17 +113,14 @@ export default function CriarConta() {
     });
   };
 
-  // Submeter formulário
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Avançar para próximo step se não estiver no 3
     if (step !== 3) {
       setStep(step + 1);
       return;
     }
 
-    // Validações
     if (formData.password !== formData.confirmPassword) {
       showToast('As passwords não coincidem!', 'error');
       return;
@@ -150,10 +145,9 @@ export default function CriarConta() {
         avatar_id: null
       };
 
-      const response = await register(dataToSend);
+      const response = await registerUser(dataToSend);
       showToast(response.message || 'Conta criada com sucesso!', 'success');
 
-      // Abrir modal de avatar
       setTimeout(() => setShowAvatarModal(true), 1000);
 
     } catch (err) {
@@ -165,7 +159,6 @@ export default function CriarConta() {
     }
   };
 
-  // Selecionar avatar
   const handleAvatarSelect = (avatar) => {
     localStorage.setItem('user_avatar', JSON.stringify(avatar));
     setShowAvatarModal(false);
@@ -175,17 +168,14 @@ export default function CriarConta() {
     }, 500);
   };
 
-  // Voltar para login
   const handleBackToLogin = () => {
     navigate('/login');
   };
 
   return (
     <>
-      {/* Toast */}
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
 
-      {/* Avatar Modal */}
       {showAvatarModal && (
         <AvatarModal
           onSelect={handleAvatarSelect}
@@ -193,20 +183,16 @@ export default function CriarConta() {
         />
       )}
 
-      {/* Background */}
      <img src={Bg} alt="Background" className="fixed inset-0 bg-gradient-to-br from-black/300 via-slate-900/60 to-black/300 z-10" />
       <div className="fixed inset-0 bg-black/80 z-10"></div>
 
       <div className="min-h-screen flex relative z-20">
-        {/* Left - Form */}
         <div className="w-full lg:w-1/2 flex items-center justify-center p-4 lg:p-6">
           <div className="w-full max-w-md">
-            {/* Logo - Reduzido */}
             <div className="text-center mb-4 animate-fade-in">
               <img src={logo} alt="CodeQuestPOO RP Logo" className=" w-150 h-40 mb-2 object-contain" />
             </div>
 
-            {/* Card Principal */}
             <div className={`backdrop-blur-2xl rounded-3xl shadow-2xl border animate-fade-in-up transition-all duration-500 overflow-hidden ${
               step === 1
                 ? 'bg-gradient-to-br from-slate-800/60 via-slate-800/50 to-slate-900/60 p-6 border-slate-700/40'
@@ -215,7 +201,6 @@ export default function CriarConta() {
                 : 'bg-gradient-to-br from-slate-800/60 via-slate-800/50 to-slate-900/60 p-6 border-slate-700/40 ring-1 ring-slate-700/30'
             }`}>
               
-              {/* Header - Mais Compacto */}
               <div className="mb-6">
                 <div className="flex items-center justify-between mb-1">
                   <h2 className="text-2xl font-bold bg-gradient-to-r from-cyan-300 via-cyan-400 to-blue-400 bg-clip-text text-transparent">
@@ -235,7 +220,6 @@ export default function CriarConta() {
                 </p>
               </div>
 
-              {/* Progress Indicator - Moderno */}
               <div className="flex items-center justify-between mb-6 px-1">
                 {[1, 2, 3].map((number) => (
                   <div key={number} className="flex-1 flex items-center group">
@@ -261,10 +245,8 @@ export default function CriarConta() {
                 ))}
               </div>
 
-              {/* Form */}
               <form onSubmit={handleSubmit} className="space-y-4">
                 
-                {/* Step 1 - Credenciais */}
                 <div className={`transition-all duration-300 ${step === 1 ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 -translate-y-4 absolute pointer-events-none'}`}>
                   <div className="space-y-3">
                     <InputField
@@ -340,7 +322,6 @@ export default function CriarConta() {
                   </div>
                 </div>
 
-                {/* Step 2 - Dados Escolares */}
                 <div className={`transition-all duration-300 ${step === 2 ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 -translate-y-4 absolute pointer-events-none'}`}>
                   <div className="space-y-3">
                     <div className="grid grid-cols-2 gap-3">
@@ -387,7 +368,6 @@ export default function CriarConta() {
                   </div>
                 </div>
 
-                {/* Step 3 - Review */}
                 <div className={`transition-all duration-300 ${step === 3 ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 -translate-y-4 absolute pointer-events-none'}`}>
                   <div className="space-y-3 bg-gradient-to-br from-slate-900/50 to-slate-800/40 p-4 rounded-2xl border border-slate-700/50">
                     <div className="flex items-center gap-2 mb-2">
@@ -423,7 +403,6 @@ export default function CriarConta() {
                   </div>
                 </div>
 
-                {/* Buttons */}
                 <div className="flex gap-2.5 mt-6 pt-4 border-t border-slate-700/30">
                   {step > 1 && (
                     <button
@@ -455,7 +434,6 @@ export default function CriarConta() {
                   )}
                 </div>
 
-                {/* Divider */}
                 <div className="relative my-4">
                   <div className="absolute inset-0 flex items-center">
                     <div className="w-full border-t border-slate-700/30"></div>
@@ -465,7 +443,6 @@ export default function CriarConta() {
                   </div>
                 </div>
 
-                {/* Back to Login */}
                 <button
                   type="button"
                   onClick={handleBackToLogin}
@@ -477,17 +454,14 @@ export default function CriarConta() {
               </form>
             </div>
 
-            {/* Footer */}
             <p className="text-center text-slate-500 text-xs mt-4 font-medium">
               Ao criar conta, você concorda com os <span className="text-cyan-400 hover:text-cyan-300 cursor-pointer transition-colors font-semibold">Termos de Serviço</span>
             </p>
           </div>
         </div>
 
-        {/* Right - Hero */}
         <div className="hidden lg:flex lg:w-1/2 items-center justify-center p-6 relative">
           <div className="relative z-10 flex items-center justify-center animate-fade-in-right">
-            {/* Shapes */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
               <div className="absolute w-[500px] h-[500px] bg-gradient-to-br from-cyan-500/30 to-blue-500/30 rounded-[3rem] rotate-12 -z-10 blur-3xl animate-pulse-slow"></div>
               <div className="absolute w-[400px] h-[400px] bg-gradient-to-br from-blue-600/20 to-cyan-600/20 rounded-[2.5rem] -rotate-12 translate-x-12 translate-y-8 -z-20 blur-2xl"></div>
@@ -504,7 +478,6 @@ export default function CriarConta() {
         </div>
       </div>
 
-      {/* CSS animations */}
       <style jsx>{`
         @keyframes toast-slide {
           from {

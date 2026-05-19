@@ -15,9 +15,9 @@ export const getUser = () => {
   return JSON.parse(localStorage.getItem(USER_KEY));
 };
 
-export const logout = () => {
-  localStorage.removeItem(TOKEN_KEY);
-  localStorage.removeItem(USER_KEY);
+export const clearAuthStorage = () => {
+  localStorage.removeItem("cq_token");
+  localStorage.removeItem("cq_user");
 };
 
 export const isAuthenticated = () => !!getToken();

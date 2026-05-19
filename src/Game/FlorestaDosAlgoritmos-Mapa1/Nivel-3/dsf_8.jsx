@@ -32,6 +32,7 @@ export default function DSF8() {
     const [showModal, setShowModal] = useState(true);
     const [modalNivelConcluido, setModalNivelConcluido] = useState(null);
     const [showResult, setShowResult] = useState(false);
+    const [loadingState, setLoadingState] = useState(true);
 
     const token = getToken()
     const userId = getUser()
@@ -45,9 +46,8 @@ export default function DSF8() {
         try {
             async function loadLevels() {
                 const data = await getLevelsByMap(mapaId)
-
+                setLoadingState(false)
                 setLevels(data)
-
 
                 if (data?.[1]?.desafios?.length > 0) {
                     setDesafioId(data[2].desafios[1].id)
@@ -97,6 +97,7 @@ export default function DSF8() {
                 proximoNivel: finalResult?.proximoNivel ?? null,
                 nivelMaximo: finalResult?.nivelMaximo ?? false
             });
+            setLoadingState(false)
         }
 
     }, [finalResult, finished])
@@ -152,6 +153,17 @@ export default function DSF8() {
                 )}
             </>
         )
+    }
+
+    if (loadingState) {
+        return (
+            <div className="relative min-h-screen bg-black animate-fadeIn flex items-center justify-center">
+                <div className="text-white text-center">
+                    <div className="w-12 h-12 border-4 border-yellow-600 border-t-yellow-400 rounded-full animate-spin mx-auto mb-4"></div>
+                    <p>Carregando desafio 8...</p>
+                </div>
+            </div>
+        );
     }
 
     return (

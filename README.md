@@ -71,15 +71,14 @@ tempo total de jogo (já calculado)
 
 ⚠️ Já preparado mas ainda sem lógica automática:
 
-XP
+✅ XP
 Coins
-Streak
+✅ Streak
 🗺️ Sistema de Mapas
 ✅ Mapa 1 (Floresta dos Algoritmos) ligado à BD
 ✅ Níveis carregados dinamicamente
 ✅ Desafios carregados da base de dados
 ✅ Estrutura escalável para novos mapas
-
 
 
 🟡 2. Em Desenvolvimento
@@ -93,7 +92,7 @@ Associação do aluno ao herói escolhido
 lógica das respostas
 validação das respostas
 feedback ao jogador
-ligação ao desempenho_desafio
+✅ ligação ao desempenho_desafio
 
 🔴 3. O Que Falta Fazer (Organizado por Prioridade)
 
@@ -127,9 +126,9 @@ código simples Python
 🥈 PRIORIDADE MÉDIA — Progressão
 🧭 Progressão entre níveis
  Desbloquear próximo nível automaticamente
- Atualizar nivel_atual
- Atualizar mapa_atual
- Verificar conclusão do mapa
+ ✅Atualizar nivel_atual
+ ✅Atualizar mapa_atual
+ ✅Verificar conclusão do mapa
 🗺️ Mapas 2 e 3
  Criar níveis na BD
  Inserir desafios

@@ -41,6 +41,7 @@ export default function DSF7() {
     const [levels, setLevels] = useState([])
     const [desafioId, setDesafioId] = useState(null)
     const [showModal, setShowModal] = useState(true)
+    const [loadingState, setLoadingState] = useState(true);
 
     // 🔑 FASE controla o que está visível: quiz → code → done
     const [phase, setPhase] = useState("quiz")
@@ -56,6 +57,7 @@ export default function DSF7() {
             try {
                 const data = await getLevelsByMap(mapaId)
                 setLevels(data)
+                setLoadingState(false)
                 if (data?.[1]?.desafios?.length > 0) {
                     setDesafioId(data[2].desafios[0].id)
                 }
@@ -92,6 +94,7 @@ export default function DSF7() {
         if (quiz.finished && phase === "quiz") {
             // eslint-disable-next-line react-hooks/set-state-in-effect
             setPhase("code")
+            setLoadingState(false)
         }
     }, [quiz.finished, phase])
 
@@ -99,6 +102,7 @@ export default function DSF7() {
         if (code.finished && phase === "code") {
             // eslint-disable-next-line react-hooks/set-state-in-effect
             setPhase("done")
+            setLoadingState(false)
         }
     }, [code.finished, phase])
 
@@ -129,7 +133,17 @@ export default function DSF7() {
             />
         )
     }
-
+    
+    if (loadingState) {
+        return (
+            <div className="relative min-h-screen bg-black animate-fadeIn flex items-center justify-center">
+                <div className="text-white text-center">
+                    <div className="w-12 h-12 border-4 border-yellow-600 border-t-yellow-400 rounded-full animate-spin mx-auto mb-4"></div>
+                    <p>Carregando desafio 7...</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <>

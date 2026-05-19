@@ -2,16 +2,31 @@ import { LogOut, User, X, Mail, Shield, ChevronRight, Settings } from "lucide-re
 import { pararTempo } from "../../Services/gameplay/tempoService";
 import { useNavigate } from "react-router-dom";
 import "../../css/ProfileModal.css";
+import { useState, useEffect } from "react";
+import { getMe } from "../../Services/users/userService.js"
+import { logout } from "../../Services/auth/authService.js";
 
-
-export default function ProfileModal({ user, onClose }) {
+export default function ProfileModal({ onClose }) {
   const navigate = useNavigate();
+  const [user, setUser] = useState(null);
 
+  useEffect(() => {
+    const getUser = async () => {
+      try {
+        const userData = await getMe();
+        console.log("User id", userData.id)
+        setUser(userData)
+      } catch (error) {
+        console.error("Erro ao obter utilziador:", error);
+      }
+    }
+    getUser();
+  }, []);
+  
   return (
     <>
 
       <div className="profile-modal">
-        {/* HEADER */}
         <div className="pm-header">
           <span className="pm-title">Conta</span>
           <button className="pm-close" onClick={onClose}>
@@ -19,7 +34,6 @@ export default function ProfileModal({ user, onClose }) {
           </button>
         </div>
 
-        {/* HERO */}
         <div className="pm-hero">
           <div className="pm-avatar-wrap">
             <div className="pm-avatar">
@@ -35,7 +49,6 @@ export default function ProfileModal({ user, onClose }) {
 
         <div className="pm-divider" />
 
-        {/* MENU */}
         <div className="pm-menu">
           <div className="pm-menu-item">
             <div className="pm-menu-icon">
@@ -73,20 +86,17 @@ export default function ProfileModal({ user, onClose }) {
           </div>
         </div>
 
-        {/* FOOTER */}
         <div className="pm-footer">
           <button
             className="pm-logout"
-            onClick={() => {
-              pararTempo();
-              localStorage.removeItem("cq_token");
-              localStorage.removeItem("cq_user");
-
+            onClick={async () => {
+              await logout(user.id);
+              pararTempo()
               onClose();
               navigate("/", { replace: true });
             }}
           >
-            
+
             <LogOut size={15} />
             Terminar Sessão
           </button>

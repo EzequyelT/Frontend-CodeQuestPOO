@@ -10,6 +10,7 @@ export default function Perfil({ user }) {
         xp_total: 0,
         streak: 0,
     });
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchStats = async () => {
@@ -18,10 +19,11 @@ export default function Perfil({ user }) {
                 if (!token) return;
 
                 const data = await getProgressoDashboard(token);
+                setLoading(false);
                 setStats(data);
             } catch (err) {
                 console.error("Erro ao carregar stats:", err);
-
+                setLoading(false);
                 setStats({
                     tempo_total_jogo: 0,
                     xp_total: 0,
@@ -32,6 +34,18 @@ export default function Perfil({ user }) {
 
         fetchStats();
     }, []);
+
+
+    if (loading) {
+        return (
+            <div className="relative min-h-screen bg-black animate-fadeIn flex items-center justify-center">
+                <div className="text-white text-center">
+                    <div className="w-12 h-12 border-4 border-yellow-600 border-t-yellow-400 rounded-full animate-spin mx-auto mb-4"></div>
+                    <p>Carregando Perfil...</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="p-4">
@@ -75,11 +89,11 @@ export default function Perfil({ user }) {
                     <h1>membro desde {user?.data_registo ? new Date(user.data_registo).toLocaleDateString() : "Data não disponível"}</h1>
                     <button>Configurações</button>
                 </div>
-                 
-                 {/* Corpo do container do Perfil */}
+
+                {/* Corpo do container do Perfil */}
                 <div>
                     <table>
-                       
+
                         <tbody>
 
                             <tr>

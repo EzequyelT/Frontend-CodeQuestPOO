@@ -1,19 +1,15 @@
 import DashBoardHeader from "../../Components/Header/HeaderDashBoard";
 import { useNavigate } from "react-router-dom";
 import { getProgresso, getProgressoDashboard } from "../../Services/users/userStatsService";
+import { getUserTempo } from "../../Services/users/jogTemService";
 import { obterXPAluno } from "../../Services/Gameplay/xpProgressService";
 import { getMapas } from "../../Services/maps/mapasService";
-import { iniciarTempo, pararTempo } from "../../Services/gameplay/tempoService";
 import map1 from "../../assets/Maps/FirstMap.png";
 import { useState, useEffect } from "react";
 import SideBar from "../../Components/SideBar/SideBar";
 import mago from "../../assets/DashBoard/mago.png"
 import "../../css/DashBoard.css";
 
-
-// ============================================================
-// 🔷 DATA
-// ============================================================
 const PLAYER = {
     name: "CodeMaster",
     heroi: mago,
@@ -122,7 +118,7 @@ function AccuracyChart({ accuracy, errors }) {
 // 🔷 WeeklyBars (igual ao original)
 // ============================================================
 function WeeklyBars({ activity, currentDayOfWeek }) {
-    const max = Math.max(...activity);
+    const max = Math.max(...activity || 0);
     return (
         <div className="flex items-end gap-1.5 h-20">
             {activity.map((val, i) => {
@@ -130,7 +126,7 @@ function WeeklyBars({ activity, currentDayOfWeek }) {
                 const active = i === currentDayOfWeek;
                 return (
                     <div key={i} className="flex flex-col items-center gap-1 flex-1 h-full justify-end">
-                        <div style={{ height: `${h}%` }}
+                        <div style={{ height: `${h, 2}%` }}
                             className={`w-full rounded-sm transition-all ${active
                                 ? "bg-gradient-to-t from-yellow-500 to-green-400 shadow-md shadow-green-500/40"
                                 : "bg-gray-700 hover:bg-gray-600"}`} />
@@ -218,6 +214,10 @@ function MainCard({ player, calculoXp, currentDayOfWeek }) {
                 <span className="text-xs text-gray-500 border border-gray-700 rounded px-2 py-0.5 mr-52">
                     {progressaoXp.titulo}
                 </span>
+            </div>
+
+            <div className="text-gray-500 text-xs mt-2 ml-6 mb-2">
+                Semana iniciada: {formatarData(player.ultimaAtualizado)}
             </div>
 
             {/* Corpo */}
@@ -397,14 +397,21 @@ function ErrorTypesPanel({ errors }) {
 // ============================================================
 // 🔷 Helper: transforma dados de API em objeto player
 // ============================================================
-function mapProgressToPlayer(userData, data) {
+function mapProgressToPlayer(userData, data, tempo) {
     const progressao = data.progressao || {};
 
     return {
         name: userData.nome,
         heroi: mago,
-        memberSince: "Set 2024",
-        weekActivity: [30, 55, 40, 70, 95, 50, 20],
+
+        memberSince: userData.data_registo,
+
+        weekActivity: tempo?.weekActivity || [0, 0, 0, 0, 0, 0, 0],
+        hoursThisWeek: tempo?.hoursThisWeek || "0 H 0 M",
+        maxPerDay: tempo?.maxPerDay || "0 H 0 M",
+
+        ultimaAtualizado: tempo?.ultimaAtualizado || null,
+
         currentDay: 5,
 
         diasSeguidos: data.streak ?? 0,
@@ -492,6 +499,44 @@ function TrophiesAndMissionPanel({ trophies, mission }) {
     );
 }
 
+function formatTempo(minutos = 0) {
+    const h = Math.floor(minutos / 60);
+    const m = minutos % 60;
+    return `${h} H ${m} M`;
+}
+
+function formatarData(data) {
+    if (!data) return "—";
+    const d = new Date(data);
+    return new Intl.DateTimeFormat('pt-PT', {
+        day: '2-digit',
+        month: '2-digit'
+    }).format(d);
+}
+function mapTempoToUI(apiTempo) {
+
+    const tempo = apiTempo?.getTempo;
+
+    if (!tempo) {
+        return {
+            hoursThisWeek: "0 H 0 M",
+            maxPerDay: "0 H 0 M",
+            tempoTotal: "0 H 0 M",
+            weekActivity: [0, 0, 0, 0, 0, 0, 0],
+            ultimaAtualizado: tempo?.ultimaAtualizado || null, 
+        };    
+    }
+
+    return {
+        hoursThisWeek: formatTempo(tempo.horas_semana || 0),
+        maxPerDay: formatTempo(tempo.max_tempo_dia || 0),
+        tempoTotal: formatTempo(tempo.tempo_total || 0),
+        weekActivity: tempo.atividade_semana || [0, 0, 0, 0, 0, 0, 0],
+        ultimaAtualizado: tempo.ultimoAtualizado || null,
+    };
+    
+}
+
 export function DashBoard() {
     const [user, setUser] = useState(null);
     const [progresso, setProgresso] = useState(null);
@@ -499,8 +544,8 @@ export function DashBoard() {
     const [erro, setErro] = useState(null);
     const [mapasProgresso, setMapasProgresso] = useState([]);
     const [progressaoXp, setProgressaoXp] = useState(null);
+    const [tempo, setTempo] = useState(null);
     const navigate = useNavigate();
-
 
     const token = localStorage.getItem("cq_token");
 
@@ -512,23 +557,6 @@ export function DashBoard() {
             }
         } catch (err) {
             console.error("Erro ao verificar autenticação", err.response || err);
-        }
-
-    }, [token]);
-
-    useEffect(() => {
-
-        try {
-
-            if (token) {
-                iniciarTempo(token);
-            }
-
-            return () => {
-                pararTempo();
-            };
-        } catch (err) {
-            console.error("Erro ao iniciar tempo de sessão", err.response || err);
         }
 
     }, [token]);
@@ -575,15 +603,26 @@ export function DashBoard() {
 
         // Carregar progresso com JWT
         const token = localStorage.getItem("cq_token");
-        getProgressoDashboard(token)
+        Promise.all([
+            getProgressoDashboard(token),
+            getUserTempo()
+        ])
 
-            .then(data => {
-                console.log("[Dashboard] ✅ Progresso carregado:", data);
+            .then(([dashboardData, tempoData]) => {
 
-                const player = mapProgressToPlayer(userData, data);
+                console.log("Dashboard:", dashboardData);
+                console.log("Tempo:", tempoData);
+
+                const tempoUI = mapTempoToUI(tempoData);
+
+                const player = mapProgressToPlayer(
+                    userData,
+                    dashboardData,
+                    tempoUI
+                );
+
                 setProgresso(player);
                 setErro(null);
-
             })
 
 
@@ -611,7 +650,7 @@ export function DashBoard() {
 
                         return {
                             ...m,
-                            map1: m.map1 || map1, // garante imagem sempre existente
+                            map1: m.map1 || map1,
                             desafios: prog.desafios_completos || 0,
                             total: prog.total_desafios || 0,
                             locked: !prog.desbloqueado,
@@ -631,6 +670,20 @@ export function DashBoard() {
         }
 
     }, []);
+
+    useEffect(() => {
+        const fetchTempo = async () => {
+            try {
+                const data = await getUserTempo()
+                console.log("[Dashboard] Tempo do utilizador:", data);
+                setTempo(data);
+            } catch (err) {
+                console.error("Erro ao carregar tempo:", err);
+            }
+        }
+        fetchTempo();
+    }, []);
+
 
     if (loading) {
         return (

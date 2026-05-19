@@ -16,7 +16,7 @@ export const getAllAlunos = async () => {
 export const registerUser = async (data) => {
   try {
 
-    const { data: res } = await api.post("/alunos", data);
+    const { data: res } = await api.post("/alunos/registrar", data);
     return res;
 
   }catch (err) {
@@ -24,3 +24,13 @@ export const registerUser = async (data) => {
     throw err
   }
 };
+
+export const getMe = async () => {
+  try {
+    const { data } = await api.get("/alunos/getMe");
+    return data;
+  } catch (error) {
+    console.error("Erro ao buscar utilizador: ", error)
+    throw error
+  }
+}

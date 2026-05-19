@@ -31,6 +31,8 @@ export default function DSF4() {
   const [levels, setLevels] = useState([])
   const [desafioId, setDesafioId] = useState(null)
   const [showModal, setShowModal] = useState(true);
+  const [loading, setLoading] = useState(true);
+
 
   const bgDim = (0.55)
 
@@ -46,6 +48,7 @@ export default function DSF4() {
       async function loadLevels() {
         const data = await getLevelsByMap(mapaId);
         setLevels(data);
+        setLoading(false);
 
         if (data?.[1]?.desafios?.length > 0) {
           setDesafioId(data[1].desafios[0].id)
@@ -103,8 +106,16 @@ export default function DSF4() {
     )
   }
 
-  if (!desafioId) {
-    return <div>Carregando...</div>;
+
+  if (loading) {
+    return (
+      <div className="relative min-h-screen bg-black animate-fadeIn flex items-center justify-center">
+        <div className="text-white text-center">
+          <div className="w-12 h-12 border-4 border-yellow-600 border-t-yellow-400 rounded-full animate-spin mx-auto mb-4"></div>
+          <p>Carregando desafio 4...</p>
+        </div>
+      </div>
+    );
   }
 
   return (

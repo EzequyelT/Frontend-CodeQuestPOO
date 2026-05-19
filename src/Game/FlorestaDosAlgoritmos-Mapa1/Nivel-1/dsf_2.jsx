@@ -31,6 +31,7 @@ export default function DSF2() {
   const [levels, setLevels] = useState([])
   const [desafioId, setDesafioId] = useState(null)
   const [showModal, setShowModal] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [initialStreak, setInitialStreak] = useState(0);
 
   const bgDim = (0.55)
@@ -50,7 +51,7 @@ export default function DSF2() {
       async function loadLevels() {
         const data = await getLevelsByMap(mapaId);
         setLevels(data);
-
+        setLoading(false);
         setDesafioId(data[1]?.id);
       }
 
@@ -58,6 +59,7 @@ export default function DSF2() {
         if (!token) return;
         const stats = await getProgressoDashboard(token);
         setInitialStreak(stats.streak || 0);
+        setLoading(false);
       }
 
       loadLevels();
@@ -113,9 +115,20 @@ export default function DSF2() {
     )
   }
 
+   if (loading) {
+        return (
+            <div className="relative min-h-screen bg-black animate-fadeIn flex items-center justify-center">
+                <div className="text-white text-center">
+                    <div className="w-12 h-12 border-4 border-yellow-600 border-t-yellow-400 rounded-full animate-spin mx-auto mb-4"></div>
+                    <p>Carregando desafio 2...</p>
+                </div>
+            </div>
+        );
+    }
+
   return (
     <>
-
+      
       <ModalService
         isOpen={showModal}
         setIsOpen={setShowModal}

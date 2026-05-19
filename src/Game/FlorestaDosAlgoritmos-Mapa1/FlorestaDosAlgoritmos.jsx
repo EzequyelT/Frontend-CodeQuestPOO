@@ -81,14 +81,13 @@ const BUTTON_IMAGES = {
 
 const Color = {
   primary: {
-    dark: "#0a2a4a",      // Fundo escuro do botão
-    main: "#1e5a8e",       // Azul base
-    light: "#3b7ab8",      // Azul claro
-    lighter: "#5a96d8",    // Azul mais claro
-    brightest: "#7ab8ff",  // Azul brilhante
+    dark: "#0a2a4a",      
+    main: "#1e5a8e",     
+    light: "#3b7ab8",     
+    lighter: "#5a96d8",    
+    brightest: "#7ab8ff",  
   },
 
-  // Secundário (Ouro/Bronze - mantém o tema)
   secondary: {
     dark: "#3a2010",
     main: "#8b5e1a",
@@ -96,14 +95,12 @@ const Color = {
     lighter: "#c4a878",
   },
 
-  // Glow/Shadow
   glow: {
     blue: "rgba(79, 180, 255, 0.6)",
     blueSoft: "rgba(79, 180, 255, 0.3)",
     gold: "rgba(255, 215, 0, 0.6)",
   },
 
-  // Neutros
   neutral: {
     bg: "#000",
     darkBg: "#0a0a0a",
@@ -114,9 +111,6 @@ const Color = {
 
 const NODE_SIZE = 56;
 
-// ─────────────────────────────────────────────────────────────────────────────
-// DATA FETCHING
-// ─────────────────────────────────────────────────────────────────────────────
 
 async function fetchLevels(mapaId, token) {
   const [niveisDB, progressoTotal] = await Promise.all([
@@ -274,7 +268,6 @@ function NodeTooltip({ challenge, onPlay }) {
         pointerEvents: "auto",
       }}
     >
-      {/* Top shimmer line */}
       <div style={{
         position: "absolute", top: 0, left: 20, right: 20, height: 1, borderRadius: 1,
         background: isCompleted
@@ -282,7 +275,6 @@ function NodeTooltip({ challenge, onPlay }) {
           : "linear-gradient(90deg, transparent, #4fc3f7, transparent)",
       }} />
 
-      {/* Arrow tip */}
       <div style={{
         position: "absolute", bottom: -7, left: "50%",
         transform: "translateX(-50%)",
@@ -291,7 +283,6 @@ function NodeTooltip({ challenge, onPlay }) {
         clipPath: "polygon(0 0, 100% 0, 50% 100%)",
       }} />
 
-      {/* Completed badge label */}
       {isCompleted && (
         <div style={{
           display: "inline-flex", alignItems: "center", gap: 4,
@@ -432,9 +423,6 @@ function ChallengeNode({ challenge, onHover, hoveredId, navigate }) {
         <PulseRings color={isCompleted ? "rgba(255,215,0,0.3)" : "rgba(79,195,247,0.35)"} />
       )}
 
-      {/* ════════════════════════════════════════════════════════════ */}
-      {/* 🎮 BOTÃO DO DESAFIO - SÓ A IMAGEM (SEM BORDERS) */}
-      {/* ════════════════════════════════════════════════════════════ */}
       <div
         style={{
           width: NODE_SIZE,
@@ -449,7 +437,6 @@ function ChallengeNode({ challenge, onHover, hoveredId, navigate }) {
           overflow: "visible",
         }}
       >
-        {/* IMAGEM DO BOTÃO - 100% DO TAMANHO */}
         <img
           src={buttonImage}
           style={{
@@ -464,7 +451,6 @@ function ChallengeNode({ challenge, onHover, hoveredId, navigate }) {
           alt={`Fase ${challenge.id}`}
         />
 
-        {/* Lock overlay - aparece por cima da imagem */}
         {isLocked && (
           <div
             style={{
@@ -498,14 +484,11 @@ function ChallengeNode({ challenge, onHover, hoveredId, navigate }) {
           </div>
         )}
 
-        {/* Badge de concluído no canto */}
         {isCompleted && <CompletedBadge />}
       </div>
 
-      {/* Stars abaixo do botão */}
       {!isLocked && <NodeStars count={challenge.stars} />}
 
-      {/* Tooltip ao passar o mouse */}
       {isHovered && !isLocked && (
         <NodeTooltip
           challenge={challenge}
@@ -515,10 +498,6 @@ function ChallengeNode({ challenge, onHover, hoveredId, navigate }) {
     </div>
   );
 }
-
-// ─────────────────────────────────────────────────────────────────────────────
-// SUB-COMPONENTS — Map decorations
-// ─────────────────────────────────────────────────────────────────────────────
 
 function LevelPath({ challenges }) {
   if (challenges.length < 2) return null;
@@ -573,10 +552,6 @@ function LevelBanner({ level }) {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// SUB-COMPONENTS — HUD
-// ─────────────────────────────────────────────────────────────────────────────
-
 
 function XPBar({ xp, xpMax, level }) {
   const xpValido = xp ?? 0;
@@ -613,9 +588,7 @@ function XPBar({ xp, xpMax, level }) {
         {nivelValido}
       </div>
 
-      {/* Barra e Textos */}
       <div style={{ flex: 1 }}>
-        {/* Labels */}
         <div style={{
           display: "flex",
           justifyContent: "space-between",
@@ -640,7 +613,6 @@ function XPBar({ xp, xpMax, level }) {
           </span>
         </div>
 
-        {/* Barra de Progresso */}
         <div style={{
           height: 12,
           borderRadius: 6,
@@ -666,7 +638,6 @@ function XPBar({ xp, xpMax, level }) {
               overflow: "hidden",
             }}
           >
-            {/* Shimmer Animation */}
             <div
               style={{
                 position: "absolute",
@@ -676,7 +647,6 @@ function XPBar({ xp, xpMax, level }) {
               }}
             />
 
-            {/* Pulsing Light */}
             <div
               style={{
                 position: "absolute",
@@ -722,9 +692,6 @@ function ProgressBar({ levels }) {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// MAIN PAGE
-// ─────────────────────────────────────────────────────────────────────────────
 
 const MAP_EXTRA = 1.8;
 
@@ -736,7 +703,6 @@ export default function FlorestaDosAlgoritmos() {
     nivel: 1,
   });
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [hoveredId, setHoveredId] = useState(null);
   const [translateY, setTranslateY] = useState(0);
   const [dragging, setDragging] = useState(false);
@@ -757,7 +723,6 @@ export default function FlorestaDosAlgoritmos() {
         setData(resultado);
       } catch (err) {
         console.error("Erro ao carregar o mapa:", err);
-        setError(err.message);
       } finally {
         setLoading(false);
       }
@@ -833,19 +798,18 @@ export default function FlorestaDosAlgoritmos() {
   }
   function onPointerUp() { setDragging(false); }
 
-  if (error) return (
-    <div style={{ height: "100dvh", background: "#000", display: "flex", alignItems: "center", justifyContent: "center" }}>
-      <p style={{ color: "#f87171", fontFamily: "Georgia,serif" }}>Erro: {error}</p>
-    </div>
-  );
 
-  if (loading) return (
-    <div style={{ height: "100dvh", background: "#000", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 14 }}>
-      <style>{`@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}`}</style>
-      <Loader2 size={32} color="#8b5e1a" style={{ animation: "spin 1s linear infinite" }} />
-      <p style={{ fontFamily: "Georgia,serif", color: "#a08060", fontSize: 14 }}>A carregar o mapa…</p>
-    </div>
-  );
+  
+    if (loading) {
+        return (
+            <div className="relative min-h-screen bg-black animate-fadeIn flex items-center justify-center">
+                <div className="text-white text-center">
+                    <div className="w-12 h-12 border-4 border-yellow-600 border-t-yellow-400 rounded-full animate-spin mx-auto mb-4"></div>
+                    <p>Carregando Mapa...</p>
+                </div>
+            </div>
+        );
+    }
 
   const { levels } = data;
   const challenges = allChallenges(levels);

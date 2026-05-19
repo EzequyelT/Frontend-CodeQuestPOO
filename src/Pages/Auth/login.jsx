@@ -7,7 +7,6 @@ import { useNavigate } from "react-router-dom";
 import { login as authLogin } from "../../Services/auth/authService";
 import { saveToken } from "../../Services/auth/authStorage";
 
-// Componente de Notificação Toast
 const Toast = ({ message, type, onClose }) => {
   const isSuccess = type === 'success';
   
@@ -18,7 +17,6 @@ const Toast = ({ message, type, onClose }) => {
           ? 'bg-emerald-500/90 border-emerald-400/50' 
           : 'bg-red-500/90 border-red-400/50'
       }`}>
-        {/* Icon */}
         <div className="flex-shrink-0">
           {isSuccess ? (
             <CheckCircle className="w-6 h-6 text-white" />
@@ -27,12 +25,10 @@ const Toast = ({ message, type, onClose }) => {
           )}
         </div>
         
-        {/* Message */}
         <div className="flex-1">
           <p className="text-white font-medium text-sm">{message}</p>
         </div>
         
-        {/* Close Button */}
         <button
           onClick={onClose}
           className="flex-shrink-0 text-white/80 hover:text-white transition-colors"
@@ -52,10 +48,9 @@ export default function Login() {
   const [toast, setToast] = useState(null);
   const navigate = useNavigate();
 
-  // Função para mostrar toast
   const showToast = (message, type = 'error') => {
     setToast({ message, type });
-    setTimeout(() => setToast(null), 5000); // Auto-close após 5 segundos
+    setTimeout(() => setToast(null), 5000); 
   };
 
   const handleSubmit = async (e) => {
@@ -82,7 +77,6 @@ export default function Login() {
 
   return (
     <>
-      {/* Toast Notification */}
       {toast && (
         <Toast 
           message={toast.message} 
@@ -91,14 +85,11 @@ export default function Login() {
         />
       )}
 
-      {/* Background Image */}
       <img src={Bg} alt="Background" className="fixed inset-0 bg-gradient-to-br from-black/300 via-slate-900/60 to-black/300 z-10" />
 
-      {/* Dark Overlay */}
       <div className="fixed inset-0 bg-black/80 z-10"></div>
 
       <div className="min-h-screen flex relative z-20">
-        {/* Left Side - Login Form */}
         <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
           <div className="w-full max-w-md">
             {/* Logo/Brand */}
@@ -106,7 +97,6 @@ export default function Login() {
               <img src={logo} alt="CodeQuestPOO RP Logo" className="mx-auto w-150 h-55 mb-4" />
             </div>
 
-            {/* Login Card */}
             <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-2xl p-10 border border-slate-700/50">
               <div className="mb-8">
                 <h2 className="text-3xl font-bold text-white mb-2">Bem-vindo de Volta</h2>
@@ -116,7 +106,6 @@ export default function Login() {
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-5">
-                {/* Email Input */}
                 <div>
                   <label className="block text-slate-300 text-sm font-medium mb-2">
                     Email
@@ -134,7 +123,6 @@ export default function Login() {
                   </div>
                 </div>
 
-                {/* Password Input */}
                 <div>
                   <label className="block text-slate-300 text-sm font-medium mb-2">
                     Palavra-passe
@@ -163,7 +151,6 @@ export default function Login() {
                   </div>
                 </div>
 
-                {/* Remember me & Forgot password */}
                 <div className="flex items-center justify-between text-sm">
                   <label className="flex items-center text-slate-400 cursor-pointer hover:text-slate-300 transition-colors">
                     <input type="checkbox" className="mr-2 rounded border-slate-600 bg-slate-900/50 text-cyan-500 focus:ring-cyan-500 focus:ring-offset-0" />
@@ -174,7 +161,6 @@ export default function Login() {
                   </a>
                 </div>
 
-                {/* Login Button */}
                 <button
                   type="submit"
                   disabled={loading}
@@ -185,7 +171,6 @@ export default function Login() {
                 </button>
               </form>
 
-              {/* Divider */}
               <div className="relative my-8">
                 <div className="absolute inset-0 flex items-center">
                   <div className="w-full border-t border-slate-700"></div>
@@ -197,7 +182,6 @@ export default function Login() {
                 </div>
               </div>
 
-              {/* Create Account Button */}
               <button
                 type="button"
                 onClick={handleCreateAccount}
@@ -210,10 +194,8 @@ export default function Login() {
           </div>
         </div>
 
-        {/* Right Side - Hero Section */}
         <div className="hidden lg:flex lg:w-1/2 items-center justify-center p-8 relative">
           <div className="relative z-10 flex items-center justify-center">
-            {/* Geometric shapes */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
               <div className="absolute w-[450px] h-[450px] bg-gradient-to-br from-cyan-500/40 to-blue-500/40 rounded-[3rem] rotate-12 -z-10"></div>
               <div className="absolute w-[370px] h-[370px] bg-gradient-to-br from-blue-600/30 to-cyan-600/30 rounded-[2.5rem] -rotate-12 translate-x-12 translate-y-8 -z-20"></div>
@@ -221,7 +203,6 @@ export default function Login() {
               <div className="absolute w-24 h-24 bg-blue-400/50 rounded-xl -rotate-45 -right-12 -bottom-12 -z-10"></div>
             </div>
 
-            {/* Hero Image */}
             <img
               src={HeroSection}
               alt="Hero Section"
@@ -231,7 +212,6 @@ export default function Login() {
         </div>
       </div>
 
-      {/* CSS para animação */}
       <style jsx>{`
         @keyframes slide-in {
           from {

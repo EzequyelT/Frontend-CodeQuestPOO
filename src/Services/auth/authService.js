@@ -1,5 +1,5 @@
 import api from "../api/axios";
-import { saveToken, saveUser } from "./authStorage";
+import { saveToken, saveUser, clearAuthStorage } from "./authStorage";
 
 export const login = async (email, password) => {
   try {
@@ -17,14 +17,13 @@ export const login = async (email, password) => {
 
 };
 
-export const register = async (dados) => {
+export const logout = async (id) => {
   try {
-
-    const { data } = await api.post("/auth/register", dados);
+    const { data } = await api.post(`/auth/logout/${id}`);
+    clearAuthStorage();
     return data;
-
-  } catch(err){
-    console.error("Erro ao criar conta:", err)
+  } catch (err) {
+    console.error("[Performance] Erro ao fazer logout:", err);
+    return null;
   }
- 
 };

@@ -9,7 +9,6 @@ import { useNavigate } from "react-router-dom";
 export default function Maps() {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [erro, setErro] = useState(null);
     const [mapasProgresso, setMapasProgresso] = useState([]);
     const navigate = useNavigate();
 
@@ -19,7 +18,6 @@ export default function Maps() {
         const token = localStorage.getItem("cq_token");
 
         if (!storedUser || !token) {
-            setErro("Utilizador não autenticado");
             setLoading(false);
             console.error("[Maps] Sem utilizador ou token no localStorage");
             return;
@@ -30,12 +28,9 @@ export default function Maps() {
 
         const carregarDados = async () => {
             try {
-                // 1️⃣ Buscar mapas
                 const mapas = await getMapas();
-                // 2️⃣ Buscar progresso do aluno
                 const progresso = await getProgresso(token);
 
-                // 3️⃣ Combinar mapas e progresso
                 const mapasComProgresso = mapas.map((m) => {
                     const prog = progresso.find(p => p.mapa === m.id) || {};
                     const pct = prog.porcentagem || 0;
@@ -48,7 +43,7 @@ export default function Maps() {
                         porcentagem: pct,
                         locked: !desbloqueado,
                         done: pct === 100,
-                        bgColor: "#333", // aqui você pode definir cores por mapa
+                        bgColor: "#333", 
                         color: "#22c55e",
                         emoji: "🗺️",
                         boss: "Boss",
@@ -60,7 +55,6 @@ export default function Maps() {
                 setLoading(false);
             } catch (err) {
                 console.error("[Maps] Erro ao carregar mapas e progresso", err);
-                setErro("Erro ao carregar dados");
                 setLoading(false);
             }
         };
@@ -70,20 +64,16 @@ export default function Maps() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-black flex items-center justify-center">
-                <div className="text-white">Carregando...</div>
+            <div className="relative min-h-screen bg-black animate-fadeIn flex items-center justify-center">
+                <div className="text-white text-center">
+                    <div className="w-12 h-12 border-4 border-yellow-600 border-t-yellow-400 rounded-full animate-spin mx-auto mb-4"></div>
+                    <p>Carregando Mapas...</p>
+                </div>
             </div>
         );
     }
 
-    if (erro) {
-        return (
-            <div className="min-h-screen bg-black flex items-center justify-center">
-                <div className="text-red-400">{erro}</div>
-            </div>
-        );
-    }
-
+   
     return (
         <div className="maps min-h-screen bg-black flex flex-col">
             <DashBoardHeader user={user} />

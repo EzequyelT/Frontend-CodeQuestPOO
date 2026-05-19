@@ -31,6 +31,7 @@ export default function DSF5() {
     const [levels, setLevels] = useState([]);
     const [desafioId, setDesafioId] = useState(null);
     const [showModal, setShowModal] = useState(true);
+    const [loadingModal, setLoadingModal] = useState(true);
 
 
     const token = getToken()
@@ -46,6 +47,7 @@ export default function DSF5() {
             async function loadLevels() {
                 const data = await getLevelsByMap(mapaId);
                 setLevels(data);
+                setLoadingModal(false)
 
                 if (data?.[1]?.desafios?.length > 0) {
                     setDesafioId(data[1].desafios[1].id)
@@ -120,8 +122,17 @@ export default function DSF5() {
             />
         )
     }
-    console.log(objectives)
 
+    if (loadingModal) {
+        return (
+            <div className="relative min-h-screen bg-black animate-fadeIn flex items-center justify-center">
+                <div className="text-white text-center">
+                    <div className="w-12 h-12 border-4 border-yellow-600 border-t-yellow-400 rounded-full animate-spin mx-auto mb-4"></div>
+                    <p>Carregando desafio 5...</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <>

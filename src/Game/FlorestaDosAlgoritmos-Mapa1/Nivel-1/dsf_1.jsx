@@ -33,6 +33,7 @@ export default function DSF1() {
     const [desafioId, setDesafioId] = useState(null);
     const [showModal, setShowModal] = useState(true);
     const [initialStreak, setInitialStreak] = useState(0);
+    const [loading, setLoading] = useState(true);
     const bgDim = (0.55)
 
     const navigate = useNavigate()
@@ -50,20 +51,20 @@ export default function DSF1() {
                 const data = await getLevelsByMap(mapaId);
                 setLevels(data);
                 setDesafioId(data[0]?.id);
+                setLoading(false);
             }
 
             async function loadStats() {
                 if (!token) return;
                 const stats = await getProgressoDashboard(token);
                 setInitialStreak(stats.streak || 0);
-                console.log(stats)
+                setLoading(false);                
             }
 
             loadLevels();
             loadStats();
 
         } catch (err) {
-
             console.error(err)
             throw (err)
         }
@@ -118,9 +119,21 @@ export default function DSF1() {
         )
     }
 
-    return (
-        <>
+    
+    if (loading) {
+        return (
+            <div className="relative min-h-screen bg-black animate-fadeIn flex items-center justify-center">
+                <div className="text-white text-center">
+                    <div className="w-12 h-12 border-4 border-yellow-600 border-t-yellow-400 rounded-full animate-spin mx-auto mb-4"></div>
+                    <p>Carregando desafio 1...</p>
+                </div>
+            </div>
+        );
+    }
 
+    return (
+        <> 
+            
             <ModalService
                 isOpen={showModal}
                 setIsOpen={setShowModal}
