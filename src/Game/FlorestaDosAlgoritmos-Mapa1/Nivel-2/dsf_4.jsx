@@ -77,6 +77,7 @@ export default function DSF4() {
     finalResult,
     resetQuiz,
     showFailModal,
+    transitioning
   } = useQuiz(dsf.perguntas, {
     token: token,
     aluno_id: userId,
@@ -93,6 +94,7 @@ export default function DSF4() {
           timeSeconds,
           hintsUsed: 0,
           xpGained: finalResult?.xpGanho?.total ?? correct * 80,
+          coinsGained: finalResult?.coinsGanhos?.total ?? correct * 10,
           score: Math.round((correct / totalQuestions) * 100),
           streak: dsf.streak,
           quizTitle: dsf.titulo,
@@ -105,7 +107,6 @@ export default function DSF4() {
       />
     )
   }
-
 
   if (loading) {
     return (
@@ -153,9 +154,10 @@ export default function DSF4() {
         }}
       >
         <QuizContainer
+          transitioning={transitioning}
           headerProps={{
             children: dsf.titulo,
-            currentQuestion: currentIndex + 1,   // ✅ dinâmico
+            currentQuestion: currentIndex + 1,   
             totalQuestions: totalQuestions,
             streak: dsf.streak,
           }}
@@ -163,7 +165,6 @@ export default function DSF4() {
             options: currentQuestion.opcoes,
           }}
         >
-          {/* 1 slot único por pergunta */}
           <div className="flex justify-center">
             <QuestionCard
               label="Arraste a resposta correta"

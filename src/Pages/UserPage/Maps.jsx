@@ -5,6 +5,8 @@ import DashBoardHeader from "../../Components/Header/HeaderDashBoard";
 import SideBar from "../../Components/SideBar/SideBar";
 import map1 from "../../assets/Maps/FirstMap.png";
 import { useNavigate } from "react-router-dom";
+import { ChartBar, Search } from "lucide-react"
+import { getMe } from "../../Services/users/userService";
 
 export default function Maps() {
     const [user, setUser] = useState(null);
@@ -14,22 +16,22 @@ export default function Maps() {
 
 
     useEffect(() => {
-        const storedUser = localStorage.getItem("cq_user");
-        const token = localStorage.getItem("cq_token");
-
-        if (!storedUser || !token) {
-            setLoading(false);
-            console.error("[Maps] Sem utilizador ou token no localStorage");
-            return;
+        const userData = async () => {
+            try {
+                const user = await getMe();
+                if (!user) return;
+                setUser(user);
+                setLoading(false)
+            } catch (error) {
+                console.error("Erro ao buscar utilizador:", error);
+            }
         }
-
-        const userData = JSON.parse(storedUser);
-        setUser(userData);
+        userData()
 
         const carregarDados = async () => {
             try {
                 const mapas = await getMapas();
-                const progresso = await getProgresso(token);
+                const progresso = await getProgresso(user);
 
                 const mapasComProgresso = mapas.map((m) => {
                     const prog = progresso.find(p => p.mapa === m.id) || {};
@@ -43,7 +45,7 @@ export default function Maps() {
                         porcentagem: pct,
                         locked: !desbloqueado,
                         done: pct === 100,
-                        bgColor: "#333", 
+                        bgColor: "#333",
                         color: "#22c55e",
                         emoji: "🗺️",
                         boss: "Boss",
@@ -73,29 +75,41 @@ export default function Maps() {
         );
     }
 
-   
+
     return (
         <div className="maps min-h-screen bg-black flex flex-col">
             <DashBoardHeader user={user} />
             <SideBar user={user} />
 
-            <div className="flex-1 flex flex-col items-center justify-between mt-20 ml-20 px-6 pb-8">
-                {/* Imagem + botão */}
-                <div className="relative mt-6">
+
+            <div className="flex-1 flex flex-col justify-between mt-20 ml-20 px-6 pb-8">
+                <div className="flex justify-end items-center gap-3 mb-2 mr-10">
+                    <button className="w-9 h-9 rounded-full flex items-center justify-center text-gray-400 border border-gray-800 hover:border-gray-600 hover:text-white transition-colors">
+                        <Search size={20} />
+                    </button>
+                    <button
+                        onClick={() => navigate("/Estatisticas")} 
+                        className="w-9 h-9 rounded-full flex items-center justify-center text-gray-400 border border-gray-800 hover:border-gray-600 hover:text-white transition-colors"
+                    >
+                        <ChartBar size={20} />
+                    </button>
+                </div>
+
+                <div className="relative mt-3">
                     <img
                         src={map1}
                         alt="Mapa 1"
-                        className="w-95 h-140 transition-transform duration-300 hover:scale-105 cursor-pointer"
+                        className="w-100 h-145 ml-125 transition-transform duration-300 hover:scale-105 cursor-pointer"
                     />
                     <button
-                        className="absolute left-1/2 bottom-35 -translate-x-1/2 bg-green-600 text-white px-6 py-2 rounded-full hover:bg-green-700 transition-colors duration-200 animate-bounce border-2 border-black font-semibold"
+                        className="absolute left-1/2 bottom-40 -translate-x-1/2 bg-green-600 text-white px-6 py-2 rounded-full hover:bg-green-700 transition-colors duration-200 animate-bounce border-2 border-black font-semibold"
                         onClick={() => navigate('/FlorestaDosAlgoritmos')}
                     >
                         jogar
                     </button>
                 </div>
 
-                <footer className="w-full max-w-5xl mt-20">
+                <footer className="w-full max-w-5xl mt-20 ml-50">
                     <div className="w-full flex flex-col gap-4 rounded-2xl border border-gray-800 bg-[#111] p-5">
                         {mapasProgresso.map((m, i) => {
                             const pct = m.porcentagem;

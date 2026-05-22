@@ -1,6 +1,6 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import './index.css';
+import './css/index.css';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 // Pages
@@ -12,6 +12,8 @@ import Maps from './Pages/UserPage/Maps';
 import Trophies from './Pages/UserPage/Trophies&Achievements';
 import Login from "./Pages/Auth/login";
 import CriarConta from "./Pages/Auth/criarConta";
+import HistoricoSemanal from "./Pages/UserPage/HistoricoSemanal";
+import Estatisticas from './Pages/UserPage/Estatisticas';
 
 // Components
 import Desafio1GameTest from "./Components/GameTest/desafio1";
@@ -37,8 +39,10 @@ createRoot(document.getElementById('root')).render(
           <Route path="/Login" element={<Login />} />
           <Route path="/CriarConta" element={<CriarConta />} />
           <Route path="/Maps" element={<Maps />} />
+          <Route path="/HistoricoSemanal" element={<HistoricoSemanal />} />
           <Route path="/Trophies" element={<Trophies />} />
           <Route path="/Perfil" element={<Perfil />} />
+          <Route path="/Estatisticas" element={<Estatisticas />} />
 
           {/* DESAFIOS */}
           <Route path="/Desafio1GameTest" element={<Desafio1GameTest />} />
@@ -46,8 +50,10 @@ createRoot(document.getElementById('root')).render(
           <Route path="/DesafioFinalGameTest" element={<DesafioFinal />} />
 
           {/* GAME */}
+          {/* Map-1 */}
           <Route path="/FlorestaDosAlgoritmos" element={<FlorestaDosAlgoritmos />} />
           <Route path="/floresta/*" element={<Mapa1 />} />
+          {/* Map-2 */}
 
           {/* fallback */}
           <Route path="*" element={<Landingpage />} />

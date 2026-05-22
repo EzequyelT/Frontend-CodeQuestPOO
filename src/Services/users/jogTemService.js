@@ -9,3 +9,13 @@ export const getUserTempo = async () => {
     return null;
   }
 };
+
+export const getHistoricoSemanal = async () => {
+  try {
+    const { data } = await api.get("/jogadorTempo/historico");
+    return data;
+  } catch (error) {
+    console.error("[TempoJogador] Erro ao buscar:", error);
+    return null;
+  }
+}

@@ -1,40 +1,19 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { 
+  CheckCircle2, 
+  XCircle, 
+  Timer, 
+  Lightbulb, 
+  Coins, 
+  Sparkles, 
+  Flame, 
+  Rocket 
+} from "lucide-react";
 
 import buttonMap from "../../../assets/Buttons/Mapa.png";
 import buttonRemake from "../../../assets/Buttons/Refazer.png";
-import Bg from "../../../assets/Maps/Bg-Map1.png"
-
-
-const Color = {
-  primary: {
-    dark: "#0a2a4a",
-    main: "#1e5a8e",
-    light: "#3b7ab8",
-    lighter: "#5a96d8",
-    brightest: "#7ab8ff",
-  },
-  secondary: {
-    dark: "#3a2010",
-    main: "#8b5e1a",
-    light: "#a08060",
-    lighter: "#c4a878",
-  },
-  glow: {
-    blue: "rgba(79, 180, 255, 0.6)",
-    blueSoft: "rgba(79, 180, 255, 0.25)",
-    gold: "rgba(255, 215, 0, 0.55)",
-    goldSoft: "rgba(255, 185, 0, 0.18)",
-  },
-  neutral: {
-    bg: "#000",
-    darkBg: "#0a0a0a",
-    card: "rgba(10, 30, 50, 0.45)",
-    border: "rgba(30, 90, 142, 0.3)",
-  },
-};
-
-
+import Bg from "../../../assets/Maps/Bg-Map1.png";
 
 function formatTime(s) {
   const m = Math.floor(s / 60);
@@ -42,10 +21,10 @@ function formatTime(s) {
 }
 
 function getScoreLabel(score) {
-  if (score >= 90) return { label: "Incrível!", color: Color.secondary.lighter };
-  if (score >= 70) return { label: "Muito bom!", color: Color.primary.brightest };
-  if (score >= 50) return { label: "Bom esforço!", color: "#f5c518" };
-  return { label: "Continue tentando!", color: "#e05c5c" };
+  if (score >= 90) return { label: "Incrível!", color: "stroke-[#c4a878]", textColor: "text-[#c4a878]" };
+  if (score >= 70) return { label: "Muito bom!", color: "stroke-[#7ab8ff]", textColor: "text-[#7ab8ff]" };
+  if (score >= 50) return { label: "Bom esforço!", color: "stroke-[#f5c518]", textColor: "text-[#f5c518]" };
+  return { label: "Continue tentando!", color: "stroke-[#e05c5c]", textColor: "text-[#e05c5c]" };
 }
 
 function ScoreRing({ score }) {
@@ -53,7 +32,7 @@ function ScoreRing({ score }) {
   const radius = 52;
   const circ = 2 * Math.PI * radius;
   const offset = circ - (displayed / 100) * circ;
-  const { label, color } = getScoreLabel(score);
+  const { label, color, textColor } = getScoreLabel(score);
 
   useEffect(() => {
     let start = null;
@@ -68,270 +47,192 @@ function ScoreRing({ score }) {
   }, [score]);
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
-      <div style={{ position: "relative", width: 128, height: 128 }}>
-        <div style={{
-          position: "absolute", inset: -4, borderRadius: "50%",
-          boxShadow: `0 0 24px 6px ${Color.glow.goldSoft}, 0 0 48px 12px ${Color.glow.blueSoft}`,
-          pointerEvents: "none",
-        }} />
-        <svg width={128} height={128} style={{ transform: "rotate(-90deg)", display: "block" }}>
-          <circle cx={64} cy={64} r={radius} fill="none"
-            stroke="rgba(255,255,255,0.07)" strokeWidth={10} />
-          <circle cx={64} cy={64} r={radius} fill="none"
-            stroke={color} strokeWidth={10} strokeLinecap="round"
-            strokeDasharray={circ} strokeDashoffset={offset}
-            style={{ transition: "stroke-dashoffset 0.05s linear" }} />
+    <div className="flex flex-col items-center gap-1">
+      <div className="relative w-32 h-32">
+        <div className="absolute inset-[-4px] rounded-full pointer-events-none shadow-[0_0_24px_6px_rgba(255,185,0,0.18),0_0_48px_12px_rgba(79,180,255,0.25)]" />
+        
+        <svg width={128} height={128} className="-rotate-90 block">
+          <circle cx={64} cy={64} r={radius} fill="none" className="stroke-white/5" strokeWidth={10} />
+          <circle 
+            cx={64} cy={64} r={radius} fill="none" 
+            className={`${color} transition-[stroke-dashoffset] duration-75 ease-linear`}
+            strokeWidth={10} strokeLinecap="round"
+            strokeDasharray={circ} strokeDashoffset={offset} 
+          />
         </svg>
-        <div style={{
-          position: "absolute", inset: 0,
-          display: "flex", flexDirection: "column",
-          alignItems: "center", justifyContent: "center", gap: 6,
-        }}>
-          <span style={{ fontSize: 30, fontWeight: 800, color: "#fff", lineHeight: 1 }}>
+        
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-1.5">
+          <span className="text-3xl font-extrabold text-white leading-none">
             {displayed}
           </span>
-          <span style={{ fontSize: 10, color: "rgba(255,255,255,0.35)", letterSpacing: "0.12em" }}>
+          <span className="text-[10px] text-white/35 tracking-widest">
             SCORE
           </span>
         </div>
       </div>
-      <span style={{ fontSize: 13, fontWeight: 700, color, marginTop: 4 }}>{label}</span>
+      <span className={`text-trast text-sm font-bold mt-1 ${textColor}`}>{label}</span>
     </div>
   );
 }
 
-// ── Stat Card ────────────────────────────────────────────────
-function Stat({ icon, label, value, valueColor }) {
+function Stat({ icon: Icon, label, value, valueColor }) {
   return (
-    <div style={{
-      flex: "1 1 80px",
-      background: Color.neutral.card,
-      border: `1px solid ${Color.neutral.border}`,
-      borderRadius: 16, padding: "12px 8px",
-      backdropFilter: "blur(8px)",
-      display: "flex", flexDirection: "column",
-      alignItems: "center", gap: 5,
-      transition: "transform 0.2s",
-    }}
-      onMouseEnter={e => e.currentTarget.style.transform = "translateY(-2px)"}
-      onMouseLeave={e => e.currentTarget.style.transform = "translateY(0)"}
-    >
-      <span style={{ fontSize: 18 }}>{icon}</span>
-      <span style={{ fontSize: 17, fontWeight: 700, color: valueColor || "#fff" }}>{value}</span>
-      <span style={{ fontSize: 9, color: "rgba(255,255,255,0.35)", letterSpacing: "0.08em", textAlign: "center" }}>
+    <div className="flex-1 min-w-[80px] bg-[#0a1e32]/45 border border-[#1e5a8e]/30 rounded-2xl p-3 flex flex-col items-center gap-1.5 backdrop-blur-md transition-transform duration-200 hover:-translate-y-0.5">
+      <Icon size={18} className={valueColor || "text-white"} />
+      <span className={`text-base font-bold ${valueColor || "text-white"}`}>{value}</span>
+      <span className="text-[9px] text-white/35 tracking-wider text-center uppercase">
         {label}
       </span>
     </div>
   );
 }
 
-// ── XP Bar ───────────────────────────────────────────────────
-function XPBar({ xp }) {
-  const max = 500;
+function ProgressBar({ label, amount, suffix, colorClass, barGradient, shadowClass, max = 500 }) {
   const [width, setWidth] = useState(0);
 
   useEffect(() => {
-    const t = setTimeout(() => setWidth(Math.min((xp / max) * 100, 100)), 200);
+    const t = setTimeout(() => setWidth(Math.min((amount / max) * 100, 100)), 200);
     return () => clearTimeout(t);
-  }, [xp]);
+  }, [amount, max]);
 
   return (
-    <div style={{ width: "100%", padding: "0 2px" }}>
-      <div style={{
-        display: "flex", justifyContent: "space-between",
-        fontSize: 11, color: "rgba(255,255,255,0.4)", marginBottom: 7,
-      }}>
-        <span>⭐ XP ganho</span>
-        <span style={{ color: Color.secondary.lighter, fontWeight: 700 }}>+{xp} XP</span>
+    <div className="w-full px-0.5">
+      <div className="flex justify-between text-xs text-white/40 mb-1.5">
+        <span>{label}</span>
+        <span className={`font-bold ${colorClass}`}>+{amount} {suffix}</span>
       </div>
-      <div style={{
-        background: "rgba(255,255,255,0.06)",
-        border: `1px solid ${Color.neutral.border}`,
-        borderRadius: 99, height: 8, overflow: "hidden",
-      }}>
-        <div style={{
-          height: "100%", borderRadius: 99,
-          background: `linear-gradient(90deg, ${Color.secondary.main}, ${Color.secondary.lighter})`,
-          boxShadow: `0 0 8px ${Color.glow.gold}`,
-          width: `${width}%`,
-          transition: "width 0.9s cubic-bezier(0.34,1.56,0.64,1)",
-        }} />
+      <div className="bg-white/5 border border-[#1e5a8e]/30 rounded-full h-2 overflow-hidden">
+        <div 
+          className={`h-full rounded-full bg-gradient-to-r ${barGradient} ${shadowClass} transition-all duration-[900ms] cubic-bezier(0.34,1.56,0.64,1)`}
+          style={{ width: `${width}%` }}
+        />
       </div>
     </div>
   );
 }
 
-// ── Action Button ────────────────────────────────────────────
 function ActionBtn({ onClick, children, primary = false }) {
   return (
     <button
       onClick={onClick}
-      style={{
-        width: "100%", padding: "12px 0", borderRadius: 999,
-        fontSize: 13, fontWeight: 700, color: "#fff",
-        background: primary
-          ? `linear-gradient(135deg, ${Color.primary.light}, ${Color.primary.main})`
-          : Color.neutral.card,
-        border: primary
-          ? `1px solid ${Color.primary.lighter}`
-          : `1px solid ${Color.neutral.border}`,
-        boxShadow: primary ? `0 4px 20px ${Color.glow.blueSoft}` : "none",
-        backdropFilter: "blur(6px)",
-        cursor: "pointer", letterSpacing: "0.03em",
-        transition: "filter 0.15s, transform 0.15s",
-      }}
-      onMouseEnter={e => {
-        e.currentTarget.style.filter = "brightness(1.18)";
-        e.currentTarget.style.transform = "translateY(-2px)";
-      }}
-      onMouseLeave={e => {
-        e.currentTarget.style.filter = "brightness(1)";
-        e.currentTarget.style.transform = "translateY(0)";
-      }}
+      className={`w-full py-3 rounded-full text-sm font-bold text-white tracking-wide cursor-pointer backdrop-blur-sm transition-all duration-150 hover:brightness-125 hover:-translate-y-0.5 ${
+        primary 
+          ? "bg-gradient-to-br from-[#3b7ab8] to-[#1e5a8e] border border-[#5a96d8] shadow-[0_4px_20px_rgba(79,180,255,0.25)]" 
+          : "bg-[#0a1e32]/45 border border-[#1e5a8e]/30"
+      }`}
     >
       {children}
     </button>
   );
 }
 
-export default function QuizResult({
-  result,
-  onRepeat,
-  onNextChallenge,
-}) {
-  const { correct, wrong, timeSeconds, hintsUsed, xpGained, score, streak, quizTitle } = result;
-  const isPerfect = result.wrong === 0;
+export default function QuizResult({ result, onRepeat, onNextChallenge }) {
+  const {
+    correct,
+    wrong,
+    timeSeconds,
+    hintsUsed,
+    xpGained,
+    coinsGained,
+    score,
+    streak,
+    quizTitle
+  } = result;
+
+  const isPerfect = wrong === 0;
   const navigate = useNavigate();
-  const bgDim = (0.65)
 
   return (
-    <>
-      <div style={{
-        minHeight: "100vh",
-        width: "100%",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-        backgroundImage: `
-    linear-gradient(rgba(0,0,0,${bgDim}), rgba(0,0,0,${bgDim})),
-    url(${Bg})
-  `,
-
-      }}>
-        <div style={{
-          maxWidth: 500,
-          margin: "0 auto",
-          padding: "28px 22px",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: 26,
-          fontFamily: "system-ui, sans-serif",
-        }}>
-
-          <div style={{ textAlign: "center", width: "100%" }}>
-            <p style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", letterSpacing: "0.14em", margin: "0 0 5px" }}>
-              RESULTADO FINAL
-            </p>
-            <h2 style={{ color: "#fff", margin: 0, fontSize: 17, fontWeight: 700 }}>
-              {quizTitle}
-            </h2>
-            {isPerfect && (
-              <div style={{
-                width: "100%",
-                background: "linear-gradient(135deg, rgba(255,215,0,0.08), rgba(79,180,255,0.08))",
-                border: "1px solid rgba(255,215,0,0.3)",
-                borderRadius: 16,
-                padding: "16px 20px",
-                textAlign: "center",
-              }}>
-                <p style={{ color: "#ffe08a", fontSize: 15, fontWeight: 700, margin: "0 0 4px" }}>
-                  Pontuação Perfeita!
-                </p>
-                <p style={{ color: "rgba(255,255,255,0.55)", fontSize: 12, margin: "0 0 8px", lineHeight: 1.5 }}>
-                  Acertaste todas as questões sem errar nenhuma. Impressionante!
-                </p>
-                <span style={{
-                  display: "inline-block",
-                  background: `linear-gradient(135deg, ${Color.secondary.dark}, ${Color.secondary.main})`,
-                  color: Color.secondary.lighter,
-                  fontSize: 11, fontWeight: 700, padding: "4px 16px", borderRadius: 999,
-                  border: "1px solid rgba(255,185,0,0.25)",
-                }}>
-                  🔥 +1 Streak conquistado!
-                </span>
-              </div>
-            )}
-
-            {streak > 1 && (
-              <span style={{
-                display: "inline-block", marginTop: 10,
-                background: `linear-gradient(135deg, ${Color.secondary.dark}, ${Color.secondary.main})`,
-                color: Color.secondary.lighter,
-                fontSize: 11, fontWeight: 700, padding: "4px 16px", borderRadius: 999,
-                border: `1px solid rgba(255,185,0,0.25)`,
-                boxShadow: `0 0 10px ${Color.glow.goldSoft}`,
-              }}>
-                🔥 Streak {streak} desafios seguidos!
-              </span>
-            )}
-          </div>
-
-          {/* Divider */}
-          <div style={{ width: "100%", height: 1, background: `linear-gradient(90deg, transparent, ${Color.neutral.border}, transparent)` }} />
-
-          {/* Ring */}
-          <ScoreRing score={score} />
-
-          {/* Stats */}
-          <div style={{ display: "flex", gap: 10, width: "100%", flexWrap: "wrap" }}>
-            <Stat icon="✅" label="CERTAS" value={correct} valueColor="#4cde7f" />
-            <Stat icon="❌" label="ERRADAS" value={wrong} valueColor="#e05c5c" />
-            <Stat icon="⏱" label="TEMPO" value={formatTime(timeSeconds)} />
-            <Stat icon="💡" label="DICAS" value={hintsUsed} valueColor={Color.primary.brightest} />
-          </div>
-
-          {/* XP */}
-          <XPBar xp={xpGained} />
-
-          {/* Divider */}
-          <div style={{ width: "100%", height: 1, background: `linear-gradient(90deg, transparent, ${Color.neutral.border}, transparent)` }} />
-
-          {/* Buttons */}
-          <div style={{ width: "65%", display: "flex", flexDirection: "column", gap: 10 }}>
-            <ActionBtn onClick={onNextChallenge} primary>
-              Próximo Desafio 🚀
-            </ActionBtn>
-
-            <div style={{ display: "flex", gap: 12, justifyContent: "center" }}>
-              <button
-                onClick={onRepeat}
-                style={{
-                  background: "none", border: "none", cursor: "pointer", padding: 8,
-                  transition: "filter 0.15s, transform 0.15s"
-                }}
-                onMouseEnter={e => { e.currentTarget.style.filter = "brightness(1.35)"; e.currentTarget.style.transform = "translateY(-3px)"; }}
-                onMouseLeave={e => { e.currentTarget.style.filter = "brightness(1)"; e.currentTarget.style.transform = "translateY(0)"; }}
-              >
-                <img src={buttonRemake} alt="Refazer" style={{ height: 65, width: 65 }} />
-              </button>
-
-              <button
-                onClick={() => navigate("/FlorestaDosAlgoritmos")}
-                style={{
-                  background: "none", border: "none", cursor: "pointer", padding: 8,
-                  transition: "filter 0.15s, transform 0.15s"
-                }}
-                onMouseEnter={e => { e.currentTarget.style.filter = "brightness(1.35)"; e.currentTarget.style.transform = "translateY(-3px)"; }}
-                onMouseLeave={e => { e.currentTarget.style.filter = "brightness(1)"; e.currentTarget.style.transform = "translateY(0)"; }}
-              >
-                <img src={buttonMap} alt="Mapa" style={{ height: 65, width: 65 }} />
-              </button>
+    <div 
+      className="min-h-screen w-full bg-cover bg-center bg-no-repeat relative"
+      style={{ backgroundImage: `linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.65)), url(${Bg})` }}
+    >
+      <div className="max-w-[500px] mx-auto px-5 py-7 flex flex-col items-center gap-6 font-sans">
+        
+        <div className="text-center w-full">
+          <p className="text-[10px] text-white/30 tracking-widest mb-1 uppercase">
+            Resultado Final
+          </p>
+          <h2 className="text-white text-lg font-bold m-0">
+            {quizTitle}
+          </h2>
+          
+          {isPerfect && (
+            <div className="w-full mt-4 bg-gradient-to-br from-yellow-500/10 to-blue-500/10 border border-yellow-500/30 rounded-2xl p-4 text-center">
+              <p className="text-[#ffe08a] text-base font-bold mb-1 flex items-center justify-center gap-1.5">
+                <Sparkles size={16} className="text-yellow-400" /> Pontuação Perfeita!
+              </p>
+              <p className="text-white/55 text-xs m-0 shelf-card leading-relaxed">
+                Acertaste todas as questões sem errar nenhuma. Impressionante!
+              </p>
             </div>
+          )}
+
+          {streak > 1 && (
+            <span className="inline-flex items-center gap-1.5 mt-3 bg-gradient-to-br from-[#3a2010] to-[#8b5e1a] text-[#c4a878] text-[11px] font-bold px-4 py-1 rounded-full border border-yellow-500/25 shadow-[0_0_10px_rgba(255,185,0,0.18)]">
+              <Flame size={13} className="fill-current" /> {streak} Streak totais! Continue assim
+            </span>
+          )}
+        </div>
+
+        <div className="w-full h-px bg-gradient-to-r from-transparent via-[#1e5a8e]/30 to-transparent" />
+
+        <ScoreRing score={score} />
+
+        <div className="flex gap-2.5 w-full flex-wrap">
+          <Stat icon={CheckCircle2} label="Certas" value={correct} valueColor="text-[#4cde7f]" />
+          <Stat icon={XCircle} label="Erradas" value={wrong} valueColor="text-[#e05c5c]" />
+          <Stat icon={Timer} label="Tempo" value={formatTime(timeSeconds)} />
+          <Stat icon={Lightbulb} label="Dicas" value={hintsUsed} valueColor="text-[#7ab8ff]" />
+          <Stat icon={Coins} label="Moedas" value={coinsGained || 0} valueColor="text-[#fde047]" />
+        </div>
+
+        <div className="w-full flex flex-col gap-4">
+          <ProgressBar 
+            label="⭐ XP ganho" 
+            amount={xpGained} 
+            suffix="XP" 
+            colorClass="text-[#c4a878]" 
+            barGradient="from-[#8b5e1a] to-[#c4a878]" 
+            shadowClass="shadow-[0_0_8px_rgba(255,215,0,0.55)]"
+          />
+          <ProgressBar 
+            label="💰 Moedas ganhas" 
+            amount={coinsGained} 
+            suffix="Coins" 
+            colorClass="text-[#fde047]" 
+            barGradient="from-[#ca8a04] to-[#fde047]" 
+            shadowClass="shadow-[0_0_8px_rgba(255,215,0,0.5)]"
+          />
+        </div>
+
+        <div className="w-full h-px bg-gradient-to-r from-transparent via-[#1e5a8e]/30 to-transparent" />
+
+        <div className="w-[65%] flex flex-col gap-2.5">
+          <ActionBtn onClick={onNextChallenge} primary>
+            <span className="flex items-center justify-center gap-2">
+              Próximo Desafio <Rocket size={15} />
+            </span>
+          </ActionBtn>
+
+          <div className="flex gap-3 justify-center">
+            <button
+              onClick={onRepeat}
+              className="bg-none border-none cursor-pointer p-2 transition-all duration-150 hover:brightness-125 hover:-translate-y-0.5 active:scale-95"
+            >
+              <img src={buttonRemake} alt="Refazer" className="h-16 w-16" />
+            </button>
+
+            <button
+              onClick={() => navigate("/FlorestaDosAlgoritmos")}
+              className="bg-none border-none cursor-pointer p-2 transition-all duration-150 hover:brightness-125 hover:-translate-y-0.5 active:scale-95"
+            >
+              <img src={buttonMap} alt="Mapa" className="h-16 w-16" />
+            </button>
           </div>
         </div>
+
       </div>
-    </>
+    </div>
   );
 }

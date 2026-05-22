@@ -33,6 +33,7 @@ export function useCode(fases = [], config = {}) {
   const [totalWrong, setTotalWrong] = useState(0)
   const [totalAttempts, setTotalAttempts] = useState(0)
   const [streakAtual, setStreakAtual] = useState(config.streakInicial ?? 0);
+  const [transitioning, setTransitioning] = useState(false)
 
   const totalWrongRef = useRef(0)
   const totalAttemptsRef = useRef(0)
@@ -80,7 +81,7 @@ export function useCode(fases = [], config = {}) {
         ? Math.round((correct / totalTentativas) * 100)
         : 0
 
-    console.log("SAVE →", {          // ← log aqui para confirmar
+    console.log("SAVE →", {
       erradas: totalWrongRef.current,
       tentativas: totalAttemptsRef.current,
       score,
@@ -184,14 +185,20 @@ export function useCode(fases = [], config = {}) {
           prev.map(obj => ({ ...obj, done: true }))
         )
 
+        setTransitioning(true)
+
         setTimeout(() => {
           if (isUltima) setFinished(true)
           else setCurrentIndex(i => i + 1)
+          
+          setTransitioning(false)
         }, 1500)
 
         return { success: true, output }
       } else {
         setMentorStatus("error")
+
+        const nextAttempts = attempts + 1
 
         addErrorLog(
           currentHint.error
@@ -199,16 +206,29 @@ export function useCode(fases = [], config = {}) {
             : `❌ ${finalOutput || "Output vazio"}`
         )
 
-        setConsecutiveWrong(prev => {
-          const next = prev + 1
-          if (next === 5) setShowFailModal(true)
-          return next
-        })
         setStreakAtual(0)
+
+        if (nextAttempts >= 3) {
+
+          addLog(
+            "warning",
+            "⚠️ Número máximo de tentativas atingido. Indo para próxima pergunta..."
+          )
+          
+          setTransitioning(true)
+
+          setTimeout(() => {
+            if (isUltima) {
+              setFinished(true)
+            } else {
+              setCurrentIndex(i => i + 1)
+            }
+            setTransitioning(false)
+          }, 1500)
+        }
 
         return { success: false, output: finalOutput }
       }
-
     } catch (err) {
       const clean = formatError(err?.message || String(err))
 
@@ -222,7 +242,6 @@ export function useCode(fases = [], config = {}) {
       setLoading(false)
     }
   }
-
 
   return {
     currentQuestion,
@@ -244,5 +263,6 @@ export function useCode(fases = [], config = {}) {
     runCode,
     showFailModal,
     streakAtual,
+    transitioning
   }
 }

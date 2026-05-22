@@ -86,7 +86,8 @@ export default function DSF1() {
         finalResult,
         resetQuiz,
         showFailModal,
-        streakAtual
+        streakAtual,
+        transitioning
     } = useQuiz(dsf.perguntas, {
         token: token,
         aluno_id: userId,
@@ -104,6 +105,7 @@ export default function DSF1() {
                     timeSeconds,
                     hintsUsed: 0,
                     xpGained: finalResult?.xpGanho?.total ?? correct * 80,
+                    coinsGained: finalResult?.coinsGanhos?.total ?? correct * 10,
                     score: Math.round((correct / totalQuestions) * 100),
                     streak: streakAtual,
                     quizTitle: dsf.titulo,
@@ -168,7 +170,7 @@ export default function DSF1() {
             >
 
                 <QuizContainer
-
+                    transitioning={transitioning}
                     headerProps={{
                         children: dsf.titulo,
                         currentQuestion: currentIndex + 1,
@@ -189,7 +191,7 @@ export default function DSF1() {
                         />
                     </div>
 
-                </QuizContainer>
+                </QuizContainer >
             </div>
         </>
     )

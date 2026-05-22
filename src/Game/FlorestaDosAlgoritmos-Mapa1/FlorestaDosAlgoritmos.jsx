@@ -81,11 +81,11 @@ const BUTTON_IMAGES = {
 
 const Color = {
   primary: {
-    dark: "#0a2a4a",      
-    main: "#1e5a8e",     
-    light: "#3b7ab8",     
-    lighter: "#5a96d8",    
-    brightest: "#7ab8ff",  
+    dark: "#0a2a4a",
+    main: "#1e5a8e",
+    light: "#3b7ab8",
+    lighter: "#5a96d8",
+    brightest: "#7ab8ff",
   },
 
   secondary: {
@@ -118,6 +118,8 @@ async function fetchLevels(mapaId, token) {
     getProgresso(token),
   ]);
 
+  console.log("moedas",niveisDB)
+  
   const progressoMapa = progressoTotal.find(p => p.mapa === mapaId) || {};
   const desafiosCompletos = progressoMapa.desafios_completos || 0;
   let posicaoGlobal = 0;
@@ -139,6 +141,7 @@ async function fetchLevels(mapaId, token) {
         name: desafio.nome,
         description: desafio.descricao,
         xpReward: desafio.xp,
+        coin: desafio.coins,
         route: `/floresta/nivel-${nivel.id}/desafio-${desafio.id}`,
         x: pos.x,
         y: pos.y,
@@ -147,9 +150,8 @@ async function fetchLevels(mapaId, token) {
       };
     }),
   }));
-
   return {
-    player: { streak: 0, coins: 0, xp: 0, xpMax: 500, level: 1 },
+    player: { streak: 0, coin: 0, xp: 0, xpMax: 500, level: 1 },
     levels,
   };
 }
@@ -325,6 +327,16 @@ function NodeTooltip({ challenge, onPlay }) {
           </svg>
           <span style={{ fontSize: 12, color: "#f0c060", fontWeight: 700 }}>
             +{challenge.xpReward} XP
+          </span>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+          <svg width={12} height={12} viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="9" fill="#ca8a04" stroke="#fde047" strokeWidth="1.5" />
+            <circle cx="12" cy="12" r="6" fill="#eab308" opacity="0.6" />
+            <text x="12" y="16" textAnchor="middle" fontSize="6" fontWeight="700" fill="#fef08a" fontFamily="system-ui">$</text>
+          </svg>
+          <span style={{ fontSize: 12, color: "#fde047", fontWeight: 700 }}>
+            +{challenge.coin || 0} Coins
           </span>
         </div>
         <div style={{ display: "flex", gap: 3 }}>
@@ -753,6 +765,7 @@ export default function FlorestaDosAlgoritmos() {
           xp: 0,
           xpProximoNivel: 320,
           nivel: 1,
+          coins: 0,
         });
       }
     }
@@ -799,17 +812,17 @@ export default function FlorestaDosAlgoritmos() {
   function onPointerUp() { setDragging(false); }
 
 
-  
-    if (loading) {
-        return (
-            <div className="relative min-h-screen bg-black animate-fadeIn flex items-center justify-center">
-                <div className="text-white text-center">
-                    <div className="w-12 h-12 border-4 border-yellow-600 border-t-yellow-400 rounded-full animate-spin mx-auto mb-4"></div>
-                    <p>Carregando Mapa...</p>
-                </div>
-            </div>
-        );
-    }
+
+  if (loading) {
+    return (
+      <div className="relative min-h-screen bg-black animate-fadeIn flex items-center justify-center">
+        <div className="text-white text-center">
+          <div className="w-12 h-12 border-4 border-yellow-600 border-t-yellow-400 rounded-full animate-spin mx-auto mb-4"></div>
+          <p>Carregando Mapa...</p>
+        </div>
+      </div>
+    );
+  }
 
   const { levels } = data;
   const challenges = allChallenges(levels);

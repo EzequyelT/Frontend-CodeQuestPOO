@@ -80,6 +80,7 @@ export default function DSF6() {
         saving,
         showFailModal,
         attempts,
+        transitioning
     } = useCode(dsf, {
         token,
         aluno_id: userId,
@@ -92,6 +93,7 @@ export default function DSF6() {
         if (!finalResult?.primeiraVez) return;
 
         if (finalResult?.nivelCompleto) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setModalNivelConcluido({
                 nivelNome: `Nível ${challenge.nivel} Concluído!`,
                 xpGanho: finalResult?.xpGanho?.total ?? 0,
@@ -121,6 +123,7 @@ export default function DSF6() {
                         timeSeconds,
                         xpGained: finalResult?.xpGanho?.total ?? correct * 80,
                         xpNextLevel: finalResult?.xpProximoNivel ?? 0,
+                        coinsGained: finalResult?.coinsGanhos?.total ?? correct * 10,
                         nivelAtual: finalResult?.nivel_atual ?? 1,
                         score: score,
                         desafioCompleto: finalResult?.desafioCompleto ?? false,
@@ -204,6 +207,7 @@ export default function DSF6() {
                     currentQuestion={currentQuestion}
                     logs={logs}
                     loading={loading}
+                    transitioning={transitioning}
                     mentorStatus={mentorStatus}
                     objectives={objectives}
                     runCode={runCode}

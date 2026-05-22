@@ -20,11 +20,6 @@ import dsf_7 from "../../Data/Mapa-1/Nivel-3/dsf_7"
 import ModalService from '../Components/Modal/ModalService'
 import ModalFalha from '../Components/Modal/ModalFalha'
 
-
-// ─────────────────────────────────────────────
-// Separar os dados por tipo UMA vez fora do componente
-// (evita recriar arrays em cada render)
-// ─────────────────────────────────────────────
 const quizSteps = dsf_7.filter(s => s.type === "quiz")
 const codeSteps = dsf_7.filter(s => s.type === "code")
 
@@ -121,6 +116,7 @@ export default function DSF7() {
 
                     xpGained: finalResult?.xpGanho?.total ?? totalCorrect * 80,
                     xpNextLevel: finalResult?.xpProximoNivel ?? 0,
+                    coinsGained: finalResult?.coinsGanhos?.total ?? totalCorrect * 10,
                     nivelAtual: finalResult?.nivel_atual ?? 1,
 
                     score: Math.round((totalCorrect / (totalCorrect + totalWrong || 1)) * 100),
@@ -133,6 +129,8 @@ export default function DSF7() {
             />
         )
     }
+
+    
     
     if (loadingState) {
         return (
@@ -183,6 +181,7 @@ export default function DSF7() {
 
                 {phase === "quiz" && (
                     <QuizContainer
+                        transitioning={quiz.transitioning}
                         headerProps={{
                             children: quiz.currentQuestion?.titulo ?? "Debug Quiz",
                             currentQuestion: quiz.currentIndex + 1,
@@ -210,6 +209,7 @@ export default function DSF7() {
                         key={code.currentIndex}
                         currentQuestion={code.currentQuestion}
                         logs={code.logs}
+                        transitioning={code.transitioning}
                         loading={code.loading}
                         mentorStatus={code.mentorStatus}
                         objectives={code.currentQuestion?.objectives ?? []}

@@ -1,11 +1,13 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { concluirDesafio } from "../../Services/Gameplay/xpProgressService"
 
 export function useQuiz(perguntas = [], config = {}) {
+
   const [currentIndex, setCurrentIndex] = useState(0)
   const [currentResponse, setCurrentResponse] = useState(null)
   const [correct, setCorrect] = useState(0)
   const [wrong, setWrong] = useState(0)
+
   const [finished, setFinished] = useState(false)
   const [startTime] = useState(() => Date.now())
   const [timeSeconds, setTimeSeconds] = useState(0)
@@ -15,6 +17,7 @@ export function useQuiz(perguntas = [], config = {}) {
   const [consecutiveWrong, setConsecutiveWrong] = useState(0)
   const [showFailModal, setShowFailModal] = useState(false)
   const [streakAtual, setStreakAtual] = useState(config.streakInicial ?? 0);
+  const [transitioning, setTransitioning] = useState(false)
 
   function advanceQuestion() {
     setCurrentResponse(null)
@@ -34,10 +37,17 @@ export function useQuiz(perguntas = [], config = {}) {
   useEffect(() => {
     if (!currentResponse) return
 
-    const timer = setTimeout(() => advanceQuestion(), 2000)
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setTransitioning(true)
+
+    const timer = setTimeout(() => {
+      advanceQuestion()
+      setTransitioning(false)
+    }, 1600)
+
     return () => clearTimeout(timer)
 
-  }, [currentResponse, currentIndex])
+  }, [currentResponse])
 
 
   useEffect(() => {
@@ -79,7 +89,7 @@ export function useQuiz(perguntas = [], config = {}) {
     streakAtual
   ])
 
-  function resetQuiz() {
+  const resetQuiz = useCallback(() => {
     setCurrentIndex(0)
     setCurrentResponse(null)
     setCorrect(0)
@@ -90,22 +100,26 @@ export function useQuiz(perguntas = [], config = {}) {
     setConsecutiveWrong(0)
     setShowFailModal(false)
     setStreakAtual(config.streakInicial ?? 0)
-  }
+  }, [config.streakInicial])
 
   // Este efeito é intencional: precisamos sincronizar o estado local
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     resetQuiz()
-  }, [config.desafio_id])
-
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setStreakAtual(config.streakInicial ?? 0)
-  }, [config.streakInicial])
+  }, [config.desafio_id, resetQuiz])
 
   const currentQuestion = perguntas[currentIndex]
   const isUltima = currentIndex + 1 >= perguntas.length
   const progress = Math.round(((currentIndex + 1) / perguntas.length) * 100)
+
+  function startTransition(callback) {
+    setTransitioning(true)
+
+    setTimeout(() => {
+      callback?.()
+      setTransitioning(false)
+    }, 1500)
+  }
 
   function response(item) {
     if (currentResponse) return
@@ -117,15 +131,18 @@ export function useQuiz(perguntas = [], config = {}) {
       setCorrect(c => c + 1)
       setConsecutiveWrong(0)
       setStreakAtual(s => s + 1)
+
+      startTransition()
     } else {
       setWrong(w => w + 1)
       setStreakAtual(0)
       setConsecutiveWrong(prev => {
         const next = prev + 1
         const perguntasRestantes = perguntas.length - currentIndex
-        if (next >= 4 && perguntasRestantes <= 2) setShowFailModal(true)
+        if (next >= 4 && perguntasRestantes <= 2) setShowFailModal(true), setTransitioning(false)
         return next
       })
+      startTransition()
     }
   }
 
@@ -155,5 +172,6 @@ export function useQuiz(perguntas = [], config = {}) {
     resetQuiz,
     consecutiveWrong,
     streakAtual,
+    transitioning
   }
 }

@@ -32,7 +32,7 @@ export default function DSF3() {
     const [desafioId, setDesafioId] = useState(null);
     const [showModal, setShowModal] = useState(true);
     const [modalNivelConcluido, setModalNivelConcluido] = useState(null);
-    const [showResult, setShowResult] = useState(false);
+    const [showResult] = useState(false);
     const [loadingState, setLoadingState] = useState(true);
     
 
@@ -75,6 +75,7 @@ export default function DSF3() {
         saving,
         showFailModal,
         attempts,
+        transitioning
     } = useCode(dsf, {
         token,
         aluno_id: userId,
@@ -85,10 +86,10 @@ export default function DSF3() {
     useEffect(() => {
         if (!finished || !finalResult) return;
 
-        // ✅ proteção extra (evita crash)
         if (!finalResult?.primeiraVez) return;
 
         if (finalResult?.nivelCompleto) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setModalNivelConcluido({
                 nivelNome: `Nível ${challenge.nivel} Concluído!`,
                 xpGanho: finalResult?.xpGanho?.total ?? 0,
@@ -104,7 +105,14 @@ export default function DSF3() {
     console.log("FINAL RESULT:", finalResult);
 
     if (finished && saving) {
-        return <div className="text-white text-4xl font-bold">Salvando resultado...</div>
+        return (
+            <div className="relative min-h-screen bg-black animate-fadeIn flex items-center justify-center">
+                <div className="text-white text-center">
+                    <div className="w-12 h-12 border-4 border-yellow-600 border-t-yellow-400 rounded-full animate-spin mx-auto mb-4"></div>
+                    <p>Salvando Resultado...</p>
+                </div>
+            </div>
+        );
     }
 
     const score = Math.max(
@@ -125,6 +133,7 @@ export default function DSF3() {
                         xpGained: finalResult?.xpGanho?.total ?? correct * 80,
                         xpNextLevel: finalResult?.xpProximoNivel ?? 0,
                         nivelAtual: finalResult?.nivel_atual ?? 1,
+                        coinsGained: finalResult?.coinsGanhos?.total ?? correct * 10,
 
                         score: score,
                         desafioCompleto: finalResult?.desafioCompleto ?? false,
@@ -166,7 +175,7 @@ export default function DSF3() {
         )
 
     }
-
+    
      
     if (loadingState) {
         return (
@@ -219,6 +228,7 @@ export default function DSF3() {
                     currentQuestion={currentQuestion}
                     logs={logs}
                     loading={loading}
+                    transitioning={transitioning}
                     mentorStatus={mentorStatus}
                     objectives={objectives}
                     runCode={runCode}

@@ -37,12 +37,11 @@ export default function DashBoardHeader({ user }) {
         setStats(data);
       } catch (err) {
         console.error("Erro ao carregar stats:", err);
-        // Usar dados padrão em caso de erro
         setStats({
           tempo_total_jogo: 0,
           xp_total: 0,
           coins: 0,
-          streak: 0,
+          streak_dias: 0,
         });
       }
     };
@@ -55,23 +54,16 @@ export default function DashBoardHeader({ user }) {
       try {
         const token = localStorage.getItem("cq_token");
         if (!token) {
-          console.warn("❌ Token não encontrado no localStorage");
+          console.warn("Token não encontrado no localStorage");
           return;
         }
 
         const data = await getProgressoDashboard(token);
 
-        // 👇 Adiciona isto
-        console.log("📦 Dados completos recebidos:", data);
-        console.log("⏱️ tempo_total_jogo:", formatarTempo(data.tempo_total_jogo));
-        console.log("⭐ xp_total:", data.xp_total);
-        console.log("💰 coins:", data.coins);
-        console.log("⚡ streak:", data.streak);
-
         setStats(data);
       } catch (err) {
         console.error("Erro ao carregar stats:", err);
-        setStats({ tempo_total_jogo: 0, xp_total: 0, coins: 0, streak: 0 });
+        setStats({ tempo_total_jogo: 0, xp_total: 0, coins: 0, streak_dias: 0 });
       }
     };
 
@@ -127,13 +119,13 @@ export default function DashBoardHeader({ user }) {
       `}</style>
 
       <header
-        className="fixed top-0 left-0 w-full h-20 flex items-center gap-4 px-6 py-4"
+        className="fixed top-0 left-0 w-full h-20 flex items-center gap-4 px-6 py-4  "
         style={{
           background: "black",
           boxShadow: "0 4px 32px rgba(0,0,0,0.5)"
         }}
       >
-        {/* Logo */}
+        <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-blue-500 via-yellow-500 to-purple-500 z-50" />
         <div className="flex items-center justify-center">
           <img
             src={logo}
@@ -190,7 +182,7 @@ export default function DashBoardHeader({ user }) {
           <Stat icon={<Clock size={14} color="#06b6d4" />} value={formatarTempo(stats.tempo_total_jogo)} delay="0ms" />
           <Stat icon={<Star size={14} color="#facc15" />} value={`${stats.xp_total} XP`} delay="60ms" />
           <Stat icon={<DollarSign size={14} color="#a78bfa" />} value={stats.coins} delay="120ms" />
-          <Stat icon={<Flame  size={14} color="#f97316" />} value={stats.streak} delay="180ms" />
+          <Stat icon={<Flame  size={14} color="#f97316" />} value={stats.streak_dias} delay="180ms" />
         </div>
 
         {/* Right group — search + settings + avatar */}

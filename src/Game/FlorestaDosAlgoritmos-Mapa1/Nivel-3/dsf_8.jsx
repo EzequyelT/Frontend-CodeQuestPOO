@@ -79,6 +79,7 @@ export default function DSF8() {
         saving,
         showFailModal,
         attempts,
+        transitioning
     } = useCode(dsf, {
         token,
         aluno_id: userId,
@@ -91,6 +92,7 @@ export default function DSF8() {
         if (!finalResult?.primeiraVez) return;
 
         if (finalResult?.nivelCompleto) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setModalNivelConcluido({
                 nivelNome: `Nível ${challenge.nivel} Concluído!`,
                 xpGanho: finalResult?.xpGanho?.total ?? 0,
@@ -103,7 +105,14 @@ export default function DSF8() {
     }, [finalResult, finished])
 
     if (finished && saving) {
-        return <div>Salvando resultado...</div>
+        return (
+            <div className="relative min-h-screen bg-black animate-fadeIn flex items-center justify-center">
+                <div className="text-white text-center">
+                    <div className="w-12 h-12 border-4 border-yellow-600 border-t-yellow-400 rounded-full animate-spin mx-auto mb-4"></div>
+                    <p>Salvando Resultado...</p>
+                </div>
+            </div>
+        );
     }
 
     const score = Math.max(
@@ -122,6 +131,7 @@ export default function DSF8() {
                         xpGained: finalResult?.xpGanho?.total ?? correct * 80,
                         xpNextLevel: finalResult?.xpProximoNivel ?? 0,
                         nivelAtual: finalResult?.nivel_atual ?? 1,
+                        coinsGained: finalResult?.coinsGanhos?.total ?? correct * 10,
                         score: score,
                         desafioCompleto: finalResult?.desafioCompleto ?? false,
                         primeiraVez: finalResult?.primeiraVez ?? true,
@@ -195,9 +205,9 @@ export default function DSF8() {
             <div className="scrollbar"
                 style={{
                     backgroundImage: `
-                                   linear-gradient(rgba(0,0,0,${bgDim}), rgba(0,0,0,${bgDim})),
-                                   url(${Bg})
-                                   `,
+                     linear-gradient(rgba(0,0,0,${bgDim}), rgba(0,0,0,${bgDim})),
+                     url(${Bg})
+                    `,
                     backgroundSize: "cover",
                     backgroundPosition: "center",
                     backgroundRepeat: "no-repeat",
@@ -208,6 +218,7 @@ export default function DSF8() {
                     currentQuestion={currentQuestion}
                     logs={logs}
                     loading={loading}
+                    transitioning={transitioning}
                     mentorStatus={mentorStatus}
                     objectives={objectives}
                     runCode={runCode}

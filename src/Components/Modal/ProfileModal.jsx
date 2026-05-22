@@ -1,5 +1,4 @@
 import { LogOut, User, X, Mail, Shield, ChevronRight, Settings } from "lucide-react";
-import { pararTempo } from "../../Services/gameplay/tempoService";
 import { useNavigate } from "react-router-dom";
 import "../../css/ProfileModal.css";
 import { useState, useEffect } from "react";
@@ -91,7 +90,6 @@ export default function ProfileModal({ onClose }) {
             className="pm-logout"
             onClick={async () => {
               await logout(user.id);
-              pararTempo()
               onClose();
               navigate("/", { replace: true });
             }}
