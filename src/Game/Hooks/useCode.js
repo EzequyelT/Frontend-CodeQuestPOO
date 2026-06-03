@@ -2,12 +2,14 @@ import { useState, useEffect, useRef } from "react"
 import { concluirDesafio } from "../../Services/Gameplay/xpProgressService"
 import { getPyodide } from "../../Python/pyodideEngine"
 import formatError from "../../Python/ErrorPyton"
+import { pedirFeedbackIA } from "../../Services/Gameplay/feedbackAIService"
 
 export function useCode(fases = [], config = {}) {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [logs, setLogs] = useState([])
   const [loading, setLoading] = useState(false)
   const [mentorStatus, setMentorStatus] = useState("idle")
+  const [aiFeedback, setAiFeedback] = useState(null)
 
   const [objectives, setObjectives] = useState([])
   const [finished, setFinished] = useState(false)
@@ -32,7 +34,7 @@ export function useCode(fases = [], config = {}) {
 
   const [totalWrong, setTotalWrong] = useState(0)
   const [totalAttempts, setTotalAttempts] = useState(0)
-  const [streakAtual, setStreakAtual] = useState(config.streakInicial ?? 0);
+  const [streakAtual, setStreakAtual] = useState(config.streakInicial ?? 0)
   const [transitioning, setTransitioning] = useState(false)
 
   const totalWrongRef = useRef(0)
@@ -47,6 +49,7 @@ export function useCode(fases = [], config = {}) {
 
     setLogs([])
     setMentorStatus("idle")
+    setAiFeedback(null)
     setConsecutiveWrong(0)
     setShowFailModal(false)
     setWrong(0)
@@ -81,12 +84,6 @@ export function useCode(fases = [], config = {}) {
         ? Math.round((correct / totalTentativas) * 100)
         : 0
 
-    console.log("SAVE →", {
-      erradas: totalWrongRef.current,
-      tentativas: totalAttemptsRef.current,
-      score,
-    })
-
     concluirDesafio(config.desafio_id, {
       respostas_erradas: totalWrong,
       tentativas: totalAttempts,
@@ -109,8 +106,6 @@ export function useCode(fases = [], config = {}) {
       })
   }, [finished, showFailModal])
 
-
-  // LOGS
   function addLog(type, message) {
     const time = new Date().toLocaleTimeString()
     setLogs(prev => [...prev, { type, message, time }])
@@ -126,12 +121,34 @@ export function useCode(fases = [], config = {}) {
     addLog("error", message)
   }
 
-  // RUN CODE
+  async function gerarFeedbackErro({ code, finalOutput, erro, tentativa }) {
+    try {
+      const feedback = await pedirFeedbackIA({
+        titulo: currentQuestion?.title || currentQuestion?.titulo || currentQuestion?.name || "Desafio",
+        objetivos:
+          currentQuestion?.objectives?.map(obj =>
+            obj.label || obj.text || obj.description || obj.title || String(obj)
+          ) ?? [],
+        codigo: code,
+        output: finalOutput ?? "",
+        erro: erro ?? "",
+        tentativa,
+      })
+
+      setAiFeedback(feedback)
+      return feedback
+    } catch (err) {
+      console.error("Erro ao pedir feedback IA:", err)
+      return null
+    }
+  }
+
   async function runCode(code) {
     if (loading) return
 
     setLoading(true)
     setMentorStatus("typing")
+    setAiFeedback(null)
 
     addLog("info", "🐍 Executando código...")
 
@@ -161,13 +178,6 @@ export function useCode(fases = [], config = {}) {
 
       const isValid = currentQuestion?.validate?.(finalOutput) ?? false
 
-      console.log({
-        output,
-        finalOutput,
-        isValid,
-        consecutiveWrong,
-      })
-
       if (isValid) {
         setMentorStatus("success")
 
@@ -177,7 +187,6 @@ export function useCode(fases = [], config = {}) {
         )
 
         setCorrect(c => c + 1)
-
         setConsecutiveWrong(0)
         setStreakAtual(s => s + 1)
 
@@ -190,7 +199,7 @@ export function useCode(fases = [], config = {}) {
         setTimeout(() => {
           if (isUltima) setFinished(true)
           else setCurrentIndex(i => i + 1)
-          
+
           setTransitioning(false)
         }, 1500)
 
@@ -200,21 +209,28 @@ export function useCode(fases = [], config = {}) {
 
         const nextAttempts = attempts + 1
 
+        const feedbackIA = await gerarFeedbackErro({
+          code,
+          finalOutput,
+          tentativa: nextAttempts,
+        })
+
         addErrorLog(
-          currentHint.error
-            ? `❌ ${currentHint.error}`
-            : `❌ ${finalOutput || "Output vazio"}`
+          feedbackIA
+            ? `🤖 ${feedbackIA}`
+            : currentHint.error
+              ? `❌ ${currentHint.error}`
+              : `❌ ${finalOutput || "Output vazio"}`
         )
 
         setStreakAtual(0)
 
         if (nextAttempts >= 3) {
-
           addLog(
             "warning",
             "⚠️ Número máximo de tentativas atingido. Indo para próxima pergunta..."
           )
-          
+
           setTransitioning(true)
 
           setTimeout(() => {
@@ -233,11 +249,17 @@ export function useCode(fases = [], config = {}) {
       const clean = formatError(err?.message || String(err))
 
       setMentorStatus("error")
-      addErrorLog(clean)
+
+      const feedbackIA = await gerarFeedbackErro({
+        code,
+        erro: clean,
+        tentativa: attempts + 1,
+      })
+
+      addErrorLog(feedbackIA ? `🤖 ${feedbackIA}` : clean)
       setStreakAtual(0)
 
       return { success: false, message: clean }
-
     } finally {
       setLoading(false)
     }
@@ -249,6 +271,7 @@ export function useCode(fases = [], config = {}) {
     logs,
     loading,
     mentorStatus,
+    aiFeedback,
     objectives,
     finished,
     timeSeconds,
