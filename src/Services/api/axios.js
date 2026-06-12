@@ -18,11 +18,9 @@ api.interceptors.request.use(
       console.error("Erro ao obter token:", err);
     }
 
-    // IMPORTANTE: sempre retornar config
     return config;
   },
   (error) => {
-    // erro antes de enviar request
     return Promise.reject(error);
   }
 );
@@ -32,6 +30,7 @@ api.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       console.error("Token inválido ou expirado");
+      window.location.href = "/";
     }
     return Promise.reject(error);
   }

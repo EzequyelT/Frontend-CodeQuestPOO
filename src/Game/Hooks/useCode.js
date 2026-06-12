@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from "react"
 import { concluirDesafio } from "../../Services/Gameplay/xpProgressService"
 import { getPyodide } from "../../Python/pyodideEngine"
 import formatError from "../../Python/ErrorPyton"
+import classifyError from "../../Python/classifyError"
+import classifyFeedback from "../../Python/classifyFeedback"
 import { pedirFeedbackIA } from "../../Services/Gameplay/feedbackAIService"
 
 export function useCode(fases = [], config = {}) {
@@ -39,6 +41,11 @@ export function useCode(fases = [], config = {}) {
 
   const totalWrongRef = useRef(0)
   const totalAttemptsRef = useRef(0)
+  const totalCorrectRef = useRef(0)
+
+  const tipoErroAtualRef = useRef(null)
+  const tipoFeedbackAtualRef = useRef(1)
+  const feedbackIaAtualRef = useRef(null)
 
   useEffect(() => {
     if (!currentQuestion) return
@@ -54,6 +61,8 @@ export function useCode(fases = [], config = {}) {
     setShowFailModal(false)
     setWrong(0)
     setAttempts(0)
+
+    totalAttemptsRef.current = 0
 
     if (currentHint.start) {
       addLog("info", currentHint.start)
@@ -78,19 +87,34 @@ export function useCode(fases = [], config = {}) {
 
     setSaving(true)
 
-    const totalTentativas = correct + totalWrongRef.current
+    const totalTentativas = totalCorrectRef.current + totalWrongRef.current
     const score =
       totalTentativas > 0
-        ? Math.round((correct / totalTentativas) * 100)
+        ? Math.round((totalCorrectRef.current / totalTentativas) * 100)
         : 0
 
+    console.log("SAVE →", {
+      erradas: totalWrongRef.current,
+      tentativas: totalAttemptsRef.current,
+      certas: totalCorrectRef.current,
+      time: timeSeconds,
+      streakAtual: streakAtual,
+      tipo_erro_id: tipoErroAtualRef.current,
+      tipo_feedback_id: tipoFeedbackAtualRef.current,
+      feedback_ia: feedbackIaAtualRef.current,
+    })
+
     concluirDesafio(config.desafio_id, {
-      respostas_erradas: totalWrong,
-      tentativas: totalAttempts,
+      respostas_certas: totalCorrectRef.current,
+      respostas_erradas: totalWrongRef.current,
+      tentativas: totalAttemptsRef.current,
       tempo_desafio: timeSeconds,
       score,
       ajudas_usadas: 0,
       novo_streak: streakAtual,
+      tipo_erro_id: tipoErroAtualRef.current,
+      tipo_feedback_id: tipoFeedbackAtualRef.current,
+      feedback_ia: feedbackIaAtualRef.current,
     })
       .then((resultado) => {
         if (!resultado) return
@@ -106,23 +130,37 @@ export function useCode(fases = [], config = {}) {
       })
   }, [finished, showFailModal])
 
+
   function addLog(type, message) {
     const time = new Date().toLocaleTimeString()
     setLogs(prev => [...prev, { type, message, time }])
   }
 
   function addErrorLog(message) {
-    totalWrongRef.current += 1
     totalAttemptsRef.current += 1
+
     setWrong(w => w + 1)
     setAttempts(a => a + 1)
     setTotalAttempts(a => a + 1)
-    setTotalWrong(t => t + 1)
+
     addLog("error", message)
+
+    return totalAttemptsRef.current
   }
 
-  async function gerarFeedbackErro({ code, finalOutput, erro, tentativa }) {
+  async function gerarFeedbackErro({ code, finalOutput, erro, rawError, tentativa }) {
     try {
+      const tipoErroId = classifyError(rawError)
+      tipoErroAtualRef.current = tipoErroId
+
+      // Calcula score parcial para determinar tipo de feedback
+      const totalAteTentativa = totalCorrectRef.current + totalWrongRef.current + 1
+      const scoreParcial = totalAteTentativa > 0
+        ? Math.round((totalCorrectRef.current / totalAteTentativa) * 100)
+        : 0
+      const tipoFeedbackId = classifyFeedback(scoreParcial, tentativa)
+      tipoFeedbackAtualRef.current = tipoFeedbackId
+
       const feedback = await pedirFeedbackIA({
         titulo: currentQuestion?.title || currentQuestion?.titulo || currentQuestion?.name || "Desafio",
         objetivos:
@@ -133,8 +171,11 @@ export function useCode(fases = [], config = {}) {
         output: finalOutput ?? "",
         erro: erro ?? "",
         tentativa,
+        tipo_erro_id: tipoErroId,
+        tipo_feedback_id: tipoFeedbackId,
       })
 
+      feedbackIaAtualRef.current = feedback
       setAiFeedback(feedback)
       return feedback
     } catch (err) {
@@ -178,6 +219,13 @@ export function useCode(fases = [], config = {}) {
 
       const isValid = currentQuestion?.validate?.(finalOutput) ?? false
 
+      console.log({
+        output,
+        finalOutput,
+        isValid,
+        consecutiveWrong,
+      })
+
       if (isValid) {
         setMentorStatus("success")
 
@@ -187,6 +235,8 @@ export function useCode(fases = [], config = {}) {
         )
 
         setCorrect(c => c + 1)
+        totalCorrectRef.current += 1
+
         setConsecutiveWrong(0)
         setStreakAtual(s => s + 1)
 
@@ -204,59 +254,67 @@ export function useCode(fases = [], config = {}) {
         }, 1500)
 
         return { success: true, output }
+
       } else {
         setMentorStatus("error")
 
-        const nextAttempts = attempts + 1
+        const nextAttempts = addErrorLog(
+          currentHint.error
+            ? `❌ ${currentHint.error}`
+            : `❌ ${finalOutput || "Output vazio"}`
+        )
 
-        const feedbackIA = await gerarFeedbackErro({
+        await gerarFeedbackErro({
           code,
           finalOutput,
+          erro: finalOutput,
+          rawError: error,
           tentativa: nextAttempts,
         })
 
-        addErrorLog(
-          feedbackIA
-            ? `🤖 ${feedbackIA}`
-            : currentHint.error
-              ? `❌ ${currentHint.error}`
-              : `❌ ${finalOutput || "Output vazio"}`
-        )
-
         setStreakAtual(0)
 
-        if (nextAttempts >= 3) {
-          addLog(
-            "warning",
-            "⚠️ Número máximo de tentativas atingido. Indo para próxima pergunta..."
-          )
+        if (totalAttemptsRef.current >= 3) {
+          totalWrongRef.current += 1
+          setTotalWrong(t => t + 1)
+
+          if (totalWrongRef.current >= 2) {
+            setShowFailModal(true)
+            setTransitioning(false)
+            setLoading(false)
+            return { success: false, output: finalOutput }
+          }
+
+          addLog("warning", "⚠️ Número máximo de tentativas atingido. Indo para próxima pergunta...")
 
           setTransitioning(true)
-
           setTimeout(() => {
-            if (isUltima) {
-              setFinished(true)
-            } else {
-              setCurrentIndex(i => i + 1)
-            }
+            if (isUltima) setFinished(true)
+            else setCurrentIndex(i => i + 1)
             setTransitioning(false)
-          }, 1500)
+          }, 1600)
         }
 
-        return { success: false, output: finalOutput }
+        return {
+          success: false,
+          output: finalOutput
+        }
       }
     } catch (err) {
       const clean = formatError(err?.message || String(err))
+      const tipoErroId = classifyError(err?.message || String(err))
+      tipoErroAtualRef.current = tipoErroId
 
       setMentorStatus("error")
 
-      const feedbackIA = await gerarFeedbackErro({
+      await gerarFeedbackErro({
         code,
         erro: clean,
+        rawError: err?.message || String(err),
         tentativa: attempts + 1,
       })
-
-      addErrorLog(feedbackIA ? `🤖 ${feedbackIA}` : clean)
+      addErrorLog(clean)
+      
       setStreakAtual(0)
 
       return { success: false, message: clean }
@@ -286,6 +344,6 @@ export function useCode(fases = [], config = {}) {
     runCode,
     showFailModal,
     streakAtual,
-    transitioning
+    transitioning,
   }
 }

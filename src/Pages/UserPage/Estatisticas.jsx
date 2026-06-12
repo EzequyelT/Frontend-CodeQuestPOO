@@ -5,7 +5,9 @@ import { buscarTempoNivel } from "../../Services/Gameplay/tempoService";
 import { getProgresso } from "../../Services/users/userStatsService";
 import { getMapas } from "../../Services/maps/mapasService";
 import { getLevelsByMap } from "../../Services/maps/levelService";
+import { gerarRelatorioPDF } from "../../Services/pdf/pdfService";
 import DashBoardHeader from "../../Components/Header/HeaderDashBoard";
+import loadingVideo from "../../assets/Loading/loading.webm";
 import SideBar from "../../Components/SideBar/SideBar";
 import map1 from "../../assets/Maps/FirstMap.png";
 import { ArrowLeft, Clock, Map, Trophy, Target, Star, Lock, ChevronRight, TriangleAlert, ImageOff, FileText } from "lucide-react";
@@ -168,7 +170,7 @@ function MapCard({ mapa, niveis = [], tempoNivel = [], user }) {
                             >
                                 <div className="flex items-center gap-4">
                                     <div
-                                        className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-black transition-all duration-300 group-hover/level:scale-105 shadow-md"
+                                        className="w-8 h-8 rounded-xl flex items-center justify-center text-xs font-black transition-all duration-300 group-hover/level:scale-105 shadow-md"
                                         style={{
                                             background: concluido ? "linear-gradient(135deg, #166534 0%, #14532d 100%)" : "#171717",
                                             color: concluido ? "#4ade80" : "#737373",
@@ -178,7 +180,7 @@ function MapCard({ mapa, niveis = [], tempoNivel = [], user }) {
                                         {nivel.ordem ?? i + 1}
                                     </div>
                                     <div>
-                                        <p className={`text-sm font-bold tracking-wide transition-colors ${concluido ? "text-neutral-200 group-hover/level:text-white" : "text-neutral-500"}`}>
+                                        <p className={`text-sm font-extrabold tracking-wide transition-colors ${concluido ? "text-white group-hover/level:text-white" : "text-white"}`}>
                                             {nivel.nome}
                                         </p>
                                         {nivel.descricao && (
@@ -193,31 +195,31 @@ function MapCard({ mapa, niveis = [], tempoNivel = [], user }) {
                                     {concluido ? (
                                         <>
                                             <div className="grid grid-cols-3 gap-4 text-center">
-                                                <div className="bg-neutral-900/80 px-2.5 py-1 rounded-lg border border-neutral-800/40">
+                                                <div className="bg-neutral-900/80 px-2.5 py-1 rounded-xl border border-neutral-800/40">
                                                     <p className="text-neutral-500 text-[9px] uppercase tracking-wider font-semibold">Melhor</p>
                                                     <p className="text-yellow-400 text-xs font-bold mt-0.5">
                                                         {formatTempo(tempoInfo.melhor_tempo)}
                                                     </p>
                                                 </div>
-                                                <div className="bg-neutral-900/80 px-2.5 py-1 rounded-lg border border-neutral-800/40">
+                                                <div className="bg-neutral-900/80 px-2.5 py-1 rounded-xl border border-neutral-800/40">
                                                     <p className="text-neutral-500 text-[9px] uppercase tracking-wider font-semibold">Total</p>
                                                     <p className="text-neutral-300 text-xs font-medium mt-0.5">
                                                         {formatTempo(tempoInfo.tempo_total)}
                                                     </p>
                                                 </div>
-                                                <div className="bg-neutral-900/80 px-2.5 py-1 rounded-lg border border-neutral-800/40">
+                                                <div className="bg-neutral-900/80 px-2.5 py-1 rounded-xl border border-neutral-800/40">
                                                     <p className="text-neutral-500 text-[9px] uppercase tracking-wider font-semibold">Tentativas</p>
                                                     <p className="text-neutral-300 text-xs font-medium mt-0.5">
                                                         {tempoInfo.tentativas ?? "—"}
                                                     </p>
                                                 </div>
                                             </div>
-                                            <span className="w-6 h-6 flex items-center justify-center text-xs font-black text-green-400 bg-green-500/10 border border-green-500/30 rounded-full shadow-[0_0_10px_rgba(34,197,94,0.1)]">
+                                            <span className="w-6 h-6 animate-pulse flex items-center justify-center text-xs font-black text-green-400 bg-green-500/10 border border-green-500/30 rounded-full shadow-[0_0_10px_rgba(34,197,94,0.1)]">
                                                 ✓
                                             </span>
                                         </>
                                     ) : (
-                                        <span className="text-neutral-600 text-xs font-semibold uppercase tracking-wider bg-neutral-900/50 px-2.5 py-1 rounded-lg border border-neutral-950">
+                                        <span className="text-neutral-500 text-xs font-semibold uppercase tracking-wider bg-neutral-900/50 px-2.5 py-1.5 rounded-xl border border-neutral-950">
                                             Bloqueado
                                         </span>
                                     )}
@@ -235,6 +237,21 @@ function MapCard({ mapa, niveis = [], tempoNivel = [], user }) {
             )}
         </div>
     );
+}
+
+function ExportPdf(userId) {
+    try {
+        if (!userId) {
+            console.error("Id do utilizador não encontrado para exportação de PDF.");
+            return;
+        }
+        const pdfUrl = async () => {
+            await gerarRelatorioPDF(userId);
+        }
+        pdfUrl()
+    } catch (error) {
+        console.error("Erro ao exportar PDF", error);
+    }
 }
 
 export default function Estatisticas() {
@@ -288,16 +305,48 @@ export default function Estatisticas() {
         fetchAll();
     }, []);
 
+
     if (loading) {
         return (
-            <div className="relative min-h-screen bg-neutral-950 flex items-center justify-center">
-                <div className="text-center">
-                    <div className="w-14 h-14 border-4 border-yellow-500/20 border-t-yellow-500 rounded-full animate-spin mx-auto mb-4 shadow-[0_0_15px_rgba(234,179,8,0.2)]" />
-                    <p className="text-neutral-400 font-bold uppercase tracking-widest text-xs animate-pulse">Sincronizando Dados...</p>
+            <div className="relative min-h-screen bg-[#000000] flex flex-col items-center justify-center overflow-hidden select-none">
+                <div className="flex flex-col items-center gap-6 z-10">
+
+                    <div className="relative w-40 h-40 flex items-center justify-center p-2 bg-[#080808]/50 rounded-xl">
+                        <video
+                            src={loadingVideo}
+                            autoPlay
+                            loop
+                            muted
+                            playsInline
+                            className="w-full h-full object-contain"
+                        />
+                    </div>
+
+                    <div className="flex flex-col items-center gap-3 mt-2">
+                        <p className="text-white text-sm font-semibold tracking-[0.3em] uppercase animate-pulse">
+                            Carregando
+                        </p>
+
+                        <div className="flex gap-1.5 justify-center">
+                            {[0, 0.2, 0.4].map((delay, i) => (
+                                <div
+                                    key={i}
+                                    className="w-1 h-1 rounded-full bg-amber-500/80"
+                                    style={{
+                                        animation: `dot-pulse 1.4s ease-in-out infinite`,
+                                        animationDelay: `${delay}s`
+                                    }}
+                                />
+                            ))}
+                        </div>
+                    </div>
+
                 </div>
             </div>
         );
     }
+
+    console.log("Progresso", user?.progresso)
 
     const totalTempo = user?.progresso?.tempo_total_jogo ?? 0;
     const totalXp = user?.progresso?.xp ?? 0;
@@ -330,7 +379,7 @@ export default function Estatisticas() {
                         </p>
 
                     </div>
-                    <button className="ml-auto w-40 p-2 gap-2 font-bold rounded-2xl flex justify-center items-center text-neutral-400 bg-neutral-900 border border-neutral-800 hover:border-neutral-600 hover:text-white hover:scale-105 active:scale-95 transition-all shadow-md">
+                    <button onClick={() => ExportPdf(user?.id)} className="ml-auto w-40 p-2 gap-2 font-bold rounded-2xl flex justify-center items-center text-neutral-400 bg-neutral-900 border border-neutral-800 hover:border-neutral-600 hover:text-white hover:scale-105 active:scale-95 transition-all shadow-md">
                         Exportar PDF <span><FileText /></span>
                     </button>
                 </div>
@@ -339,7 +388,7 @@ export default function Estatisticas() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
                         <StatCard icon={Clock} label="Tempo Total de Jogo" value={formatTempo(totalTempo)} color="#06b6d4" />
                         <StatCard icon={Star} label="XP" value={`${totalXp.toLocaleString()} XP`} color="#eab308" />
-                        <StatCard icon={Target} label="Niveis concluidos" value={`${niveisFeitos} Concluídas`} color="#22c55e" />
+                        <StatCard icon={Target} label="Niveis concluidos" value={`${niveisFeitos} `} color="#22c55e" />
                         <StatCard icon={Trophy} label="Best try" value={melhorTempo === Infinity ? "—" : formatTempo(melhorTempo)} color="#a855f7" />
                     </div>
 
@@ -348,7 +397,7 @@ export default function Estatisticas() {
                             Mapas da Campanha
                         </h2>
                         <span className="text-yellow-500 text-[11px] font-bold uppercase tracking-wider bg-yellow-500/10 border border-yellow-500/20 rounded-xl px-3 py-1 shadow-sm">
-                            Localização Atual: Mapa {mapaAtual} · Fase {nivelAtual}
+                            Localização Atual: Mapa {mapaAtual} · Nivel {nivelAtual}
                         </span>
                     </div>
 

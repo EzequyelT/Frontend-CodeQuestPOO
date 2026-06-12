@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import DashBoardHeader from "../../Components/Header/HeaderDashBoard";
+import loadingVideo from "../../assets/Loading/loading.webm";
 
 const CATEGORIES = [
     { id: "all", label: "Todas", count: 998, icon: "◎" },
@@ -163,8 +164,40 @@ export default function Trophies() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-black flex items-center justify-center">
-                <div className="text-white">Carregando...</div>
+            <div className="relative min-h-screen bg-[#000000] flex flex-col items-center justify-center overflow-hidden select-none">
+                <div className="flex flex-col items-center gap-6 z-10">
+
+                    <div className="relative w-40 h-40 flex items-center justify-center p-2 bg-[#080808]/50 rounded-xl">
+                        <video
+                            src={loadingVideo}
+                            autoPlay
+                            loop
+                            muted
+                            playsInline
+                            className="w-full h-full object-contain"
+                        />
+                    </div>
+
+                    <div className="flex flex-col items-center gap-3 mt-2">
+                        <p className="text-white text-sm font-semibold tracking-[0.3em] uppercase animate-pulse">
+                            Carregando
+                        </p>
+
+                        <div className="flex gap-1.5 justify-center">
+                            {[0, 0.2, 0.4].map((delay, i) => (
+                                <div
+                                    key={i}
+                                    className="w-1 h-1 rounded-full bg-amber-500/80"
+                                    style={{
+                                        animation: `dot-pulse 1.4s ease-in-out infinite`,
+                                        animationDelay: `${delay}s`
+                                    }}
+                                />
+                            ))}
+                        </div>
+                    </div>
+
+                </div>
             </div>
         );
     }
@@ -180,7 +213,7 @@ export default function Trophies() {
     return (
 
         <>
-           <DashBoardHeader user={user} />
+            <DashBoardHeader user={user} />
 
             <div className="min-h-screen w-full pt-20" style={{ background: "#030310", fontFamily: "'Segoe UI',system-ui,sans-serif" }}>
                 {/* dot grid */}
@@ -272,7 +305,7 @@ export default function Trophies() {
                                         começe essa jornada agora!
                                     </button>
                                 </div>
-                                
+
                             )}
                         </div>
                     </div>

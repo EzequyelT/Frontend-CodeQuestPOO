@@ -16,6 +16,8 @@ import Button6 from "../../../../assets/Buttons/6.png"
 import Button7 from "../../../../assets/Buttons/7.png"
 import Button8 from "../../../../assets/Buttons/8.png"
 
+import loadingVideo from "../../../../assets/Loading/loading.webm";
+
 // ─── PALETA DE CORES ────────────────────────────────────────────────────────
 
 const Color = {
@@ -349,10 +351,10 @@ function BossBanner({ correct = 0, totalFases = 5 }) {
     const barStyle = pct <= 0
         ? { bg: "linear-gradient(90deg,#1a1a1a,#444)", state: "Derrotado" }
         : pct <= 30
-        ? { bg: "linear-gradient(90deg,#6b1212,#b03030)", state: "Crítico!" }
-        : pct <= 60
-        ? { bg: "linear-gradient(90deg,#7a3a0a,#e08a2a)", state: "Ferido" }
-        : { bg: "linear-gradient(90deg,#6b1212,#e05a5a)", state: "Saudável" };
+            ? { bg: "linear-gradient(90deg,#6b1212,#b03030)", state: "Crítico!" }
+            : pct <= 60
+                ? { bg: "linear-gradient(90deg,#7a3a0a,#e08a2a)", state: "Ferido" }
+                : { bg: "linear-gradient(90deg,#6b1212,#e05a5a)", state: "Saudável" };
 
     return (
         <div
@@ -534,12 +536,41 @@ export default function RightSideBarBoss({ time, attempts, wrong = 0, correct = 
 
     if (loading) {
         return (
-            <aside
-                className="fixed right-20 top-2 h-screen flex items-center justify-center"
-                style={{ width: 340, zIndex: 60 }}
-            >
-                <div className="text-gray-500 text-sm">Carregando...</div>
-            </aside>
+            <div className="relative min-h-screen bg-[#000000] flex flex-col items-center justify-center overflow-hidden select-none">
+                <div className="flex flex-col items-center gap-6 z-10">
+
+                    <div className="relative w-40 h-40 flex items-center justify-center p-2 bg-[#080808]/50 rounded-xl">
+                        <video
+                            src={loadingVideo}
+                            autoPlay
+                            loop
+                            muted
+                            playsInline
+                            className="w-full h-full object-contain"
+                        />
+                    </div>
+
+                    <div className="flex flex-col items-center gap-3 mt-2">
+                        <p className="text-white text-sm font-semibold tracking-[0.3em] uppercase animate-pulse">
+                            Carregando
+                        </p>
+
+                        <div className="flex gap-1.5 justify-center">
+                            {[0, 0.2, 0.4].map((delay, i) => (
+                                <div
+                                    key={i}
+                                    className="w-1 h-1 rounded-full bg-amber-500/80"
+                                    style={{
+                                        animation: `dot-pulse 1.4s ease-in-out infinite`,
+                                        animationDelay: `${delay}s`
+                                    }}
+                                />
+                            ))}
+                        </div>
+                    </div>
+
+                </div>
+            </div>
         );
     }
 

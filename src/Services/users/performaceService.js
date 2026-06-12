@@ -10,6 +10,16 @@ export const getDesempenhoAluno = async (alunoId) => {
   }
 };
 
+export const getDesempenhoCodigo = async () => {
+  try {
+    const { data } = await api.get("/desempenho/codigo");
+    return data;
+  } catch (error) {
+    console.error("[Performance] Erro ao buscar:", error);
+    return null;
+  }
+}
+
 export const saveDesempenho = async (payload) => {
   try {
     const { data } = await api.post("/desempenho", payload);

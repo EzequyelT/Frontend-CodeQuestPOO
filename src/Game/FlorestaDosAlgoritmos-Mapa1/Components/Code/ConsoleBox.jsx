@@ -21,7 +21,7 @@ export default function ConsoleBox({ logs = [], loading }) {
   }
 
   return (
-    <div className="bg-black border scrollbar border-gray-800 rounded-4xl p-4 h-30 w-100 overflow-y-auto font-mono text-xs relative">
+    <div className="bg-black border scrollbar border-gray-800 rounded-4xl p-4 h-30 w-80 overflow-y-auto font-mono text-xs relative">
 
       <p className="text-gray-500 font-bold mb-2">
         🖥 Console
@@ -33,7 +33,6 @@ export default function ConsoleBox({ logs = [], loading }) {
         </p>
       )}
 
-      {/* 🔥 LOADING STATE */}
       {loading && (
         <p className="text-yellow-400 animate-pulse">
           🐍 Inicializando Python...

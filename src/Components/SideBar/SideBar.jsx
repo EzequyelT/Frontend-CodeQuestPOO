@@ -14,11 +14,9 @@ export default function SideBar() {
                 background: "black",
                 }}
         >
-            {/* Top server icons */}
             <div className="flex flex-col items-center gap-2 flex-1">
                 <Divider />
 
-                {/* Game / server slots */}
                 {sidebarLinks.map((server) => {
                     const IconComponent = server.icon;
                     return (
@@ -36,7 +34,6 @@ export default function SideBar() {
 
             </div>
 
-            {/* Bottom icons */}
             <div className="flex flex-col items-center gap-2 pb-2">
                 <Divider />
                 <SideButton tooltip="Notifications">
@@ -79,7 +76,6 @@ function SideButton({ children, onClick, active, tooltip }) {
         >
             {children}
 
-            {/* Active indicator pill on the left */}
             {active && (
                 <span
                     className="absolute left-0 rounded-r-full"

@@ -57,11 +57,8 @@ export default function CodeBox({
             </div>
 
 
-            {/* Editor Container */}
             <div className="bg-gray-950 border-3  border-gray-800 rounded-3xl mt-1 overflow-hidden shadow-2xl w-165 h-80" style={{ minHeight: '350px' }}>
-                {/* Tabs Bar */}
                 <div className="flex items-center gap-0 px-3 py-3 border-b-white border-2 border-gray-800 bg-gray-900">
-                    {/* Main Tab */}
                     <div className="flex items-center gap-2 px-4 py-2 rounded-md bg-gray-800 border-b-2 border-green-500">
                         <span className="text-xs font-mono text-gray-300 font-semibold">main.py</span>
                         <button className="ml-2 text-gray-400 hover:text-gray-200 text-xs font-bold">
@@ -69,7 +66,6 @@ export default function CodeBox({
                         </button>
                     </div>
 
-                    {/* Close button on right */}
                     <div className="ml-auto">
                         <button className="text-gray-400 hover:text-gray-200 text-sm font-bold">
                             ×

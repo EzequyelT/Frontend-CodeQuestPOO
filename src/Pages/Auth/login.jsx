@@ -92,7 +92,6 @@ export default function Login() {
       <div className="min-h-screen flex relative z-20">
         <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
           <div className="w-full max-w-md">
-            {/* Logo/Brand */}
             <div className="text-center mb-8">
               <img src={logo} alt="CodeQuestPOO RP Logo" className="mx-auto w-150 h-55 mb-4" />
             </div>

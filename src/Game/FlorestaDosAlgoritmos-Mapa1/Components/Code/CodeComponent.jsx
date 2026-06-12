@@ -8,6 +8,7 @@ export default function CodeComponent({
   logs,
   loading,
   mentorStatus,
+  aiFeedback,
   objectives,
   runCode,
   addLog,
@@ -57,6 +58,7 @@ export default function CodeComponent({
 
           <MentorBox
             status={mentorStatus}
+            aiFeedback={aiFeedback}  
             messages={{
               phase: {
                 error: hints?.error,

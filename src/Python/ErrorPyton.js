@@ -44,6 +44,21 @@ export default function formatError(err) {
     return "❌ Módulo não encontrado ou erro na importação"
   }
 
+  // Acesso a atributos/objetos (encapsulamento)
+  if (error.includes("AttributeError")) {
+    return "❌ Tentaste aceder a um atributo ou método que não existe no objeto"
+  }
+
+  // super() e herança
+  if (error.includes("super(") || error.includes("MRO")) {
+    return "❌ Erro na herança entre classes"
+  }
+
+  // Argumentos errados (polimorfismo/assinaturas)
+  if (error.includes("positional argument") || error.includes("unexpected keyword argument")) {
+    return "❌ Número ou tipo de argumentos incorreto no método"
+  }
+
   // Fallback: devolver erro original se não for reconhecido
   return `❌ Erro inesperado: ${error}`
 }

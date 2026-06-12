@@ -5,6 +5,8 @@ import { obterXPAluno } from "../../../../Services/Gameplay/xpProgressService";
 
 import { getProgresso } from "../../../../Services/users/userStatsService";
 import { Lock, Trophy, CheckSquare } from "lucide-react";
+import loadingVideo from "../../../../assets/Loading/loading.webm";
+
 import Button1 from "../../../../assets/Buttons/1.png"
 
 import Button2 from "../../../../assets/Buttons/2.png"
@@ -529,7 +531,6 @@ function getWrongStyle(wrong, limit = 5) {
     return { color: "text-red-500", pulse: "animate-[pulse_0.3s_ease-in-out_infinite]", glow: "drop-shadow-[0_0_8px_rgba(239,68,68,1)]" }
 }
 
-// ─── COMPONENTE PRINCIPAL ────────────────────────────────────────────────────
 
 export default function RightSideBar({ time, attempts, wrong = 0 }) {
     const [loading, setLoading] = useState(true);
@@ -638,12 +639,41 @@ export default function RightSideBar({ time, attempts, wrong = 0 }) {
 
     if (loading) {
         return (
-            <aside
-                className="fixed right-20 top-1 h-screen flex items-center justify-center"
-                style={{ width: 340, zIndex: 60 }}
-            >
-                <div className="text-gray-500 text-sm">Carregando...</div>
-            </aside>
+            <div className="relative min-h-screen bg-[#000000] flex flex-col items-center justify-center overflow-hidden select-none">
+                <div className="flex flex-col items-center gap-6 z-10">
+
+                    <div className="relative w-40 h-40 flex items-center justify-center p-2 bg-[#080808]/50 rounded-xl">
+                        <video
+                            src={loadingVideo}
+                            autoPlay
+                            loop
+                            muted
+                            playsInline
+                            className="w-full h-full object-contain"
+                        />
+                    </div>
+
+                    <div className="flex flex-col items-center gap-3 mt-2">
+                        <p className="text-white text-sm font-semibold tracking-[0.3em] uppercase animate-pulse">
+                            Carregando
+                        </p>
+
+                        <div className="flex gap-1.5 justify-center">
+                            {[0, 0.2, 0.4].map((delay, i) => (
+                                <div
+                                    key={i}
+                                    className="w-1 h-1 rounded-full bg-amber-500/80"
+                                    style={{
+                                        animation: `dot-pulse 1.4s ease-in-out infinite`,
+                                        animationDelay: `${delay}s`
+                                    }}
+                                />
+                            ))}
+                        </div>
+                    </div>
+
+                </div>
+            </div>
         );
     }
 
@@ -681,15 +711,14 @@ export default function RightSideBar({ time, attempts, wrong = 0 }) {
             `}</style>
 
             <aside
-                className="fixed right-10 mt-4 h-screen flex flex-col gap-3 overflow-y-auto py-6 px-4"
+                className="fixed right-10 h-screen flex flex-col gap-3 overflow-y-auto py-6 px-6"
                 style={{
-                    width: 340,
+                    width: 350,
                     zIndex: 80,
                     scrollbarWidth: "none",
                     background: "transparent",
                 }}
             >
-                {/* HEADER: Nível + XP */}
                 <div
                     className="rounded-4xl p-3 flex flex-col gap-1"
                     style={{

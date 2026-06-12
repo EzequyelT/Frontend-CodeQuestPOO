@@ -1,4 +1,4 @@
-import { GamepadIcon , Trophy, BarChart, CheckSquare } from "lucide-react";
+import { GamepadIcon , Trophy, FolderCode, CheckSquare } from "lucide-react";
 
 export const sidebarLinks = [
   {
@@ -7,14 +7,14 @@ export const sidebarLinks = [
     path: "/maps",
   },
   {
-    id: "Trouféis",
-    icon: Trophy,
-    path: "/trophies",
+    id: "Desempenhos de código",
+    icon: FolderCode,
+    path: "/Erros",
   },
   {
     id: "Placar de Líderes",
-    icon: BarChart, 
-    path: "/leaderboard",
+    icon: Trophy, 
+    path: "/leaderBoard",
   },
   {
     id: "Desafios",

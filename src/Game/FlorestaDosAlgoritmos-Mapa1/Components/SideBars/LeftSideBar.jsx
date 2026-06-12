@@ -64,7 +64,7 @@ export default function LeftSideBar({ streak }) {
 
     return (
         <aside
-            className="fixed top-0 mt-6 flex flex-col items-center gap-3 left-38 py-5 px-2"
+            className="fixed top-0 mt-5 flex flex-col items-center gap-3 left-38 py-5 px-2"
             style={{
                 width: "70px",
                 height: "700px",

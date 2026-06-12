@@ -8,6 +8,7 @@ import map1 from "../../assets/Maps/FirstMap.png";
 import { useState, useEffect } from "react";
 import SideBar from "../../Components/SideBar/SideBar";
 import mago from "../../assets/DashBoard/mago.png";
+import loadingVideo from "../../assets/Loading/loading.webm";
 import "../../css/DashBoard.css";
 
 const PLAYER = {
@@ -138,13 +139,13 @@ function WeeklyBars({ activity, currentDayOfWeek }) {
                 const barClass = active
                     ? "bg-gradient-to-t from-yellow-500 to-green-400 shadow-md shadow-green-500/40"
                     : past
-                        ? "bg-gradient-to-t from-yellow-600/70 to-green-500/50" 
+                        ? "bg-gradient-to-t from-yellow-600/70 to-green-500/50"
                         : "bg-gray-700/40 hover:bg-gray-600/50";
 
                 const labelClass = active
                     ? "text-green-400"
                     : past
-                        ? "text-gray-600" 
+                        ? "text-gray-600"
                         : "text-gray-600";
 
                 return (
@@ -240,7 +241,7 @@ function MainCard({ player, calculoXp, currentDayOfWeek, navigate }) {
 
             </div>
 
-            <div className="flex gap-0 px-6 pb-6" style={{ paddingRight: "240px" }}>
+            <div className="flex gap-0 px-6 pb-6" style={{ paddingRight: "290px" }}>
 
                 <div className="flex flex-col gap-4 w-58 flex-shrink-0">
                     <AccuracyChart accuracy={player.accuracy} errors={player.errors} />
@@ -312,7 +313,7 @@ function MainCard({ player, calculoXp, currentDayOfWeek, navigate }) {
             </div>
 
             <div
-                className="absolute top-0 right-0 bottom-0 w-60 ml-4"
+                className="absolute top-0 right-0 bottom-0 w-70 ml-4"
                 style={{
                     WebkitMaskImage: "linear-gradient(to right, transparent 0%, black 28%)",
                     maskImage: "linear-gradient(to right, transparent 0%, black 28%)",
@@ -402,15 +403,15 @@ function MapsPanel({ maps }) {
 // 🔷 ErrorTypesPanel
 // ============================================================
 function ErrorTypesPanel({ errors }) {
-    const total = errors.reduce((s, e) => s + e.count, 0);
+    const navigate = useNavigate();
 
     return (
         <div className="bg-[#151414] rounded-4xl border border-gray-800 p-4 flex flex-col gap-3 flex-1 animate-slideInDown delay-200">
             <div className="flex justify-between items-center">
                 <h3 className="text-white text-sm font-semibold">📈 Tipos de Erros</h3>
-                <span className="text-gray-500 text-xs border border-gray-700 rounded px-2 py-0.5">
-                    {total} total
-                </span>
+                <button onClick={() => navigate("/Erros")} className="w-20 h-5 p-3 rounded-lg border border-gray-700 flex items-center justify-center text-gray-500 text-xs hover:text-white">
+                    Ver mais
+                </button>
             </div>
 
             <div className="flex flex-col gap-3">
@@ -585,7 +586,7 @@ function mapProgressToPlayer(userData, data, tempo) {
 
 function mapTempoToUI(apiTempo) {
     const tempo = apiTempo?.getTempo;
-    
+
     if (!tempo) {
         return {
             hoursThisWeek: "0 H 0 M",
@@ -615,7 +616,6 @@ export function DashBoard() {
     const [user, setUser] = useState(null);
     const [progresso, setProgresso] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [erro, setErro] = useState(null);
     const [mapasProgresso, setMapasProgresso] = useState([]);
     const [progressaoXp, setProgressaoXp] = useState(null);
 
@@ -652,7 +652,6 @@ export function DashBoard() {
 
         if (!storedUser) {
             queueMicrotask(() => {
-                setErro("Utilizador não autenticado");
                 setLoading(false);
             });
             queueMicrotask(() => {
@@ -678,12 +677,10 @@ export function DashBoard() {
                 const player = mapProgressToPlayer(userData, dashboardData, tempoUI);
 
                 setProgresso(player);
-                setErro(null);
             })
             .catch(err => {
                 const errorMsg = err.response?.data?.error || err.message || "Erro desconhecido";
                 console.error("[Dashboard] Erro ao carregar progresso:", errorMsg);
-                setErro(`Erro: ${errorMsg}`);
                 setProgresso({ ...PLAYER, name: userData.nome });
             })
             .finally(() => setLoading(false));
@@ -721,10 +718,39 @@ export function DashBoard() {
 
     if (loading) {
         return (
-            <div className="relative min-h-screen bg-black animate-fadeIn flex items-center justify-center">
-                <div className="text-white text-center">
-                    <div className="w-12 h-12 border-4 border-yellow-600 border-t-yellow-400 rounded-full animate-spin mx-auto mb-4" />
-                    <p>Carregando dashboard...</p>
+            <div className="relative min-h-screen bg-[#000000] flex flex-col items-center justify-center overflow-hidden select-none">
+                <div className="flex flex-col items-center gap-6 z-10">
+
+                    <div className="relative w-40 h-40 flex items-center justify-center p-2 bg-[#080808]/50 rounded-xl">
+                        <video
+                            src={loadingVideo}
+                            autoPlay
+                            loop
+                            muted
+                            playsInline
+                            className="w-full h-full object-contain"
+                        />
+                    </div>
+
+                    <div className="flex flex-col items-center gap-3 mt-2">
+                        <p className="text-white text-sm font-semibold tracking-[0.3em] uppercase animate-pulse">
+                            Carregando
+                        </p>
+
+                        <div className="flex gap-1.5 justify-center">
+                            {[0, 0.2, 0.4].map((delay, i) => (
+                                <div
+                                    key={i}
+                                    className="w-1 h-1 rounded-full bg-amber-500/80"
+                                    style={{
+                                        animation: `dot-pulse 1.4s ease-in-out infinite`,
+                                        animationDelay: `${delay}s`
+                                    }}
+                                />
+                            ))}
+                        </div>
+                    </div>
+
                 </div>
             </div>
         );
@@ -738,12 +764,7 @@ export function DashBoard() {
             <SideBar user={user} />
 
             <main className="ml-20 mt-4 p-6 pt-24">
-                {erro && (
-                    <div className="bg-red-500/20 border border-red-500/50 text-red-200 p-4 rounded mb-4">
-                        <p className="font-semibold">⚠️ {erro}</p>
-                        <p className="text-sm mt-1 text-red-300">Abre a consola (F12) para mais detalhes</p>
-                    </div>
-                )}
+
 
                 <LoginRewardBanner />
 
