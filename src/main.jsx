@@ -9,6 +9,7 @@ import GameTest from './Pages/gameTest';
 import { DashBoard } from './Pages/UserPage/dashBoard';
 import Perfil from './Pages/UserPage/Perfil';
 import Maps from './Pages/UserPage/Maps';
+import Amigos from "./Pages/UserPage/Amigos";
 
 import Trophies from './Pages/UserPage/Trophies&Achievements';
 import Login from "./Pages/Auth/login";
@@ -49,6 +50,7 @@ createRoot(document.getElementById('root')).render(
           <Route path="/Estatisticas" element={<Estatisticas />} />
           <Route path="/Erros" element={<ErrosPage />} />
           <Route path="/leaderBoard" element={<LeaderBoard />} />
+          <Route path="/amigos" element={<Amigos />} />
 
           {/* DESAFIOS */}
           <Route path="/Desafio1GameTest" element={<Desafio1GameTest />} />

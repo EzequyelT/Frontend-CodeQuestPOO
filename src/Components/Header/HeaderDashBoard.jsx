@@ -1,10 +1,19 @@
 import { useState, useEffect } from "react";
 import { getProgressoDashboard } from "../../Services/users/userStatsService";
-import logo from '../../Assets/logo.png';
-import { Home, Clock, Users, MessageSquare, Search, Settings, Star, Flame , DollarSign } from "lucide-react";
+import logo from "../../Assets/logo.png";
+import {
+  Home,
+  Clock,
+  Users,
+  Search,
+  Settings,
+  Star,
+  Flame,
+  DollarSign,
+  Trophy
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Modal from "../Modal/ProfileModal";
-
 
 function formatarTempo(segundos = 0) {
   const h = Math.floor(segundos / 3600);
@@ -22,8 +31,9 @@ export default function DashBoardHeader({ user }) {
     tempo_total_jogo: 0,
     xp_total: 0,
     coins: 0,
-    streak: 0,
+    streak_dias: 0,
   });
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -33,7 +43,6 @@ export default function DashBoardHeader({ user }) {
         if (!token) return;
 
         const data = await getProgressoDashboard(token);
-
         setStats(data);
       } catch (err) {
         console.error("Erro ao carregar stats:", err);
@@ -49,33 +58,11 @@ export default function DashBoardHeader({ user }) {
     fetchStats();
   }, []);
 
-  useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const token = localStorage.getItem("cq_token");
-        if (!token) {
-          console.warn("Token não encontrado no localStorage");
-          return;
-        }
-
-        const data = await getProgressoDashboard(token);
-
-        setStats(data);
-      } catch (err) {
-        console.error("Erro ao carregar stats:", err);
-        setStats({ tempo_total_jogo: 0, xp_total: 0, coins: 0, streak_dias: 0 });
-      }
-    };
-
-    fetchStats();
-  }, []);
-
-
   const navItems = [
-    { id: "home", icon: <Home size={20} />, label: "Home", path: "/Dashboard" },
-    { id: "recent", icon: <Clock size={20} />, label: "Recent", path: "/recent" },
-    { id: "friends", icon: <Users size={20} />, label: "Friends", path: "/friends" },
-    { id: "messages", icon: <MessageSquare size={20} />, label: "Messages", path: "/messages" },
+    { id: "home", icon: <Home size={20} />, label: "Início", path: "/Dashboard" },
+    { id: "leaderboard", icon: <Trophy size={20} />, label: "Leaderboard", path: "/leaderBoard" },
+    { id: "recent", icon: <Clock size={20} />, label: "Recentes", path: "/recent" },
+    { id: "amigos", icon: <Users size={20} />, label: "Amigos", path: "/amigos" },
   ];
 
   return (
@@ -119,13 +106,14 @@ export default function DashBoardHeader({ user }) {
       `}</style>
 
       <header
-        className="fixed top-0 left-0 w-full h-20 flex items-center gap-4 px-6 py-4  "
+        className="fixed top-0 left-0 w-full h-20 flex items-center gap-4 px-6 py-4 z-50"
         style={{
           background: "black",
           boxShadow: "0 4px 32px rgba(0,0,0,0.5)"
         }}
       >
         <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-blue-500 via-yellow-500 to-purple-500 z-50" />
+
         <div className="flex items-center justify-center">
           <img
             src={logo}
@@ -134,7 +122,6 @@ export default function DashBoardHeader({ user }) {
           />
         </div>
 
-        {/* Nav */}
         <nav className="flex items-center gap-2 ml-40">
           {navItems.map((item) => (
             <button
@@ -174,20 +161,16 @@ export default function DashBoardHeader({ user }) {
           ))}
         </nav>
 
-        {/* Divider */}
         <div className="w-px h-8 mx-3 bg-white/10" />
 
-        {/* Stats */}
         <div className="flex items-center gap-2">
           <Stat icon={<Clock size={14} color="#06b6d4" />} value={formatarTempo(stats.tempo_total_jogo)} delay="0ms" />
           <Stat icon={<Star size={14} color="#facc15" />} value={`${stats.xp_total} XP`} delay="60ms" />
           <Stat icon={<DollarSign size={14} color="#a78bfa" />} value={stats.coins} delay="120ms" />
-          <Stat icon={<Flame  size={14} color="#f97316" />} value={stats.streak_dias} delay="180ms" />
+          <Stat icon={<Flame size={14} color="#f97316" />} value={stats.streak_dias} delay="180ms" />
         </div>
 
-        {/* Right group — search + settings + avatar */}
         <div className="ml-auto flex items-center gap-3">
-          {/* Search */}
           <div className="w-52">
             <div
               className="search-bar flex items-center gap-2 px-3 py-2 rounded-full cursor-text"
@@ -196,18 +179,20 @@ export default function DashBoardHeader({ user }) {
                 border: `1px solid ${searchFocused ? "rgba(6,182,212,0.45)" : "rgba(255,255,255,0.08)"}`,
                 boxShadow: searchFocused ? "0 0 0 3px rgba(6,182,212,0.08)" : "none",
               }}
-              onClick={() => document.getElementById("header-search").focus()}
+              onClick={() => document.getElementById("header-search")?.focus()}
             >
               <Search size={14} color={searchFocused ? "#06b6d4" : "rgba(255,255,255,0.3)"} />
+
               <input
                 id="header-search"
                 type="text"
-                placeholder="Tap '/' to search"
+                placeholder="Pesquisar"
                 className="bg-transparent outline-none text-xs w-full"
                 style={{ color: "rgba(255,255,255,0.7)", caretColor: "#06b6d4" }}
                 onFocus={() => setSearchFocused(true)}
                 onBlur={() => setSearchFocused(false)}
               />
+
               {!searchFocused && (
                 <kbd
                   className="text-xs px-1.5 py-0.5 rounded-full flex-shrink-0"
@@ -225,7 +210,6 @@ export default function DashBoardHeader({ user }) {
             </div>
           </div>
 
-          {/* Settings + Avatar */}
           <div className="flex items-center gap-4 mr-2">
             <button className="w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-200 hover:bg-cyan-600/10 hover:text-cyan-500 text-white/40">
               <Settings size={20} />
@@ -239,24 +223,15 @@ export default function DashBoardHeader({ user }) {
                 border: "2px solid rgba(255,255,255,0.1)",
                 boxShadow: "0 0 14px rgba(6,182,212,0.3)",
               }}
-              onClick={() => {
-                console.log('avatar clicked, opening modal');
-                setIsModalOpen(true);
-              }}
+              onClick={() => setIsModalOpen(true)}
             >
-              U
+              {user?.nome?.[0]?.toUpperCase() ?? "U"}
             </button>
-           
           </div>
         </div>
-
       </header>
 
-
-
-      {/* Modal de Perfil (fora do header para evitar issues de z-index/contexto)  */}
       <div className="relative">
-
         {isModalOpen && (
           <>
             <div
@@ -270,6 +245,7 @@ export default function DashBoardHeader({ user }) {
                 zIndex: 40,
               }}
             />
+
             <Modal
               user={user}
               onClose={() => setIsModalOpen(false)}
@@ -282,9 +258,7 @@ export default function DashBoardHeader({ user }) {
 }
 
 function Stat({ icon, value, delay }) {
-
   return (
-
     <div
       className="stat-pill flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-white/10"
       style={{
