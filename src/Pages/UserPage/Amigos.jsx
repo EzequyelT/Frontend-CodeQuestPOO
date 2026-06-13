@@ -1,6 +1,7 @@
 import DashBoardHeader from "../../Components/Header/HeaderDashBoard";
 import SideBar from "../../Components/SideBar/SideBar";
 import { useEffect, useState } from "react";
+import socket from "../../Services/socket/socket";
 import { getMe } from "../../Services/users/userService";
 import {
   getAmigos,
@@ -40,6 +41,23 @@ export default function Amigos() {
   const [pedidos, setPedidos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState("amigos");
+  useEffect(() => {
+    function atualizarPresenca({ alunoId, online }) {
+      setAmigos((prev) =>
+        prev.map((amigo) =>
+          amigo.alunoId === alunoId
+            ? { ...amigo, online }
+            : amigo
+        )
+      );
+    }
+
+    socket.on("presenca-atualizada", atualizarPresenca);
+
+    return () => {
+      socket.off("presenca-atualizada", atualizarPresenca);
+    };
+  }, []);
 
   const navigate = useNavigate();
 
@@ -129,22 +147,20 @@ export default function Amigos() {
           <div className="flex gap-2 bg-neutral-900/50 border border-neutral-800 p-1.5 rounded-2xl mb-6">
             <button
               onClick={() => setTab("amigos")}
-              className={`flex-1 py-3 rounded-xl text-xs font-black uppercase ${
-                tab === "amigos"
-                  ? "bg-amber-500 text-black"
-                  : "text-neutral-400 hover:text-white"
-              }`}
+              className={`flex-1 py-3 rounded-xl text-xs font-black uppercase ${tab === "amigos"
+                ? "bg-amber-500 text-black"
+                : "text-neutral-400 hover:text-white"
+                }`}
             >
               Amigos ({amigos.length})
             </button>
 
             <button
               onClick={() => setTab("pedidos")}
-              className={`flex-1 py-3 rounded-xl text-xs font-black uppercase ${
-                tab === "pedidos"
-                  ? "bg-amber-500 text-black"
-                  : "text-neutral-400 hover:text-white"
-              }`}
+              className={`flex-1 py-3 rounded-xl text-xs font-black uppercase ${tab === "pedidos"
+                ? "bg-amber-500 text-black"
+                : "text-neutral-400 hover:text-white"
+                }`}
             >
               Pedidos ({pedidos.length})
             </button>

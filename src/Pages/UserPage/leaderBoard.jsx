@@ -8,6 +8,7 @@ import api from "../../Services/api/axios";
 import { getLevelsByMap } from "../../Services/maps/levelService";
 import { getMapas } from "../../Services/maps/mapasService";
 import loadingVideo from "../../assets/Loading/loading.webm";
+import socket from "../../Services/socket/socket";
 import {
     ArrowLeft,
     Trophy,
@@ -340,12 +341,38 @@ export default function LeaderBoard() {
     const [userProgress, setUserProgress] = useState(null);
     const [amizadesMap, setAmizadesMap] = useState({});
 
+    useEffect(() => {
+        function atualizarPresenca({ alunoId, online }) {
+            setGlobalEntries((prev) =>
+                prev.map((entry) =>
+                    entry.alunoId === alunoId
+                        ? { ...entry, online }
+                        : entry
+                )
+            );
+
+            setFilteredEntries((prev) =>
+                prev.map((entry) =>
+                    entry.alunoId === alunoId
+                        ? { ...entry, online }
+                        : entry
+                )
+            );
+        }
+
+        socket.on("presenca-atualizada", atualizarPresenca);
+
+        return () => {
+            socket.off("presenca-atualizada", atualizarPresenca);
+        };
+    }, []);
+
     const navigate = useNavigate();
 
     useEffect(() => {
         async function bootstrap() {
             try {
-                api.patch("/alunos/online").catch(() => {});
+                api.patch("/alunos/online").catch(() => { });
 
                 const userData = await getMe();
                 setUser(userData);
@@ -388,7 +415,7 @@ export default function LeaderBoard() {
 
     useEffect(() => {
         const interval = setInterval(() => {
-            api.patch("/alunos/online").catch(() => {});
+            api.patch("/alunos/online").catch(() => { });
         }, 60000);
 
         return () => clearInterval(interval);
@@ -557,11 +584,10 @@ export default function LeaderBoard() {
                             <button
                                 key={t.id}
                                 onClick={() => setTab(t.id)}
-                                className={`flex-1 flex items-center justify-center gap-2.5 py-3 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-300 ${
-                                    tab === t.id
+                                className={`flex-1 flex items-center justify-center gap-2.5 py-3 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-300 ${tab === t.id
                                         ? "bg-gradient-to-r from-amber-500/20 to-yellow-500/10 text-amber-400 border border-amber-500/30 shadow-md shadow-amber-500/5"
                                         : "text-neutral-400 hover:text-neutral-200 hover:bg-neutral-900/30"
-                                }`}
+                                    }`}
                             >
                                 <t.icon size={14} className={tab === t.id ? "text-amber-400" : "text-neutral-500"} />
                                 {t.label}

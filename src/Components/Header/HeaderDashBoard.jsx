@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { getProgressoDashboard } from "../../Services/users/userStatsService";
 import logo from "../../Assets/logo.png";
+import socket from "../../Services/socket/socket";
 import {
   Home,
   Clock,
@@ -57,6 +58,20 @@ export default function DashBoardHeader({ user }) {
 
     fetchStats();
   }, []);
+
+  useEffect(() => {
+    if (!user?.id) return;
+
+    if (!socket.connected) {
+      socket.connect();
+    }
+
+    socket.emit("aluno-online", user.id);
+
+    return () => {
+      socket.disconnect();
+    };
+  }, [user?.id]);
 
   const navItems = [
     { id: "home", icon: <Home size={20} />, label: "Início", path: "/Dashboard" },
