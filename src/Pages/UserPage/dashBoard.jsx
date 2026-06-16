@@ -1,15 +1,33 @@
 import DashBoardHeader from "../../Components/Header/HeaderDashBoard";
 import { useNavigate } from "react-router-dom";
 import { getProgresso, getProgressoDashboard } from "../../Services/users/userStatsService";
+import { getTipoDeErrosUsers } from "../../Services/users/errorsUsers";
+import { getDesempenhoCodigo } from "../../Services/users/performaceService";
 import { getUserTempo } from "../../Services/users/jogTemService";
 import { obterXPAluno } from "../../Services/Gameplay/xpProgressService";
 import { getMapas } from "../../Services/maps/mapasService";
 import map1 from "../../assets/Maps/FirstMap.png";
+import map2 from "../../assets/Maps/SecondMap.png";
+import map3 from "../../assets/Maps/ThirdMap.png";
 import { useState, useEffect } from "react";
 import SideBar from "../../Components/SideBar/SideBar";
 import mago from "../../assets/DashBoard/mago.png";
 import loadingVideo from "../../assets/Loading/loading.webm";
 import "../../css/DashBoard.css";
+import {
+    Target,
+    Flame,
+    Coins,
+    Swords,
+    BookOpen,
+    ShieldCheck,
+    ClipboardList,
+    ChartNoAxesCombined,
+    Map,
+    Lock,
+    Skull,
+    CheckCircle2,
+} from "lucide-react";
 
 const PLAYER = {
     name: "CodeMaster",
@@ -50,21 +68,30 @@ function getDayofWeek() {
     }
 }
 
-const ERROR_TYPES = [
-    { name: "Sintaxe", count: 12, pct: 35, color: "#ef4444" },
-    { name: "Lógica", count: 8, pct: 24, color: "#f97316" },
-    { name: "Encapsulamento", count: 7, pct: 21, color: "#eab308" },
-    { name: "Herança", count: 7, pct: 20, color: "#a855f7" },
+const ERROR_COLORS = [
+    "#ef4444",
+    "#f97316",
+    "#eab308",
+    "#a855f7",
+    "#3b82f6",
+    "#22c55e",
 ];
 
-const TROPHIES = [
-    { icon: "🏆", name: "Primeira Vitória", unlocked: true },
-    { icon: "🌿", name: "Mestre de Floresta", unlocked: true },
-    { icon: "🎯", name: "Sem Erros", unlocked: true },
-    { icon: "🔥", name: "Streak 7 dias", unlocked: true },
-    { icon: "🧭", name: "Explorador", unlocked: false },
-    { icon: "🧙", name: "Mestre POO", unlocked: false },
-];
+function mapErrosToDB(quantidadeDeErros = [], tipoDeErros = []) {
+    const total = quantidadeDeErros.reduce((sum, e) => sum + (e.quantidade ?? 0), 0);
+
+    return tipoDeErros.map((tipo, i) => {
+        const encontrado = quantidadeDeErros.find(e => e.tipo_erro_id === tipo.id);
+        const count = encontrado?.quantidade ?? 0;
+        const pct = total > 0 ? Math.round((count / total) * 100) : 0;
+        return {
+            name: tipo.nome,
+            count,
+            pct,
+            color: ERROR_COLORS[i % ERROR_COLORS.length],
+        };
+    });
+}
 
 const DAILY_MISSION = {
     text: "Complete 3 desafios sem usar dicas",
@@ -238,7 +265,6 @@ function MainCard({ player, calculoXp, currentDayOfWeek, navigate }) {
                 <span className="text-xs text-gray-500 border border-gray-700 rounded px-2 py-0.5 mr-52">
                     {progressaoXp.titulo}
                 </span>
-
             </div>
 
             <div className="flex gap-0 px-6 pb-6" style={{ paddingRight: "290px" }}>
@@ -306,9 +332,7 @@ function MainCard({ player, calculoXp, currentDayOfWeek, navigate }) {
                             <p className="text-white font-bold text-base">{player.dicasUsadas}</p>
                             <p className="text-gray-500 text-[10px]">Dicas Usadas</p>
                         </div>
-
                     </div>
-
                 </div>
             </div>
 
@@ -328,47 +352,64 @@ function MainCard({ player, calculoXp, currentDayOfWeek, navigate }) {
 // ============================================================
 // 🔷 MapsPanel
 // ============================================================
+
 function MapsPanel({ maps }) {
     return (
         <div className="bg-[#151414] rounded-4xl border border-gray-800 p-4 flex flex-col gap-3 flex-1 animate-slideInDown">
             <div className="flex justify-between items-center">
-                <h3 className="text-white text-sm font-semibold">🗺️ Mapas de Aprendizado</h3>
+                <h3 className="text-white text-sm font-semibold flex items-center gap-1">
+                    <Map size={18} />
+                    Mapas de Aprendizado
+                </h3>
                 <button className="w-5 h-5 rounded border border-gray-700 flex items-center justify-center text-gray-500 text-xs hover:text-white">
                     +
                 </button>
             </div>
 
             {maps.map((m, i) => {
-                const pct = Math.min((m.desafios / m.total) * 100, 100);
+                const pct = m.total > 0 ? Math.min((m.desafios / m.total) * 100, 100) : 0;
+
                 return (
                     <div key={i} className="flex flex-col gap-2 hover:scale-105 transition-transform duration-300 mt-3">
                         <div
-                            className="rounded-lg h-14 flex items-center justify-between px-3 border"
-                            style={{
-                                backgroundColor: m.bgColor + "99",
-                                borderColor: m.color + "55",
-                                opacity: m.locked ? 0.5 : 1,
-                            }}
+                            className="rounded-lg h-14 flex items-center justify-between px-3 mt-3"
                         >
                             <div className="flex items-center gap-2">
-                                <img
-                                    src={m.map1}
-                                    alt="mapa"
-                                    className="w-12 h-14 rounded-2xl mb-2 flex-shrink-0"
-                                />
+                                <div className="relative w-18 h-22 mb-4 flex-shrink-0">
+                                    <img
+                                        src={m.mapImg}
+                                        alt={m.nome}
+                                        className={`w-full h-full rounded-2xl mb-2 transition-all duration-300 ${m.locked ? "grayscale opacity-40" : ""
+                                            }`}
+                                    />
+                                    {m.locked && (
+                                        <div className="absolute inset-0 flex items-center justify-center mb-2">
+                                            <Lock size={14} className="text-gray-400" />
+                                        </div>
+                                    )}
+                                </div>
+
                                 <div>
-                                    <p className="text-white text-xs font-semibold leading-none">{m.name}</p>
-                                    <p className="text-gray-400 text-[10px] mt-0.5">
-                                        Boss: {m.bossEmoji} {m.boss}
+                                    <p className={`text-xs font-semibold leading-none ${m.locked ? "text-gray-600" : "text-white"}`}>
+                                        {m.nome}
+                                    </p>
+                                    <p className="text-gray-500 text-[10px] mt-0.5 flex items-center gap-1">
+                                        <Skull size={10} />
+                                        Boss: {m.boss}
                                     </p>
                                 </div>
                             </div>
+
                             {m.locked ? (
-                                <span className="text-gray-600 text-base">🔒</span>
+                                <div className="flex items-center gap-1 text-gray-600">
+                                    <Lock size={13} />
+                                    <span className="text-[10px] font-semibold">Bloqueado</span>
+                                </div>
                             ) : m.done ? (
-                                <span className="text-[10px] font-bold text-white bg-green-600 rounded px-1.5 py-0.5">
-                                    Completo
-                                </span>
+                                <div className="flex items-center gap-1 text-green-400">
+                                    <CheckCircle2 size={13} />
+                                    <span className="text-[10px] font-bold">Completo</span>
+                                </div>
                             ) : (
                                 <span className="text-[10px] font-bold" style={{ color: m.color }}>
                                     {pct.toFixed(0)}%
@@ -378,16 +419,18 @@ function MapsPanel({ maps }) {
 
                         <div className="flex justify-between text-[10px] text-gray-500">
                             <span>Progresso</span>
-                            <span className="text-gray-400">{m.desafios}/{m.total} Desafios</span>
+                            <span className={m.locked ? "text-gray-700" : "text-gray-400"}>
+                                {m.locked ? "— / —" : `${m.desafios}/${m.total} Desafios`}
+                            </span>
                         </div>
 
                         <div className="h-1 bg-gray-800 rounded-full">
                             <div
                                 className="h-1 rounded-full transition-all duration-1000"
                                 style={{
-                                    width: `${pct}%`,
-                                    backgroundColor: m.color,
-                                    boxShadow: `0 0 6px ${m.color}66`,
+                                    width: `${m.locked ? 0 : pct}%`,
+                                    backgroundColor: m.locked ? "#374151" : m.color,
+                                    boxShadow: (!m.locked && pct > 0) ? `0 0 6px ${m.color}66` : "none",
                                     animation: m.done ? "glow 2s ease-in-out infinite" : "none",
                                 }}
                             />
@@ -400,51 +443,86 @@ function MapsPanel({ maps }) {
 }
 
 // ============================================================
-// 🔷 ErrorTypesPanel
+// 🔷 AnimatedBar — barra com entrada progressiva
+// ============================================================
+function AnimatedBar({ pct, color, delay = 0 }) {
+    const [width, setWidth] = useState(0);
+
+    useEffect(() => {
+        const timer = setTimeout(() => setWidth(pct), 120 + delay);
+        return () => clearTimeout(timer);
+    }, [pct, delay]);
+
+    return (
+        <div className="h-1.5 bg-gray-800 rounded-full overflow-hidden">
+            <div
+                className="h-1.5 rounded-full"
+                style={{
+                    width: `${width}%`,
+                    backgroundColor: color,
+                    boxShadow: `0 0 8px ${color}88`,
+                    transition: "width 900ms cubic-bezier(0.22, 1, 0.36, 1)",
+                }}
+            />
+        </div>
+    );
+}
+
+// ============================================================
+// 🔷 ErrorTypesPanel — dados reais da BD
 // ============================================================
 function ErrorTypesPanel({ errors }) {
     const navigate = useNavigate();
 
+    const safeErrors = Array.isArray(errors) ? errors : [];
+
     return (
         <div className="bg-[#151414] rounded-4xl border border-gray-800 p-4 flex flex-col gap-3 flex-1 animate-slideInDown delay-200">
             <div className="flex justify-between items-center">
-                <h3 className="text-white text-sm font-semibold">📈 Tipos de Erros</h3>
-                <button onClick={() => navigate("/Erros")} className="w-20 h-5 p-3 rounded-lg border border-gray-700 flex items-center justify-center text-gray-500 text-xs hover:text-white">
+                <h3 className="text-white text-sm font-semibold flex items-center gap-1">
+                    <ChartNoAxesCombined size={18} />
+                    Tipos de Erros
+                </h3>
+                <button
+                    onClick={() => navigate("/Erros")}
+                    className="w-20 h-5 p-3 rounded-lg border border-gray-700 flex items-center justify-center text-gray-500 text-xs hover:text-white"
+                >
                     Ver mais
                 </button>
             </div>
 
             <div className="flex flex-col gap-3">
-                {errors.map((e, i) => (
-                    <div key={i} className="flex flex-col gap-1.5 hover:bg-gray-800/30 p-2 rounded transition-colors">
+                {safeErrors.map((e, i) => (
+                    <div
+                        key={i}
+                        className="flex flex-col gap-1.5 hover:bg-gray-800/30 p-2 rounded transition-colors"
+                    >
                         <div className="flex justify-between items-center text-xs">
-                            <span className="text-gray-300 font-medium">{e.name}</span>
+                            <span className={e.count > 0 ? "text-gray-300 font-medium" : "text-gray-600 font-medium"}>
+                                {e.name}
+                            </span>
                             <div className="flex items-center gap-2">
                                 <span className="text-gray-500 text-[10px]">{e.pct}% dos erros</span>
-                                <span className="font-bold" style={{ color: e.color }}>{e.count}</span>
+                                <span className="font-bold text-xs" style={{ color: e.count > 0 ? e.color : "#444" }}>
+                                    {e.count}×
+                                </span>
                             </div>
                         </div>
-                        <div className="h-1.5 bg-gray-800 rounded-full overflow-hidden">
-                            <div
-                                className="h-1.5 rounded-full transition-all duration-700"
-                                style={{
-                                    width: `${e.pct}%`,
-                                    backgroundColor: e.color,
-                                    boxShadow: `0 0 6px ${e.color}66`,
-                                }}
-                            />
-                        </div>
+                        <AnimatedBar pct={e.pct} color={e.color} delay={i * 120} />
                     </div>
                 ))}
             </div>
 
             <div className="border-t border-gray-800 pt-3 mt-1">
                 <div className="flex gap-1 flex-wrap">
-                    {errors.map((e, i) => (
+                    {safeErrors.map((e, i) => (
                         <span
                             key={i}
                             className="text-[10px] rounded px-2 py-0.5 font-medium"
-                            style={{ backgroundColor: e.color + "22", color: e.color }}
+                            style={{
+                                backgroundColor: e.color + (e.count > 0 ? "22" : "0a"),
+                                color: e.count > 0 ? e.color : e.color + "55",
+                            }}
                         >
                             {e.name}
                         </span>
@@ -458,91 +536,91 @@ function ErrorTypesPanel({ errors }) {
 // ============================================================
 // 🔷 TrophiesAndMissionPanel
 // ============================================================
-function TrophiesAndMissionPanel({ trophies, mission }) {
+function TrophiesAndMissionPanel({ mission }) {
     const pct = Math.min((mission.current / mission.total) * 100, 100);
     const done = mission.current >= mission.total;
 
     return (
-        <div className="bg-[#151414] rounded-4xl border border-gray-800 p-4 flex flex-col gap-4 flex-1 animate-slideInRight">
+        <div className="bg-[#151414] rounded-4xl border border-gray-800 p-5 flex flex-col gap-4 flex-1 animate-slideInRight">
 
-            <div>
-                <div className="flex justify-between items-center mb-3">
-                    <h3 className="text-white text-sm font-semibold">🏆 Troféus</h3>
-                    <span className="text-gray-500 text-xs border border-gray-700 rounded px-2 py-0.5">
-                        {trophies.filter(t => t.unlocked).length}/{trophies.length}
-                    </span>
-                </div>
-                <div className="grid grid-cols-3 gap-2">
-                    {trophies.map((t, i) => (
-                        <div
-                            key={i}
-                            className="flex flex-col items-center gap-1 bg-gray-800/40 rounded-lg py-2.5 border border-gray-700/30 hover:border-gray-600/50 transition-all hover:scale-110 cursor-pointer"
-                            style={{ opacity: t.unlocked ? 1 : 0.35 }}
-                        >
-                            <span
-                                className="text-xl"
-                                style={{
-                                    filter: t.unlocked ? "none" : "grayscale(1)",
-                                    animation: t.unlocked ? "bounce 2s ease-in-out infinite" : "none",
-                                }}
-                            >
-                                {t.icon}
-                            </span>
-                            <span className="text-[9px] text-gray-400 text-center leading-tight px-1">
-                                {t.name}
-                            </span>
-                        </div>
-                    ))}
-                </div>
+            <div className="flex justify-between items-center">
+                <h3 className="text-white text-sm font-semibold flex items-center gap-2">
+                    <Target size={15} className="text-yellow-500" />
+                    Missão Diária
+                </h3>
+                <span className="text-gray-600 text-[11px] border border-gray-800 rounded-lg px-2 py-0.5">
+                    {mission.current}/{mission.total}
+                </span>
             </div>
 
-            <div className="border-t border-gray-800" />
+            <div className="bg-[#1a1a1a] border border-gray-800 rounded-2xl p-4 flex flex-col gap-3">
+                <div className="flex items-start gap-2.5">
+                    <span className="w-5 h-5 rounded-full bg-yellow-500/10 border border-yellow-500/30 text-yellow-400 text-[10px] flex items-center justify-center font-bold flex-shrink-0 mt-0.5">
+                        1
+                    </span>
+                    <span className="text-gray-400 text-xs leading-relaxed">{mission.text}</span>
+                </div>
 
-            <div>
-                <h3 className="text-white text-sm font-semibold mb-2">🎯 Missão Diária</h3>
-                <div className="flex flex-col gap-2">
-                    <div className="flex items-start gap-2">
-                        <span className="w-5 h-5 rounded-full bg-yellow-500/20 border border-yellow-500/40 text-yellow-400 text-[10px] flex items-center justify-center font-bold flex-shrink-0 mt-0.5">
-                            1
-                        </span>
-                        <span className="text-gray-400 text-xs">{mission.text}</span>
-                    </div>
-                    <div className="flex justify-between text-[10px] text-gray-500">
-                        <span>Progresso</span>
-                        <span className="font-bold" style={{ color: done ? "#d4a017" : "#555" }}>
-                            {mission.current}/{mission.total}
+                <div className="flex flex-col gap-1.5">
+                    <div className="flex justify-between text-[10px]">
+                        <span className="text-gray-600">Progresso</span>
+                        <span className="font-semibold" style={{ color: done ? "#d4a017" : "#555" }}>
+                            {mission.current} / {mission.total}
                         </span>
                     </div>
-                    <div className="h-1.5 bg-gray-800 rounded-full">
+                    <div className="h-1.5 bg-gray-900 rounded-full overflow-hidden">
                         <div
                             className="h-1.5 rounded-full transition-all duration-700"
                             style={{
                                 width: `${pct}%`,
                                 background: done ? "#d4a017" : "#3b82f6",
-                                boxShadow: done ? "0 0 6px #d4a01766" : "none",
                             }}
                         />
                     </div>
-                    <div className="flex items-center justify-between mt-1">
-                        <span className="text-gray-500 text-[10px]">Recompensa:</span>
-                        <span className="text-yellow-400 font-bold text-xs">🪙 {mission.reward}</span>
-                    </div>
+                </div>
+
+                <div className="flex justify-between items-center pt-1 border-t border-gray-800">
+                    <span className="text-gray-600 text-[10px]">Recompensa</span>
+                    <span className="text-yellow-400 font-bold text-xs flex items-center gap-1">
+                        <Coins size={13} />
+                        {mission.reward}
+                    </span>
                 </div>
             </div>
 
             {mission.streak.active && (
-                <div className="bg-yellow-500/10 border border-yellow-500/25 rounded-lg p-2.5 flex items-start gap-2 animate-glow">
-                    <span className="text-base flex-shrink-0 animate-bounce-custom">🔥</span>
-                    <div>
+                <div className="bg-yellow-500/[0.06] border border-yellow-500/20 rounded-2xl p-3.5 flex items-start gap-2.5">
+                    <Flame size={18} className="text-orange-400 flex-shrink-0 mt-0.5" />
+                    <div className="flex flex-col gap-1">
                         <p className="text-yellow-400 text-xs font-semibold">Streak Ativo!</p>
-                        <p className="text-gray-400 text-[10px] mt-0.5 leading-relaxed">
+                        <p className="text-gray-500 text-[11px] leading-relaxed">
                             Continue jogando por mais{" "}
-                            <span className="text-white font-bold">{mission.streak.daysLeft} dias</span>{" "}
-                            para desbloquear o troféu "{mission.streak.goal}"
+                            <span className="text-gray-200 font-bold">{mission.streak.daysLeft} dias</span>{" "}
+                            para desbloquear o troféu{" "}
+                            <em className="text-gray-400 not-italic">"{mission.streak.goal}"</em>
                         </p>
                     </div>
                 </div>
             )}
+
+            <div className="bg-[#1a1a1a] border border-gray-800 rounded-2xl p-4 flex flex-col gap-3 flex-1">
+                <p className="text-gray-600 text-[11px] flex items-center gap-1.5">
+                    <ClipboardList size={13} />
+                    Próximas missões
+                </p>
+                {[
+                    { icon: <Swords size={14} />, text: "Vence 2 batalhas seguidas", xp: "+80" },
+                    { icon: <BookOpen size={14} />, text: "Estuda 30 min sem pausa", xp: "+60" },
+                    { icon: <ShieldCheck size={14} />, text: "Completa um mapa sem erros", xp: "+120" },
+                ].map((m, i) => (
+                    <div key={i} className="flex items-center gap-2.5 opacity-50">
+                        <span className="text-gray-500">{m.icon}</span>
+                        <span className="text-gray-500 text-[11px] flex-1">{m.text}</span>
+                        <span className="text-gray-600 text-[10px] font-bold">{m.xp}</span>
+                    </div>
+                ))}
+            </div>
+
         </div>
     );
 }
@@ -606,7 +684,6 @@ function mapTempoToUI(apiTempo) {
         ultimaAtualizado: tempo.ultimoAtualizado || null,
         diasAteReset: tempo.diasAteReset || 7,
     };
-
 }
 
 // ============================================================
@@ -618,6 +695,10 @@ export function DashBoard() {
     const [loading, setLoading] = useState(true);
     const [mapasProgresso, setMapasProgresso] = useState([]);
     const [progressaoXp, setProgressaoXp] = useState(null);
+    const [errors, setErrors] = useState(/** @type {Array} */([]));
+    const [desempenho, setDesempenho] = useState(null);
+    // Helper para garantir que errors é sempre array antes de fazer set
+    const safeSetErrors = (val) => setErrors(Array.isArray(val) ? val : []);
 
     const navigate = useNavigate();
     const token = localStorage.getItem("cq_token");
@@ -651,9 +732,7 @@ export function DashBoard() {
         const storedUser = localStorage.getItem("cq_user");
 
         if (!storedUser) {
-            queueMicrotask(() => {
-                setLoading(false);
-            });
+            queueMicrotask(() => setLoading(false));
             queueMicrotask(() => {
                 setLoading(false);
                 console.error("[Dashboard] Sem utilizador no localStorage");
@@ -673,9 +752,8 @@ export function DashBoard() {
         ])
             .then(([dashboardData, tempoData]) => {
                 const tempoUI = mapTempoToUI(tempoData);
-                console.log("Tempo vindo da Api", tempoUI)
+                console.log("Tempo vindo da Api", tempoUI);
                 const player = mapProgressToPlayer(userData, dashboardData, tempoUI);
-
                 setProgresso(player);
             })
             .catch(err => {
@@ -688,26 +766,27 @@ export function DashBoard() {
 
     useEffect(() => {
         const token = localStorage.getItem("cq_token");
+        const MAP_IMAGES = [map1, map2, map3];
         try {
             getMapas()
                 .then(mapas => getProgresso(token).then(progresso => ({ mapas, progresso })))
                 .then(({ mapas, progresso }) => {
-                    const combinados = mapas.map(m => {
+
+                    const combinados = mapas.map((m, index) => {
                         const prog = progresso.find(p => p.mapa === m.id) || {};
                         return {
                             ...m,
-                            map1: m.map1 || map1,
+                            mapImg: MAP_IMAGES[index] || map1,   
                             desafios: prog.desafios_completos || 0,
                             total: prog.total_desafios || 0,
                             locked: !prog.desbloqueado,
                             done: prog.porcentagem === 100,
                             color: "#22c55e",
                             bgColor: "#333",
-                            emoji: "🗺️",
                             boss: "Boss",
-                            bossEmoji: "👹",
                         };
                     });
+                    console.log("Mapas e progresso:", combinados);
                     setMapasProgresso(combinados);
                 });
         } catch (err) {
@@ -715,12 +794,40 @@ export function DashBoard() {
         }
     }, []);
 
+    useEffect(() => {
+        const fetchErros = async () => {
+            try {
+                const data = await getTipoDeErrosUsers();
+                console.log("Erros da BD:", data);
+                // Usa apenas quantidadeDeErros — é o que importa para o painel
+                safeSetErrors(mapErrosToDB(data?.quantidadeDeErros, data?.TipoDeErros));
+            } catch (err) {
+                console.error("Erro ao carregar erros", err.response || err);
+                safeSetErrors([]);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchErros();
+    }, []);
+
+    useEffect(() => {
+        async function fetchDesempenho() {
+            try {
+                const data = await getDesempenhoCodigo();
+                setDesempenho(data?.resumo ?? null);
+            } catch (err) {
+                console.error("Erro ao carregar desempenho:", err);
+            }
+        }
+        fetchDesempenho();
+    }, []);
 
     if (loading) {
         return (
             <div className="relative min-h-screen bg-[#000000] flex flex-col items-center justify-center overflow-hidden select-none">
                 <div className="flex flex-col items-center gap-6 z-10">
-
                     <div className="relative w-40 h-40 flex items-center justify-center p-2 bg-[#080808]/50 rounded-xl">
                         <video
                             src={loadingVideo}
@@ -731,12 +838,10 @@ export function DashBoard() {
                             className="w-full h-full object-contain"
                         />
                     </div>
-
                     <div className="flex flex-col items-center gap-3 mt-2">
                         <p className="text-white text-sm font-semibold tracking-[0.3em] uppercase animate-pulse">
                             Carregando
                         </p>
-
                         <div className="flex gap-1.5 justify-center">
                             {[0, 0.2, 0.4].map((delay, i) => (
                                 <div
@@ -744,13 +849,12 @@ export function DashBoard() {
                                     className="w-1 h-1 rounded-full bg-amber-500/80"
                                     style={{
                                         animation: `dot-pulse 1.4s ease-in-out infinite`,
-                                        animationDelay: `${delay}s`
+                                        animationDelay: `${delay}s`,
                                     }}
                                 />
                             ))}
                         </div>
                     </div>
-
                 </div>
             </div>
         );
@@ -758,19 +862,27 @@ export function DashBoard() {
 
     const currentDayOfWeek = getDayofWeek();
 
+    const totalRespostas = (desempenho?.total_certas ?? 0) + (desempenho?.total_erradas ?? 0);
+    const accuracyPct = totalRespostas > 0
+        ? Math.round((desempenho.total_certas / totalRespostas) * 100)
+        : (progresso?.accuracy ?? 0);
+    const errorsPct = 100 - accuracyPct;
+
     return (
         <div className="relative min-h-screen bg-black animate-fadeIn">
             <DashBoardHeader user={user} />
             <SideBar user={user} />
 
             <main className="ml-20 mt-4 p-6 pt-24">
-
-
                 <LoginRewardBanner />
 
                 {progresso && progressaoXp && (
                     <MainCard
-                        player={progresso}
+                        player={{
+                            ...progresso,
+                            accuracy: accuracyPct,
+                            errors: errorsPct,
+                        }}
                         calculoXp={progressaoXp}
                         currentDayOfWeek={currentDayOfWeek}
                         navigate={navigate}
@@ -779,8 +891,8 @@ export function DashBoard() {
 
                 <div className="flex gap-4 mt-6">
                     <MapsPanel maps={mapasProgresso} />
-                    <ErrorTypesPanel errors={ERROR_TYPES} />
-                    <TrophiesAndMissionPanel trophies={TROPHIES} mission={DAILY_MISSION} />
+                    <ErrorTypesPanel errors={errors} />
+                    <TrophiesAndMissionPanel mission={DAILY_MISSION} />
                 </div>
             </main>
         </div>

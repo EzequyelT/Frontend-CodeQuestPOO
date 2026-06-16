@@ -6,6 +6,16 @@ import mago from "../../assets/DashBoard/mago.png";
 import { getHistoricoSemanal } from "../../Services/users/jogTemService";
 import { getMe } from "../../Services/users/userService";
 import loadingVideo from "../../assets/Loading/loading.webm";
+import {
+    BarChart2,
+    CalendarDays,
+    Clock,
+    Star,
+    TrendingUp,
+    Trophy,
+    ArrowLeft,
+    Layers,
+} from "lucide-react";
 
 function formatTempo(minutos = 0) {
     const h = Math.floor(minutos / 60);
@@ -44,21 +54,27 @@ function BarChart({ semanas }) {
     const max = Math.max(...semanas.map(s => s.tempo_semana), 1);
 
     return (
-        <div className="flex items-end gap-2 h-48 mt-2">
+        /* altura fixa em px — percentagem de height só funciona se o pai tiver altura definida em px */
+        <div className="flex items-end gap-2 mt-2" style={{ height: "192px" }}>
             {semanas.map((s, i) => {
                 const pct = (s.tempo_semana / max) * 100;
                 const isBest = s.tempo_semana === max;
                 return (
-                    <div key={i} className="flex flex-col items-center gap-1 flex-1 h-full justify-end group">
+                    <div
+                        key={i}
+                        className="flex flex-col items-center gap-1 flex-1 justify-end group"
+                        style={{ height: "100%" }}
+                    >
                         <span className="text-[9px] text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
                             {formatTempo(s.tempo_semana)}
                         </span>
                         <div
                             style={{ height: `${Math.max(pct, 3)}%` }}
-                            className={`w-full rounded-t-md transition-all duration-700 ${isBest
-                                ? "bg-green-500"
-                                : "bg-yellow-700/60 hover:bg-yellow-600/80"
-                                }`}
+                            className={`w-full rounded-t-md transition-all duration-700 ${
+                                isBest
+                                    ? "bg-green-500"
+                                    : "bg-yellow-700/60 hover:bg-yellow-600/80"
+                            }`}
                         />
                         <span className="text-[9px] text-gray-600 text-center leading-tight">
                             {formatarInicioSemana(s.semana_inicio)}
@@ -171,12 +187,10 @@ export default function HistoricoSemanal() {
         : 0;
     const totalMinutos = historico.reduce((acc, s) => acc + s.tempo_semana, 0);
 
-
     if (loading) {
         return (
             <div className="relative min-h-screen bg-[#000000] flex flex-col items-center justify-center overflow-hidden select-none">
                 <div className="flex flex-col items-center gap-6 z-10">
-
                     <div className="relative w-40 h-40 flex items-center justify-center p-2 bg-[#080808]/50 rounded-xl">
                         <video
                             src={loadingVideo}
@@ -187,12 +201,10 @@ export default function HistoricoSemanal() {
                             className="w-full h-full object-contain"
                         />
                     </div>
-
                     <div className="flex flex-col items-center gap-3 mt-2">
                         <p className="text-white text-sm font-semibold tracking-[0.3em] uppercase animate-pulse">
                             Carregando
                         </p>
-
                         <div className="flex gap-1.5 justify-center">
                             {[0, 0.2, 0.4].map((delay, i) => (
                                 <div
@@ -200,13 +212,12 @@ export default function HistoricoSemanal() {
                                     className="w-1 h-1 rounded-full bg-amber-500/80"
                                     style={{
                                         animation: `dot-pulse 1.4s ease-in-out infinite`,
-                                        animationDelay: `${delay}s`
+                                        animationDelay: `${delay}s`,
                                     }}
                                 />
                             ))}
                         </div>
                     </div>
-
                 </div>
             </div>
         );
@@ -230,7 +241,8 @@ export default function HistoricoSemanal() {
                         onClick={() => navigate(-1)}
                         className="flex items-center gap-2 text-xs text-gray-400 border border-gray-700 rounded-lg px-4 py-2 hover:border-yellow-600 hover:text-yellow-500 transition-colors"
                     >
-                        ← Voltar ao dashboard
+                        <ArrowLeft size={13} />
+                        Voltar ao dashboard
                     </button>
                 </div>
 
@@ -249,10 +261,12 @@ export default function HistoricoSemanal() {
                         <div className="flex flex-col gap-4 flex-1">
                             <div className="bg-[#151414] border border-gray-800 rounded-2xl p-5">
                                 <div className="flex items-center justify-between mb-1">
-                                    <h3 className="text-white text-sm font-semibold">
-                                        📊 Tempo de estudo por semana
+                                    <h3 className="text-white text-sm font-semibold flex items-center gap-2">
+                                        <BarChart2 size={15} className="text-yellow-500" />
+                                        Tempo de estudo por semana
                                     </h3>
-                                    <span className="text-gray-600 text-[10px] border border-gray-800 rounded px-2 py-0.5">
+                                    <span className="text-gray-600 text-[10px] border border-gray-800 rounded px-2 py-0.5 flex items-center gap-1">
+                                        <Clock size={10} />
                                         minutos
                                     </span>
                                 </div>
@@ -263,8 +277,9 @@ export default function HistoricoSemanal() {
                             </div>
 
                             <div className="bg-[#151414] border border-gray-800 rounded-2xl p-5">
-                                <h3 className="text-white text-sm font-semibold mb-4">
-                                    🗓️ Detalhe por semana
+                                <h3 className="text-white text-sm font-semibold mb-4 flex items-center gap-2">
+                                    <CalendarDays size={15} className="text-yellow-500" />
+                                    Detalhe por semana
                                 </h3>
                                 <div className="overflow-x-auto">
                                     <table className="w-full text-xs">
@@ -284,7 +299,8 @@ export default function HistoricoSemanal() {
                                                         <td className="py-2.5 text-gray-300">
                                                             {formatarPeriodo(s.semana_inicio, s.semana_fim)}
                                                             {isBest && (
-                                                                <span className="ml-2 text-[9px] bg-green-500/20 text-green-400 rounded px-1.5 py-0.5">
+                                                                <span className="ml-2 text-[9px] bg-green-500/20 text-green-400 rounded px-1.5 py-0.5 inline-flex items-center gap-0.5">
+                                                                    <Star size={8} />
                                                                     melhor
                                                                 </span>
                                                             )}
@@ -308,8 +324,9 @@ export default function HistoricoSemanal() {
                             <MagoCard user={user} />
 
                             <div className="bg-[#151414] border border-gray-800 rounded-2xl p-4">
-                                <h3 className="text-white text-sm font-semibold mb-3">
-                                    🕒 Últimas semanas
+                                <h3 className="text-white text-sm font-semibold mb-3 flex items-center gap-2">
+                                    <Layers size={14} className="text-yellow-500" />
+                                    Últimas semanas
                                 </h3>
                                 <WeeksDetail semanas={[...historico].reverse()} />
                             </div>

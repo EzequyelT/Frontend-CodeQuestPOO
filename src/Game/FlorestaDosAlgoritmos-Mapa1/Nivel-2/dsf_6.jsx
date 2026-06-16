@@ -107,7 +107,43 @@ export default function DSF6() {
     }, [finished, finalResult]);
 
     if (finished && saving) {
-        return <div>Salvando resultado...</div>
+        return (
+            <div className="relative min-h-screen bg-[#000000] flex flex-col items-center justify-center overflow-hidden select-none">
+                <div className="flex flex-col items-center gap-6 z-10">
+
+                    <div className="relative w-40 h-40 flex items-center justify-center p-2 bg-[#080808]/50 rounded-xl">
+                        <video
+                            src={loadingVideo}
+                            autoPlay
+                            loop
+                            muted
+                            playsInline
+                            className="w-full h-full object-contain"
+                        />
+                    </div>
+
+                    <div className="flex flex-col items-center gap-3 mt-2">
+                        <p className="text-white text-sm font-semibold tracking-[0.3em] uppercase animate-pulse">
+                            Salvando Resultado
+                        </p>
+
+                        <div className="flex gap-1.5 justify-center">
+                            {[0, 0.2, 0.4].map((delay, i) => (
+                                <div
+                                    key={i}
+                                    className="w-1 h-1 rounded-full bg-amber-500/80"
+                                    style={{
+                                        animation: `dot-pulse 1.4s ease-in-out infinite`,
+                                        animationDelay: `${delay}s`
+                                    }}
+                                />
+                            ))}
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        );
     }
 
     const score = Math.max(
@@ -244,7 +280,7 @@ export default function DSF6() {
                     runCode={runCode}
                     addLog={addLog}
                     hints={currentQuestion?.hints}
-                    aiFeedback={aiFeedback} 
+                    aiFeedback={aiFeedback}
                 />
             </div>
         </>

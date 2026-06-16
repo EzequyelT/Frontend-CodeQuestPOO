@@ -151,6 +151,7 @@ export function useCode(fases = [], config = {}) {
   async function gerarFeedbackErro({ code, finalOutput, erro, rawError, tentativa }) {
     try {
       const tipoErroId = classifyError(rawError)
+      console.log("classifyError result →", classifyError(rawError))
       tipoErroAtualRef.current = tipoErroId
 
       // Calcula score parcial para determinar tipo de feedback
@@ -268,7 +269,7 @@ export function useCode(fases = [], config = {}) {
           code,
           finalOutput,
           erro: finalOutput,
-          rawError: error,
+          rawError: error || finalOutput,
           tentativa: nextAttempts,
         })
 

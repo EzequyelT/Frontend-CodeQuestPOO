@@ -10,7 +10,21 @@ import DashBoardHeader from "../../Components/Header/HeaderDashBoard";
 import loadingVideo from "../../assets/Loading/loading.webm";
 import SideBar from "../../Components/SideBar/SideBar";
 import map1 from "../../assets/Maps/FirstMap.png";
-import { ArrowLeft, Clock, Map, Trophy, Target, Star, Lock, ChevronRight, TriangleAlert, ImageOff, FileText } from "lucide-react";
+import map2 from "../../assets/Maps/SecondMap.png";
+import map3 from "../../assets/Maps/ThirdMap.png";
+import { 
+    ArrowLeft, 
+    Clock, 
+    Map, 
+    Trophy, 
+    Target, 
+    Star, 
+    Lock, 
+    ChevronRight, 
+    TriangleAlert, 
+    ImageOff, 
+    FileText 
+} from "lucide-react";
 
 function formatTempo(segundos = 0) {
     if (!segundos) return "0s";
@@ -95,9 +109,9 @@ function MapCard({ mapa, niveis = [], tempoNivel = [], user }) {
                                 : mapa.id === 1
                                     ? <img src={map1}></img>
                                     : mapa.id === 2
-                                        ? <img src={map1}></img>
+                                        ? <img src={map2}></img>
                                         : mapa.id === 3
-                                            ? <img src={map1}></img>
+                                            ? <img src={map3}></img>
                                             : <ImageOff />
                         }
                     </div>
