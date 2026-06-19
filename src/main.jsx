@@ -3,7 +3,6 @@ import { createRoot } from 'react-dom/client';
 import './css/index.css';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
-
 // Pages
 import Landingpage from './Pages/landingPage';
 import GameTest from './Pages/gameTest';
@@ -12,10 +11,10 @@ import Perfil from './Pages/UserPage/Perfil';
 import Maps from './Pages/UserPage/Maps';
 import Amigos from "./Pages/UserPage/Amigos";
 
-
 import Trophies from './Pages/UserPage/Trophies&Achievements';
 import Login from "./Pages/Auth/login";
 import CriarConta from "./Pages/Auth/criarConta";
+import Mentores from "./Pages/UserPage/Mentores";
 
 import HistoricoSemanal from "./Pages/UserPage/HistoricoSemanal";
 import Estatisticas from './Pages/UserPage/Estatisticas';
@@ -31,7 +30,9 @@ import Desafio2GameTest from "./Components/GameTest/desafio2";
 import DesafioFinal from "./Components/GameTest/desafioFinal";
 
 // Game
-import FlorestaDosAlgoritmos from "./Game/FlorestaDosAlgoritmos-Mapa1/FlorestaDosAlgoritmos";
+import FlorestaDosAlgoritmos from "./Game/Mapas/FlorestaDosAlgoritmos-Mapa1/FlorestaDosAlgoritmos";
+import VilaDaLogica from './Game/Mapas/VilaDaLogica-Mapa2/vilaDaLogica';
+
 import Mapa1 from "./Game/Routes/game.routes";
 
 //context
@@ -57,8 +58,11 @@ createRoot(document.getElementById('root')).render(
           <Route path="/leaderBoard" element={<LeaderBoard />} />
           <Route path="/amigos" element={<Amigos />} />
           <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/mentores" element={<Mentores />} />
 
-          {/* DESAFIOS */}
+          {/* TESTES */}
+
+          {/* Teste */}
           <Route path="/Desafio1GameTest" element={<Desafio1GameTest />} />
           <Route path="/Desafio2GameTest" element={<Desafio2GameTest />} />
           <Route path="/DesafioFinalGameTest" element={<DesafioFinal />} />
@@ -68,6 +72,7 @@ createRoot(document.getElementById('root')).render(
           <Route path="/FlorestaDosAlgoritmos" element={<FlorestaDosAlgoritmos />} />
           <Route path="/floresta/*" element={<Mapa1 />} />
           {/* Map-2 */}
+          <Route path="/VilaDaLogica" element={<VilaDaLogica />} />
 
           {/* fallback */}
           <Route path="*" element={<Landingpage />} />

@@ -1,4 +1,10 @@
-import { GamepadIcon , Trophy, FolderCode, CheckSquare } from "lucide-react";
+import { 
+  GamepadIcon , 
+  Trophy, 
+  FolderCode, 
+  CheckSquare,
+  VenetianMask 
+} from "lucide-react";
 
 export const sidebarLinks = [
   {
@@ -20,5 +26,10 @@ export const sidebarLinks = [
     id: "Desafios",
     icon: CheckSquare, 
     path: "/challenges",
+  },
+   {
+    id: "Mentores",
+    icon: VenetianMask,
+    path: "/mentores",
   },
 ];

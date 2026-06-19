@@ -74,7 +74,7 @@ export function useCode(fases = [], config = {}) {
 
     const t = setInterval(() => {
       setTimeSeconds(Math.floor((Date.now() - startTime) / 1000))
-    }, 1000)
+    }, 3000)
 
     return () => clearInterval(t)
   }, [finished, showFailModal, startTime])
@@ -265,6 +265,8 @@ export function useCode(fases = [], config = {}) {
             : `❌ ${finalOutput || "Output vazio"}`
         )
 
+        setMentorStatus("typing")
+
         await gerarFeedbackErro({
           code,
           finalOutput,
@@ -272,6 +274,8 @@ export function useCode(fases = [], config = {}) {
           rawError: error || finalOutput,
           tentativa: nextAttempts,
         })
+
+        setMentorStatus("error")
 
         setStreakAtual(0)
 
@@ -315,7 +319,7 @@ export function useCode(fases = [], config = {}) {
         tentativa: attempts + 1,
       })
       addErrorLog(clean)
-      
+
       setStreakAtual(0)
 
       return { success: false, message: clean }

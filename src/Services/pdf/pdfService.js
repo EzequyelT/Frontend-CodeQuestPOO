@@ -6,25 +6,23 @@ export async function gerarRelatorioPDF(alunoId) {
             responseType: "blob",
         });
 
-        const blob = new Blob
-            ([response.data],
-                {
-                    type: "application/pdf"
-                }
-            );
-        const fileURL = window.URL.createObjectURL(blob)
+        const blob = new Blob([response.data], {
+            type: "application/pdf",
+        });
+
+        const fileURL = window.URL.createObjectURL(blob);
 
         const link = document.createElement("a");
-
         link.href = fileURL;
-
-        link.setAttribute("download", "relatorio.pdf");
+        link.download = "relatorio.pdf";
 
         document.body.appendChild(link);
-
         link.click();
-        link.remove(); 
-        window.URL.revokeObjectURL(fileURL);
+        link.remove();
+
+        setTimeout(() => {
+            window.URL.revokeObjectURL(fileURL);
+        }, 1000);
 
     } catch (error) {
         console.error("Erro ao gerar relatório PDF", error);

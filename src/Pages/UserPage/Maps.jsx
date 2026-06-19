@@ -171,7 +171,7 @@ export default function Maps() {
 
                 <div className="flex flex-row justify-center gap-40 mt-5">
                     {mapa2 && (
-                        <MapCard mapaData={mapa2} imgSrc={map2} route="/FlorestaDosAlgoritmos" imgClass="w-100 h-145" navigate={navigate} />
+                        <MapCard mapaData={mapa2} imgSrc={map2} route="/VilaDaLogica" imgClass="w-100 h-145" navigate={navigate} />
                     )}
                     {mapa3 && (
                         <MapCard mapaData={mapa3} imgSrc={map3} route="/FlorestaDosAlgoritmos" imgClass="w-100 h-145" navigate={navigate} />

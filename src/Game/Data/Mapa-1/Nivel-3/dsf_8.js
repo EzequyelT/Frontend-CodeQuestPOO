@@ -48,22 +48,6 @@ const dsf_8 = [
     },
 
     {
-        titulo: "Fase 4 – Encontrar o maior número",
-        initialCode: "# Encontra o maior número da lista\nnumeros = [3, 7, 2, 9, 5]\nmaior = 0\n",
-        objectives: [
-            { label: "Percorrer a lista com loop" },
-            { label: "Comparar valores" },
-            { label: "Atualizar variável maior" },
-            { label: "Mostrar o resultado final" },
-        ],
-        validate: (output) => output.trim() === "9",
-        hints: {
-            error: "Ainda não é o golpe final… usa if n > maior.",
-            success: "A Serpente enfraquece… está quase derrotada!"
-        }
-    },
-
-    {
         titulo: "Fase 5 – Desafio Final: Código Seguro",
         initialCode: "# Verifica passwords seguras\npasswords = ['123', 'abc123', 'segura123']\n",
         objectives: [

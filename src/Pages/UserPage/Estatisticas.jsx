@@ -12,18 +12,19 @@ import SideBar from "../../Components/SideBar/SideBar";
 import map1 from "../../assets/Maps/FirstMap.png";
 import map2 from "../../assets/Maps/SecondMap.png";
 import map3 from "../../assets/Maps/ThirdMap.png";
-import { 
-    ArrowLeft, 
-    Clock, 
-    Map, 
-    Trophy, 
-    Target, 
-    Star, 
-    Lock, 
-    ChevronRight, 
-    TriangleAlert, 
-    ImageOff, 
-    FileText 
+import {
+    ArrowLeft,
+    Clock,
+    Map,
+    Trophy,
+    Target,
+    Star,
+    Lock,
+    ChevronRight,
+    TriangleAlert,
+    ImageOff,
+    FileText,
+    Loader2
 } from "lucide-react";
 
 function formatTempo(segundos = 0) {
@@ -253,27 +254,13 @@ function MapCard({ mapa, niveis = [], tempoNivel = [], user }) {
     );
 }
 
-function ExportPdf(userId) {
-    try {
-        if (!userId) {
-            console.error("Id do utilizador não encontrado para exportação de PDF.");
-            return;
-        }
-        const pdfUrl = async () => {
-            await gerarRelatorioPDF(userId);
-        }
-        pdfUrl()
-    } catch (error) {
-        console.error("Erro ao exportar PDF", error);
-    }
-}
-
 export default function Estatisticas() {
     const [user, setUser] = useState(null);
     const [tempoNivel, setTempoNivel] = useState([]);
     const [niveis, setNiveis] = useState([]);
     const [mapasProgresso, setMapasProgresso] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [exportLoading, setExportLoading] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -369,6 +356,22 @@ export default function Estatisticas() {
     const niveisFeitos = tempoNivel.filter(t => t.tempo_total > 0).length;
     const melhorTempo = tempoNivel.reduce((best, t) => Math.min(best, t.melhor_tempo ?? Infinity), Infinity);
 
+    async function handleExportPdf() {
+        try {
+            if (!user?.id) {
+                console.error("Id do utilizador não encontrado para exportação de PDF.");
+                return;
+            }
+
+            setExportLoading(true);
+            await gerarRelatorioPDF(user.id);
+        } catch (error) {
+            console.error("Erro ao exportar PDF:", error);
+        } finally {
+            setExportLoading(false);
+        }
+    }
+
     return (
         <div className="relative min-h-screen bg-neutral-950 text-neutral-100 selection:bg-yellow-500 selection:text-black antialiased">
 
@@ -393,8 +396,27 @@ export default function Estatisticas() {
                         </p>
 
                     </div>
-                    <button onClick={() => ExportPdf(user?.id)} className="ml-auto w-40 p-2 gap-2 font-bold rounded-2xl flex justify-center items-center text-neutral-400 bg-neutral-900 border border-neutral-800 hover:border-neutral-600 hover:text-white hover:scale-105 active:scale-95 transition-all shadow-md">
-                        Exportar PDF <span><FileText /></span>
+                    <button
+                        onClick={handleExportPdf}
+                        disabled={exportLoading}
+                        className={`ml-auto w-44 p-2 gap-2 font-bold rounded-2xl flex justify-center items-center bg-neutral-900 border border-neutral-800 transition-all shadow-md
+        ${exportLoading
+                                ? "text-neutral-500 cursor-not-allowed opacity-70"
+                                : "text-neutral-400 hover:border-neutral-600 hover:text-white hover:scale-105 active:scale-95"
+                            }
+    `}
+                    >
+                        {exportLoading ? (
+                            <>
+                                Gerando...
+                                <Loader2 className="animate-spin" size={20} />
+                            </>
+                        ) : (
+                            <>
+                                Exportar PDF
+                                <FileText size={20} />
+                            </>
+                        )}
                     </button>
                 </div>
 

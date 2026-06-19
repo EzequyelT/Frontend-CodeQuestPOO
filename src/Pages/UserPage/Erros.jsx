@@ -4,10 +4,17 @@ import { useEffect, useState } from "react";
 import { getMe } from "../../Services/users/userService";
 import { getDesempenhoCodigo } from "../../Services/users/performaceService";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Wand2, ChevronRight } from "lucide-react";
+import { exportExcel } from "../../Services/excel/excel"
+import {
+  ArrowLeft,
+  Wand2,
+  ChevronRight,
+  FileText,
+  Loader2
+} from "lucide-react";
 import loadingVideo from "../../assets/Loading/loading.webm";
 
-const ERRO_COLORS = ["#7c3aed","#3b82f6","#f59e0b","#ef4444","#06b6d4","#22c55e"];
+const ERRO_COLORS = ["#7c3aed", "#3b82f6", "#f59e0b", "#ef4444", "#06b6d4", "#22c55e"];
 
 function formatDate(d) {
   return new Date(d).toLocaleDateString("pt-PT", {
@@ -176,6 +183,7 @@ export default function DesempenhoCodigo() {
   const [user, setUser] = useState(null);
   const [dados, setDados] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [exportLoading, setExportLoading] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -216,69 +224,102 @@ export default function DesempenhoCodigo() {
   const r = dados?.resumo;
   const taxaColor = !r ? "#94a3b8" : r.taxa_acerto >= 70 ? "#22c55e" : r.taxa_acerto >= 40 ? "#f59e0b" : "#ef4444";
 
+  async function handleExportExcel() {
+    try {
+      setExportLoading(true);
+      await exportExcel();
+    } catch (error) {
+      console.error("Erro ao exportar Excel:", error);
+    } finally {
+      setExportLoading(false);
+    }
+  }
+
   return (
     <div className="relative min-h-screen bg-neutral-950 text-neutral-100 antialiased">
       <DashBoardHeader user={user} />
       <SideBar user={user} />
 
       <main className="ml-20 pt-24 px-8 pb-16 flex justify-center">
-      <div className="w-full max-w-5xl">
+        <div className="w-full max-w-5xl">
 
-        <div className="flex items-center gap-4 mb-8">
-          <button
-            onClick={() => navigate(-1)}
-            className="w-10 h-10 rounded-2xl flex items-center justify-center text-neutral-400 bg-neutral-900 border border-neutral-800 hover:border-neutral-600 hover:text-white transition-all"
-          >
-            <ArrowLeft size={18} />
-          </button>
-          <div>
-            <h1 className="text-white font-black text-3xl tracking-tight uppercase">
-              Desempenho de Código
-            </h1>
-            <p className="text-neutral-500 text-xs mt-0.5">
-              Jogador: <span className="text-neutral-300 font-bold">{user?.nome}</span> · Análise de erros e feedback
-            </p>
-          </div>
-        </div>
-
-        {!dados ? (
-          <div className="text-center py-20 bg-neutral-900/20 border border-dashed border-neutral-800 rounded-3xl">
-            <p className="text-neutral-600 font-bold uppercase tracking-widest text-sm">
-              Ainda não há desempenho registado.
-            </p>
-            <p className="text-neutral-500 text-xs mt-1">
-              Completa desafios de código para veres a tua análise aqui.
-            </p>
-          </div>
-        ) : (
-          <>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
-              <StatCard label="Desafios" value={r.total_desafios} color="#3b82f6" />
-              <StatCard label="Respostas certas" value={r.total_certas} color="#22c55e" />
-              <StatCard label="Respostas erradas" value={r.total_erradas} color="#ef4444" />
-              <StatCard label="Taxa de acerto" value={`${r.taxa_acerto}%`} color={taxaColor} />
-            </div>
-
-            <div className="mb-8">
-              <h2 className="text-neutral-400 font-bold text-xs uppercase tracking-widest mb-4 pb-2 border-b border-neutral-900">
-                Erros por categoria
-              </h2>
-              <ErrosBars erros={r.erros_por_tipo ?? []} />
-            </div>
-
+          <div className="flex items-center gap-4 mb-8">
+            <button
+              onClick={() => navigate(-1)}
+              className="w-10 h-10 rounded-2xl flex items-center justify-center text-neutral-400 bg-neutral-900 border border-neutral-800 hover:border-neutral-600 hover:text-white transition-all"
+            >
+              <ArrowLeft size={18} />
+            </button>
             <div>
-              <h2 className="text-neutral-400 font-bold text-xs uppercase tracking-widest mb-4 pb-2 border-b border-neutral-900">
-                Desempenho por desafio
-              </h2>
-              <div className="flex flex-col gap-3">
-                {dados.por_desafio.map(d => (
-                  <DesafioCard key={d.desempenho_id} d={d} />
-                ))}
-              </div>
+              <h1 className="text-white font-black text-3xl tracking-tight uppercase">
+                Desempenho de Código
+              </h1>
+              <p className="text-neutral-500 text-xs mt-0.5">
+                Jogador: <span className="text-neutral-300 font-bold">{user?.nome}</span> · Análise de erros e feedback
+              </p>
             </div>
-          </>
-        )}
-      </div>
+            <button
+              onClick={handleExportExcel}
+              disabled={exportLoading}
+              className={`ml-auto w-44 p-2 gap-2 font-bold rounded-2xl flex justify-center items-center bg-neutral-900 border border-neutral-800 transition-all shadow-md
+    ${exportLoading
+                  ? "text-neutral-500 cursor-not-allowed opacity-70"
+                  : "text-neutral-400 hover:border-neutral-600 hover:text-white hover:scale-105 active:scale-95"
+                }
+  `}
+            >
+              {exportLoading ? (
+                <>
+                  Gerando...
+                  <Loader2 className="animate-spin" size={20} />
+                </>
+              ) : (
+                <>
+                  Exportar Excel
+                  <FileText size={20} />
+                </>
+              )}
+            </button>
+          </div>
+
+          {!dados ? (
+            <div className="text-center py-20 bg-neutral-900/20 border border-dashed border-neutral-800 rounded-3xl">
+              <p className="text-neutral-600 font-bold uppercase tracking-widest text-sm">
+                Ainda não há desempenho registado.
+              </p>
+              <p className="text-neutral-500 text-xs mt-1">
+                Completa desafios de código para veres a tua análise aqui.
+              </p>
+            </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
+                <StatCard label="Desafios" value={r.total_desafios} color="#3b82f6" />
+                <StatCard label="Respostas certas" value={r.total_certas} color="#22c55e" />
+                <StatCard label="Respostas erradas" value={r.total_erradas} color="#ef4444" />
+                <StatCard label="Taxa de acerto" value={`${r.taxa_acerto}%`} color={taxaColor} />
+              </div>
+
+              <div className="mb-8">
+                <h2 className="text-neutral-400 font-bold text-xs uppercase tracking-widest mb-4 pb-2 border-b border-neutral-900">
+                  Erros por categoria
+                </h2>
+                <ErrosBars erros={r.erros_por_tipo ?? []} />
+              </div>
+
+              <div>
+                <h2 className="text-neutral-400 font-bold text-xs uppercase tracking-widest mb-4 pb-2 border-b border-neutral-900">
+                  Desempenho por desafio
+                </h2>
+                <div className="flex flex-col gap-3">
+                  {dados.por_desafio.map(d => (
+                    <DesafioCard key={d.desempenho_id} d={d} />
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
+        </div>
       </main>
     </div>
   );
