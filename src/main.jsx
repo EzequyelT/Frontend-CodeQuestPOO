@@ -33,7 +33,8 @@ import DesafioFinal from "./Components/GameTest/desafioFinal";
 import FlorestaDosAlgoritmos from "./Game/Mapas/FlorestaDosAlgoritmos-Mapa1/FlorestaDosAlgoritmos";
 import VilaDaLogica from './Game/Mapas/VilaDaLogica-Mapa2/vilaDaLogica';
 
-import Mapa1 from "./Game/Routes/game.routes";
+import Mapa1 from "./Game/Routes/mapa-1.routes";
+import Mapa2 from "./Game/Routes/mapa-2.routes"
 
 //context
 import { SessionProvider } from './Context/SessionProvider';
@@ -73,7 +74,8 @@ createRoot(document.getElementById('root')).render(
           <Route path="/floresta/*" element={<Mapa1 />} />
           {/* Map-2 */}
           <Route path="/VilaDaLogica" element={<VilaDaLogica />} />
-
+          <Route path="/vila/*" element={<Mapa2 />} />
+          
           {/* fallback */}
           <Route path="*" element={<Landingpage />} />
         </Routes>

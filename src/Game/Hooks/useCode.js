@@ -312,15 +312,38 @@ export function useCode(fases = [], config = {}) {
 
       setMentorStatus("error")
 
+      const nextAttempts = addErrorLog(clean)
+
       await gerarFeedbackErro({
         code,
         erro: clean,
         rawError: err?.message || String(err),
-        tentativa: attempts + 1,
+        tentativa: nextAttempts,
       })
-      addErrorLog(clean)
 
       setStreakAtual(0)
+
+      // 🔥 MESMA LÓGICA DO ELSE
+      if (totalAttemptsRef.current >= 3) {
+        totalWrongRef.current += 1
+        setTotalWrong(t => t + 1)
+
+        if (totalWrongRef.current >= 2) {
+          setShowFailModal(true)
+          setLoading(false)
+          return { success: false, message: clean }
+        }
+
+        addLog("warning", "⚠️ Número máximo de tentativas atingido. Indo para próxima pergunta...")
+
+        setTransitioning(true)
+        setTimeout(() => {
+          if (isUltima) setFinished(true)
+          else setCurrentIndex(i => i + 1)
+
+          setTransitioning(false)
+        }, 1600)
+      }
 
       return { success: false, message: clean }
     } finally {

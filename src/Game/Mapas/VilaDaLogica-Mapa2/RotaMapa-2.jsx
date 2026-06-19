@@ -1,0 +1,132 @@
+import { Suspense } from "react";
+import loadingVideo from "../../../assets/Loading/loading.webm";
+
+//_______________________________Nivel 1_______________________________
+import DSF1 from "./Nivel-1/dsf_1";
+
+if (!DSF1) {
+    loader()
+}
+
+import DSF2 from "./Nivel-1/dsf_2"
+
+if (!DSF2) {
+    loader()
+}
+
+import DSF3 from "./Nivel-1/dsf_3"
+
+if (!DSF3) {
+    loader()
+}
+
+import DSF4 from "./Nivel-2/dsf_4";
+
+if (!DSF4) {
+    loader()
+}
+
+import DSF5 from "./Nivel-2/dsf_5";
+
+if (!DSF5) {
+    loader()
+}
+
+import DSF6 from "./Nivel-2/dsf_6";
+
+if (!DSF6) {
+    loader()
+}
+
+import DSF7 from "./Nivel-3/dsf_7";
+
+if (!DSF5) {
+    loader()
+}
+
+import DSF8 from "./Nivel-3/dsf_8";
+
+if (!DSF6) {
+    loader()
+}
+
+const loader = () =>
+    <div className="relative min-h-screen bg-[#000000] flex flex-col items-center justify-center overflow-hidden select-none">
+        <div className="flex flex-col items-center gap-6 z-10">
+
+            <div className="relative w-40 h-40 flex items-center justify-center p-2 bg-[#080808]/50 rounded-xl">
+                <video
+                    src={loadingVideo}
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="w-full h-full object-contain"
+                />
+            </div>
+
+            <div className="flex flex-col items-center gap-3 mt-2">
+                <p className="text-white text-sm font-semibold tracking-[0.3em] uppercase animate-pulse">
+                    Carregando
+                </p>
+
+                <div className="flex gap-1.5 justify-center">
+                    {[0, 0.2, 0.4].map((delay, i) => (
+                        <div
+                            key={i}
+                            className="w-1 h-1 rounded-full bg-amber-500/80"
+                            style={{
+                                animation: `dot-pulse 1.4s ease-in-out infinite`,
+                                animationDelay: `${delay}s`
+                            }}
+                        />
+                    ))}
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+export const gameRoutesMapa2 = [
+    {
+        path: "nivel-5/desafio-9",
+        element: <DSF1 />
+    },
+    {
+        path: "nivel-5/desafio-10",
+        element: <DSF2 />
+    },
+    {
+        path: "nivel-5/desafio-11",
+        element: <DSF3 />
+
+    },
+
+    {
+        path: "nivel-6/desafio-12",
+        element: <DSF4 />
+    },
+    {
+        path: "nivel-6/desafio-13",
+        element: <DSF5 />
+    },
+    {
+        path: "nivel-6/desafio-14",
+        element: <DSF6 />
+
+    },
+
+
+    {
+        path: "nivel-7/desafio-15",
+        element: <DSF7 />
+
+    },
+    
+    {
+        path: "nivel-7/desafio-16",
+        element: <DSF8 />
+
+    },
+
+];
