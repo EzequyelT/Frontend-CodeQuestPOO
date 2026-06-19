@@ -18,8 +18,6 @@ import map from "../../../assets/Maps/Map1.png";
 import Banner from "../../../assets/Maps/Banner.jpg";
 
 import Arrow from "../../../assets/Maps/Arrow.png";
-import ButtonImgtrophy from "../../../assets/Buttons/Trofeu.png"
-import ButtonImgHero from "../../../assets/Buttons/Game.png"
 import ButtonImgBack from "../../../assets/Buttons/Back.png"
 import Button1 from "../../../assets/Buttons/1.png"
 
@@ -1105,8 +1103,6 @@ export default function FlorestaDosAlgoritmos() {
         }}>
           {/* Botões */}
           {[
-            { id: "hero", icon: ButtonImgHero },
-            { id: "trophy", icon: ButtonImgtrophy },
           ].map(({ id, icon }) => (
             <button
               key={id}

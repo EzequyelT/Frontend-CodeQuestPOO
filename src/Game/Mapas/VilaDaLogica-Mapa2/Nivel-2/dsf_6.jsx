@@ -255,7 +255,7 @@ export default function DS6() {
                 setIsOpen={setShowModal}
                 challenge={challenge}
             />
-            <RightSideBar time={timeSeconds} attempts={attempts} />
+            <RightSideBar time={timeSeconds} attempts={attempts} mapaId={2} />
             <LeftSideBar />
 
 

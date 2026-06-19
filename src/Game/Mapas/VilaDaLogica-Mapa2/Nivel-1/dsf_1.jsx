@@ -176,7 +176,7 @@ export default function DSF1() {
                 challenge={challenge}
             />
 
-            <RightSideBar time={timeSeconds} wrong={wrong} />
+            <RightSideBar time={timeSeconds} wrong={wrong} mapaId={2} />
             <LeftSideBar streak={streakAtual} />
 
             {showFailModal && (

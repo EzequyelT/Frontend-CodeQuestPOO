@@ -210,7 +210,7 @@ export default function DSF4() {
                 setIsOpen={setShowModal}
                 challenge={challenge}
             />
-            <RightSideBar time={timeSeconds} attempts={attempts} />
+            <RightSideBar time={timeSeconds} attempts={attempts} mapaId={2} />
             <LeftSideBar />
 
             {showFailModal && (

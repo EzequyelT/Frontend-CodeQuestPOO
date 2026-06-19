@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from "react";
-import BossBannerImg from "../../../assets/Maps/BannerBoss-Map1.png";
+import BossBannerImgMap1 from "../../../assets/Maps/BannerBoss-Map1.png";
+import BossBannerImgMap2 from "../../../assets/Maps/BannerBoss-Map2.png";
+
 import { getLevelsByMap } from "../../../Services/maps/levelService";
 import { obterXPAluno } from "../../../Services/Gameplay/xpProgressService";
 
@@ -47,7 +49,6 @@ const Color = {
     },
 };
 
-// Adiciona no topo do ficheiro RightSideBarBoss.jsx, fora do componente:
 const bossBarStyles = `
   @keyframes bossShimmer {
     0% { transform: translateX(-120%); }
@@ -75,7 +76,6 @@ const bossBarStyles = `
   .boss-flash.active { animation: bossFlash 0.45s ease-out forwards; }
 `;
 
-// ─── DADOS LOCAIS ────────────────────────────────────────────────────────────
 
 const CHALLENGEPOSITIONS = {
     1: { x: 34, y: 88 },
@@ -112,17 +112,13 @@ const FEEDBACK_IA = {
 };
 
 
-// ────────────────────────────────────────────────────────────────────────────
-
 function XPBar({ xpAtual, xpProximo, percentagem }) {
 
     const safeCurrent = Number(xpAtual ?? 0);
 
-    // tenta converter o xpProximo para número
     const parsedTotal = Number(xpProximo);
     const safeTotal = Number.isFinite(parsedTotal) ? parsedTotal : null;
 
-    // garante percentagem válida
     const safePercent =
         typeof percentagem === "number" && Number.isFinite(percentagem)
             ? Math.min(percentagem, 100)
@@ -322,16 +318,23 @@ function PedirDica({ onPedir }) {
         </div>
     );
 }
-function BossBanner({ correct = 0, totalFases = 5 }) {
+
+function BossBanner({ correct = 0, totalFases = 5, mapaId = 1 }) {
     const [shaking, setShaking] = useState(false);
     const [flashing, setFlashing] = useState(false);
     const prevCorrect = useRef(correct);
+
+    const BOSS_BANNERS = {
+        1: BossBannerImgMap1,
+        2: BossBannerImgMap2,
+        // 3: BossBannerImgMap3, // adicionar quando existir o asset do mapa 3
+    };
+    const bossImg = BOSS_BANNERS[mapaId] ?? BossBannerImgMap1;
 
     const maxHp = 1000;
     const hpAtual = Math.max(0, Math.round(maxHp - (correct / totalFases) * maxHp));
     const pct = (hpAtual / maxHp) * 100;
 
-    // Dispara animações a cada acerto
     useEffect(() => {
         if (correct > prevCorrect.current) {
             setFlashing(false);
@@ -347,7 +350,6 @@ function BossBanner({ correct = 0, totalFases = 5 }) {
         prevCorrect.current = correct;
     }, [correct]);
 
-    // Cor e estado da barra
     const barStyle = pct <= 0
         ? { bg: "linear-gradient(90deg,#1a1a1a,#444)", state: "Derrotado" }
         : pct <= 30
@@ -369,12 +371,11 @@ function BossBanner({ correct = 0, totalFases = 5 }) {
             <style>{bossBarStyles}</style>
 
             <img
-                src={BossBannerImg}
+                src={bossImg}
                 alt="Boss Banner"
                 style={{ width: "200%", height: "100%", objectPosition: "60% center", display: "block" }}
             />
 
-            {/* Barra de vida */}
             <div className="absolute bottom-23 left-6 right-40">
                 <div
                     className={`boss-bar-track h-5 rounded-full overflow-hidden border relative ${shaking ? "shaking" : ""}`}
@@ -392,7 +393,6 @@ function BossBanner({ correct = 0, totalFases = 5 }) {
                         }}
                     />
 
-                    {/* Barra principal */}
                     <div
                         className={`boss-bar-fill h-full rounded-full relative overflow-hidden flex items-center justify-center ${pct <= 30 && pct > 0 ? "low" : ""}`}
                         style={{
@@ -401,7 +401,6 @@ function BossBanner({ correct = 0, totalFases = 5 }) {
                             transition: "width 0.7s cubic-bezier(0.25,0.46,0.45,0.94)",
                         }}
                     >
-                        {/* Shimmer */}
                         <div style={{
                             position: "absolute", inset: 0,
                             background: "linear-gradient(90deg,transparent,rgba(255,255,255,0.3) 50%,transparent)",
@@ -415,7 +414,6 @@ function BossBanner({ correct = 0, totalFases = 5 }) {
                         )}
                     </div>
 
-                    {/* Flash de dano */}
                     <div
                         className={`boss-flash absolute inset-0 rounded-full bg-white pointer-events-none opacity-0 ${flashing ? "active" : ""}`}
                     />
@@ -431,9 +429,8 @@ function BossBanner({ correct = 0, totalFases = 5 }) {
         </div>
     );
 }
-// ─── COMPONENTE PRINCIPAL ────────────────────────────────────────────────────
-// No componente principal, desestrutura os novos props:
-export default function RightSideBarBoss({ time, attempts, wrong = 0, correct = 0, totalFases = 8 }) {
+
+export default function RightSideBarBoss({ time, attempts, wrong = 0, correct = 0, totalFases = 8, mapaId = 1 }) {
     const [loading, setLoading] = useState(true);
     const [erro, setErro] = useState(null);
     const [progressaoXp, setProgressaoXp] = useState(null);
@@ -454,13 +451,13 @@ export default function RightSideBarBoss({ time, attempts, wrong = 0, correct = 
         return partes.join(" ");
     }
 
-    async function fetchLevelsData(mapaId, token) {
+    async function fetchLevelsData(mapaIdLocal, token) {
         const [niveisDB, progressoTotal] = await Promise.all([
-            getLevelsByMap(mapaId),
+            getLevelsByMap(mapaIdLocal),
             getProgresso(token),
         ]);
 
-        const progressoMapaData = progressoTotal.find(p => p.mapa === mapaId) || {};
+        const progressoMapaData = progressoTotal.find(p => p.mapa === mapaIdLocal) || {};
         const desafiosCompletosData = progressoMapaData.desafios_completos || 0;
 
         let posicaoGlobal = 0;
@@ -511,7 +508,7 @@ export default function RightSideBarBoss({ time, attempts, wrong = 0, correct = 
                 }
 
                 const [levelsResult, xpResult] = await Promise.all([
-                    fetchLevelsData(1, token),
+                    fetchLevelsData(mapaId, token),
                     obterXPAluno()
                 ]);
 
@@ -532,7 +529,7 @@ export default function RightSideBarBoss({ time, attempts, wrong = 0, correct = 
         }
 
         loadData();
-    }, []);
+    }, [mapaId]);
 
     if (loading) {
         return (
@@ -616,7 +613,6 @@ export default function RightSideBarBoss({ time, attempts, wrong = 0, correct = 
                     background: "transparent",
                 }}
             >
-                {/* HEADER: Nível + XP */}
                 <div
                     className="rounded-4xl p-3 flex flex-col gap-1"
                     style={{
@@ -657,9 +653,6 @@ export default function RightSideBarBoss({ time, attempts, wrong = 0, correct = 
                         </span>
                     </div>
 
-
-
-
                     <XPBar
                         xpAtual={progressaoXp?.progressao?.xpAtualNivel ?? 0}
                         xpProximo={progressaoXp?.progressao?.xpProximoNivel ?? "👑 Nível Máximo Atingido!"}
@@ -672,7 +665,7 @@ export default function RightSideBarBoss({ time, attempts, wrong = 0, correct = 
                 <FeedbackIA feedback={feedbackIA} />
                 <PedirDica onPedir={() => console.log("TODO: chamar API de dica")} />
 
-                <BossBanner correct={correct} totalFases={totalFases} />
+                <BossBanner correct={correct} totalFases={totalFases} mapaId={mapaId} />
 
                 {/* FOOTER */}
                 <div className="flex flex-col gap-2 mb-5 pt-0">

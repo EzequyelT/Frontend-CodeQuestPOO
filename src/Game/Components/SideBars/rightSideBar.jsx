@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import mapImg from "../../../assets/Maps/Map1.png";
+import mapImg2 from "../../../assets/Maps/Map2.png";
 import { getLevelsByMap } from "../../../Services/maps/levelService";
 import { obterXPAluno } from "../../../Services/Gameplay/xpProgressService";
 
@@ -49,7 +50,7 @@ const Color = {
 
 // ─── DADOS LOCAIS ────────────────────────────────────────────────────────────
 
-const CHALLENGEPOSITIONS = {
+const CHALLENGE_POSITIONS_MAP_1 = {
     1: { x: 34, y: 88 },
     2: { x: 48, y: 78 },
     3: { x: 62, y: 68 },
@@ -58,6 +59,17 @@ const CHALLENGEPOSITIONS = {
     6: { x: 90, y: 30 },
     7: { x: 10, y: 35 },
     8: { x: 46, y: 18 },
+};
+
+const CHALLENGE_POSITIONS_MAP_2 = {
+    1: { x: 25, y: 88 },
+    2: { x: 58, y: 70 },
+    3: { x: 68, y: 58 },
+    4: { x: 30, y: 52 },
+    5: { x: 49, y: 40 },
+    6: { x: 90, y: 30 },
+    7: { x: 27, y: 30 },
+    8: { x: 55, y: 15 },
 };
 
 const BUTTON_IMAGES = {
@@ -90,11 +102,9 @@ function XPBar({ xpAtual, xpProximo, percentagem }) {
 
     const safeCurrent = Number(xpAtual ?? 0);
 
-    // tenta converter o xpProximo para número
     const parsedTotal = Number(xpProximo);
     const safeTotal = Number.isFinite(parsedTotal) ? parsedTotal : null;
 
-    // garante percentagem válida
     const safePercent =
         typeof percentagem === "number" && Number.isFinite(percentagem)
             ? Math.min(percentagem, 100)
@@ -295,17 +305,17 @@ function PedirDica({ onPedir }) {
     );
 }
 
-function MiniMapa({ levels, desafiosCompletos, progressoMapa }) {
+function MiniMapa({ levels, desafiosCompletos, progressoMapa, mapImage, mapTitle }) {
     const challenges = levels.flatMap(l => l.challenges) ?? [];
     const currentIdx = challenges.findIndex(c => c.state === "available");
     const proximo = challenges[currentIdx + 1];
 
     return (
-        <div className="relative w-full h-[200px]">
+        <div className="relative w-full h-[200px] bg-black/40 overflow-hidden">
             <img
-                src={mapImg}
+                src={mapImage}
                 alt="mini mapa"
-                className="w-full h-full object-cover brightness-[0.80] saturate-[1]"
+                className="w-full h-full object-contain brightness-[0.80] saturate-[1]"
             />
 
             <div className="absolute top-1.5 left-3 mb-6 inline-flex items-center justify-center backdrop-blur-sm rounded-full shadow-lg px-4 py-[5px]"
@@ -318,7 +328,7 @@ function MiniMapa({ levels, desafiosCompletos, progressoMapa }) {
                     className="text-white text-[10px] font-bold leading-none"
                     style={{ textShadow: "0 1px 4px rgba(0,0,0,0.9)" }}
                 >
-                    Floresta dos Algoritmos
+                    {mapTitle}
                 </span>
             </div>
 
@@ -349,7 +359,7 @@ function MiniMapa({ levels, desafiosCompletos, progressoMapa }) {
 
             {challenges.map(ch => {
                 const S = 18;
-                const buttonImage = BUTTON_IMAGES[ch.id] || Button1;
+                const buttonImage = BUTTON_IMAGES[ch.posicao] || Button1;
 
                 const styles = {
                     completed: {
@@ -532,7 +542,7 @@ function getWrongStyle(wrong, limit = 5) {
 }
 
 
-export default function RightSideBar({ time, attempts, wrong = 0 }) {
+export default function RightSideBar({ time, attempts, wrong = 0, mapaId = 1 }) {
     const [loading, setLoading] = useState(true);
     const [erro, setErro] = useState(null);
     const [desafiosCompletos, setDesafiosCompletos] = useState(0);
@@ -542,6 +552,12 @@ export default function RightSideBar({ time, attempts, wrong = 0 }) {
 
     const objetivo = OBJETIVO;
     const feedbackIA = FEEDBACK_IA;
+
+    const isMap2 = mapaId === 2;
+    const mapTitle = isMap2 ? "Vila da Lógica" : "Floresta dos Algoritmos";
+    const mapImage = isMap2 ? mapImg2 : mapImg;
+    const routePrefix = isMap2 ? "vila" : "floresta";
+    const challengePositions = isMap2 ? CHALLENGE_POSITIONS_MAP_2 : CHALLENGE_POSITIONS_MAP_1;
 
     function formatTime(totalSeconds) {
         const horas = Math.floor(totalSeconds / 3600);
@@ -571,8 +587,8 @@ export default function RightSideBar({ time, attempts, wrong = 0 }) {
             id: nivel.id,
             name: nivel.nome,
             challenges: nivel.desafios.map((desafio) => {
-                const pos = CHALLENGEPOSITIONS[desafio.id] ?? { x: 50, y: 50 };
                 const minhaPosicao = posicaoGlobal++;
+                const pos = challengePositions[minhaPosicao + 1] ?? { x: 50, y: 50 };
 
                 let state;
                 if (minhaPosicao < desafiosCompletosData) state = "completed";
@@ -581,10 +597,11 @@ export default function RightSideBar({ time, attempts, wrong = 0 }) {
 
                 return {
                     id: desafio.id,
+                    posicao: minhaPosicao + 1,
                     name: desafio.nome,
                     description: desafio.descricao,
                     xpReward: desafio.xp,
-                    route: `/floresta/nivel-${nivel.id}/desafio-${desafio.id}`,
+                    route: `/${routePrefix}/nivel-${nivel.id}/desafio-${desafio.id}`,
                     x: pos.x,
                     y: pos.y,
                     state,
@@ -613,7 +630,7 @@ export default function RightSideBar({ time, attempts, wrong = 0 }) {
                 }
 
                 const [levelsResult, xpResult] = await Promise.all([
-                    fetchLevelsData(1, token),
+                    fetchLevelsData(mapaId, token),
                     obterXPAluno()
                 ]);
 
@@ -624,8 +641,6 @@ export default function RightSideBar({ time, attempts, wrong = 0 }) {
                 if (xpResult) {
                     setProgressaoXp(xpResult);
                 }
-
-                setErro(null);
             } catch (err) {
                 console.error("Erro ao carregar dados do sidebar:", err);
                 setErro(err.message || "Erro ao carregar dados");
@@ -635,7 +650,7 @@ export default function RightSideBar({ time, attempts, wrong = 0 }) {
         }
 
         loadData();
-    }, []);
+    }, [mapaId]);
 
     if (loading) {
         return (
@@ -776,6 +791,8 @@ export default function RightSideBar({ time, attempts, wrong = 0 }) {
                     levels={levels}
                     desafiosCompletos={desafiosCompletos}
                     progressoMapa={progressoMapa}
+                    mapImage={mapImage}
+                    mapTitle={mapTitle}
                 />
 
                 {/* FOOTER */}

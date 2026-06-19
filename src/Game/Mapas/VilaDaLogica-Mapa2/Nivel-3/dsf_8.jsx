@@ -252,6 +252,7 @@ export default function DSF8() {
                 time={timeSeconds}
                 correct={correct}
                 totalFases={dsf.length}
+                mapaId={2}
             />
 
             {showFailModal && (
