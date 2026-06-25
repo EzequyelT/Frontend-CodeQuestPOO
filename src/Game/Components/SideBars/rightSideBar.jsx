@@ -62,7 +62,7 @@ const CHALLENGE_POSITIONS_MAP_1 = {
 };
 
 const CHALLENGE_POSITIONS_MAP_2 = {
-    1: { x: 25, y: 88 },
+    1: { x: 22, y: 75 },
     2: { x: 58, y: 70 },
     3: { x: 68, y: 58 },
     4: { x: 30, y: 52 },

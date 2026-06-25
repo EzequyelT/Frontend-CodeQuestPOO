@@ -45,18 +45,17 @@ export default function DS6() {
     const navigate = useNavigate()
     const bgDim = (0.60)
 
-    const mapaId = 1
+    const mapaId = 2
 
     useEffect(() => {
         async function loadLevels() {
             const data = await getLevelsByMap(mapaId);
             setLevels(data);
             setLoadingState(false)
-            const nivelAtual = data?.[1];
 
-            const desafioAtual = nivelAtual?.desafios?.find(d => d.ordem === 3);
-
-            setDesafioId(desafioAtual?.id);
+            if (data?.[1]?.desafios?.length > 0) {
+                setDesafioId(data[1].desafios[2].id)
+            }
         }
 
         loadLevels()
@@ -166,7 +165,7 @@ export default function DS6() {
                         xpGained: finalResult?.xpGanho?.total ?? correct * 80,
                         xpNextLevel: finalResult?.xpProximoNivel ?? 0,
                         nivelAtual: finalResult?.nivel_atual ?? 1,
-                        coinsGained: finalResult?.coinsGanhos?.total ?? correct * 10,
+                        coinsGained: finalResult?.coinsGanho?.total ?? correct * 10,
 
                         score: score,
                         desafioCompleto: finalResult?.desafioCompleto ?? false,
@@ -176,7 +175,7 @@ export default function DS6() {
                     onRepeat={() => window.location.reload()}
                     onBackToMap={() => navigate("/VilaDaLogica")}
                     onNextChallenge={() => {
-                        navigate("/vila/nivel-7/desafio-13")
+                        navigate("/vila/nivel-7/desafio-15")
                     }}
                 />
 
@@ -188,7 +187,7 @@ export default function DS6() {
                             setModalNivelConcluido(null);
 
                             if (modalNivelConcluido?.nivelMaximo) {
-                                navigate("/mapa-final");
+                                navigate("/VilaDaLogica");
                             }
                             else if (modalNivelConcluido.proximoNivel) {
                                 navigate("/vila/nivel-7/desafio-15")

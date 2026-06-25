@@ -107,7 +107,7 @@ export default function DSF4() {
           timeSeconds,
           hintsUsed: 0,
           xpGained: finalResult?.xpGanho?.total ?? correct * 80,
-          coinsGained: finalResult?.coinsGanhos?.total ?? correct * 10,
+          coinsGained: finalResult?.coinsGanho?.total ?? correct * 10,
           score: Math.round((correct / totalQuestions) * 100),
           streak: streakAtual,
           quizTitle: dsf.titulo,

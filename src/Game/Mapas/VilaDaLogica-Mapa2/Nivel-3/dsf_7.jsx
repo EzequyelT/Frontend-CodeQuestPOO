@@ -51,7 +51,7 @@ export default function DSF7() {
                 setLoadingModal(false)
 
                 if (data?.[2]?.desafios?.length > 0) {
-                    setDesafioId(data[0].desafios[0].id)
+                    setDesafioId(data[2].desafios[0].id)
                 }
             }
 
@@ -147,7 +147,7 @@ export default function DSF7() {
 
                     xpGained: finalResult?.xpGanho?.total ?? correct * 80,
                     xpNextLevel: finalResult?.xpProximoNivel ?? 0,
-                    coinsGained: finalResult?.coinsGanhos?.total ?? correct * 10,
+                    coinsGained: finalResult?.coinsGanho?.total ?? correct * 10,
                     nivelAtual: finalResult?.nivel_atual ?? 1,
 
                     score: score,

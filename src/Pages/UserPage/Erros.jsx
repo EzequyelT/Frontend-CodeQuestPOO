@@ -15,6 +15,7 @@ import {
 import loadingVideo from "../../assets/Loading/loading.webm";
 
 const ERRO_COLORS = ["#7c3aed", "#3b82f6", "#f59e0b", "#ef4444", "#06b6d4", "#22c55e"];
+const PAGE_SIZE = 5;
 
 function formatDate(d) {
   return new Date(d).toLocaleDateString("pt-PT", {
@@ -179,11 +180,50 @@ function DesafioCard({ d }) {
   );
 }
 
+function Pagination({ current, total, onChange }) {
+  if (total <= 1) return null;
+
+  return (
+    <div className="flex items-center justify-center gap-2 mt-6">
+      <button
+        onClick={() => onChange(current - 1)}
+        disabled={current === 1}
+        className="w-9 h-9 rounded-xl flex items-center justify-center text-neutral-400 bg-neutral-900 border border-neutral-800 hover:border-neutral-600 hover:text-white transition-all disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:border-neutral-800 disabled:hover:text-neutral-400"
+      >
+        <ChevronRight size={15} className="rotate-180" />
+      </button>
+
+      {Array.from({ length: total }, (_, i) => i + 1).map(page => (
+        <button
+          key={page}
+          onClick={() => onChange(page)}
+          className={`w-9 h-9 rounded-xl text-sm font-bold border transition-all
+            ${page === current
+              ? "bg-violet-600 border-violet-500 text-white shadow-lg shadow-violet-900/40"
+              : "bg-neutral-900 border-neutral-800 text-neutral-400 hover:border-neutral-600 hover:text-white"
+            }`}
+        >
+          {page}
+        </button>
+      ))}
+
+      <button
+        onClick={() => onChange(current + 1)}
+        disabled={current === total}
+        className="w-9 h-9 rounded-xl flex items-center justify-center text-neutral-400 bg-neutral-900 border border-neutral-800 hover:border-neutral-600 hover:text-white transition-all disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:border-neutral-800 disabled:hover:text-neutral-400"
+      >
+        <ChevronRight size={15} />
+      </button>
+    </div>
+  );
+}
+
 export default function DesempenhoCodigo() {
   const [user, setUser] = useState(null);
   const [dados, setDados] = useState(null);
   const [loading, setLoading] = useState(true);
   const [exportLoading, setExportLoading] = useState(false);
+  const [page, setPage] = useState(1);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -204,6 +244,10 @@ export default function DesempenhoCodigo() {
     fetchAll();
   }, []);
 
+  useEffect(() => {
+    setPage(1);
+  }, [dados]);
+
   if (loading) {
     return (
       <div className="relative min-h-screen bg-black flex flex-col items-center justify-center">
@@ -223,6 +267,10 @@ export default function DesempenhoCodigo() {
 
   const r = dados?.resumo;
   const taxaColor = !r ? "#94a3b8" : r.taxa_acerto >= 70 ? "#22c55e" : r.taxa_acerto >= 40 ? "#f59e0b" : "#ef4444";
+
+  const desafios = dados?.por_desafio ?? [];
+  const totalPages = Math.ceil(desafios.length / PAGE_SIZE);
+  const paginatedDesafios = desafios.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   async function handleExportExcel() {
     try {
@@ -262,11 +310,11 @@ export default function DesempenhoCodigo() {
               onClick={handleExportExcel}
               disabled={exportLoading}
               className={`ml-auto w-44 p-2 gap-2 font-bold rounded-2xl flex justify-center items-center bg-neutral-900 border border-neutral-800 transition-all shadow-md
-    ${exportLoading
+                ${exportLoading
                   ? "text-neutral-500 cursor-not-allowed opacity-70"
                   : "text-neutral-400 hover:border-neutral-600 hover:text-white hover:scale-105 active:scale-95"
                 }
-  `}
+              `}
             >
               {exportLoading ? (
                 <>
@@ -312,10 +360,11 @@ export default function DesempenhoCodigo() {
                   Desempenho por desafio
                 </h2>
                 <div className="flex flex-col gap-3">
-                  {dados.por_desafio.map(d => (
+                  {paginatedDesafios.map(d => (
                     <DesafioCard key={d.desempenho_id} d={d} />
                   ))}
                 </div>
+                <Pagination current={page} total={totalPages} onChange={setPage} />
               </div>
             </>
           )}

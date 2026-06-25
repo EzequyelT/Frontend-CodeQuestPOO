@@ -33,7 +33,6 @@ export default function DSF5() {
     const [showModal, setShowModal] = useState(true);
     const [loadingModal, setLoadingModal] = useState(true);
 
-
     const token = getToken()
     const userId = getUser()
 
@@ -48,10 +47,9 @@ export default function DSF5() {
                 const data = await getLevelsByMap(mapaId);
                 setLevels(data);
                 setLoadingModal(false)
-                console.log("data", data)
 
                 if (data?.[1]?.desafios?.length > 0) {
-                    setDesafioId(data[1].desafios[0].id)
+                    setDesafioId(data[1].desafios[1].id)
                 }
             }
 
@@ -147,8 +145,8 @@ export default function DSF5() {
 
                     xpGained: finalResult?.xpGanho?.total ?? correct * 80,
                     xpNextLevel: finalResult?.xpProximoNivel ?? 0,
-                    coinsGained: finalResult?.coinsGanhos?.total ?? correct * 10,
-                    nivelAtual: finalResult?.nivel_atual ?? 1,
+                    coinsGained: finalResult?.coinsGanho?.total ?? correct * 10,
+                    nivelAtual: finalResult?.progressao?.nivel ?? 1,
 
                     score: score,
                     desafioCompleto: finalResult?.desafioCompleto ?? false,

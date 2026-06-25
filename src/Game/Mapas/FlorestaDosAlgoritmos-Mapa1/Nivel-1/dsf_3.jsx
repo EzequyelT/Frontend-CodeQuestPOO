@@ -161,7 +161,7 @@ export default function DSF3() {
                         xpGained: finalResult?.xpGanho?.total ?? correct * 80,
                         xpNextLevel: finalResult?.xpProximoNivel ?? 0,
                         nivelAtual: finalResult?.nivel_atual ?? 1,
-                        coinsGained: finalResult?.coinsGanhos?.total ?? correct * 10,
+                        coinsGained: finalResult?.coinsGanho?.total ?? correct * 10,
 
                         score: score,
                         desafioCompleto: finalResult?.desafioCompleto ?? false,

@@ -40,13 +40,13 @@ if (!DSF6) {
 
 import DSF7 from "./Nivel-3/dsf_7";
 
-if (!DSF5) {
+if (!DSF7) {
     loader()
 }
 
 import DSF8 from "./Nivel-3/dsf_8";
 
-if (!DSF6) {
+if (!DSF8) {
     loader()
 }
 

@@ -162,7 +162,7 @@ export default function DSF6() {
                         timeSeconds,
                         xpGained: finalResult?.xpGanho?.total ?? correct * 80,
                         xpNextLevel: finalResult?.xpProximoNivel ?? 0,
-                        coinsGained: finalResult?.coinsGanhos?.total ?? correct * 10,
+                        coinsGained: finalResult?.coinsGanho?.total ?? correct * 10,
                         nivelAtual: finalResult?.nivel_atual ?? 1,
                         score: score,
                         desafioCompleto: finalResult?.desafioCompleto ?? false,

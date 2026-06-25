@@ -40,7 +40,6 @@ export default function DSF7() {
     const [showModal, setShowModal] = useState(true)
     const [loadingState, setLoadingState] = useState(true);
 
-    // 🔑 FASE controla o que está visível: quiz → code → done
     const [phase, setPhase] = useState("quiz")
 
     const token = getToken()
@@ -118,7 +117,7 @@ export default function DSF7() {
 
                     xpGained: finalResult?.xpGanho?.total ?? totalCorrect * 80,
                     xpNextLevel: finalResult?.xpProximoNivel ?? 0,
-                    coinsGained: finalResult?.coinsGanhos?.total ?? totalCorrect * 10,
+                    coinsGained: finalResult?.coinsGanho?.total ?? totalCorrect * 10,
                     nivelAtual: finalResult?.nivel_atual ?? 1,
 
                     score: Math.round((totalCorrect / (totalCorrect + totalWrong || 1)) * 100),

@@ -69,6 +69,7 @@ createRoot(document.getElementById('root')).render(
           <Route path="/DesafioFinalGameTest" element={<DesafioFinal />} />
 
           {/* GAME */}
+          
           {/* Map-1 */}
           <Route path="/FlorestaDosAlgoritmos" element={<FlorestaDosAlgoritmos />} />
           <Route path="/floresta/*" element={<Mapa1 />} />
@@ -76,7 +77,6 @@ createRoot(document.getElementById('root')).render(
           <Route path="/VilaDaLogica" element={<VilaDaLogica />} />
           <Route path="/vila/*" element={<Mapa2 />} />
           
-          {/* fallback */}
           <Route path="*" element={<Landingpage />} />
         </Routes>
       </SessionProvider>

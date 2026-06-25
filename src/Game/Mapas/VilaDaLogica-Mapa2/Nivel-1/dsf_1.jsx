@@ -44,9 +44,6 @@ export default function DSF1() {
 
     const mapaId = 2
 
-    console.log("DSF1 MONTADO");
-
-
     useEffect(() => {
 
         try {
@@ -55,8 +52,10 @@ export default function DSF1() {
             async function loadLevels() {
                 const data = await getLevelsByMap(mapaId);
                 setLevels(data);
-                setDesafioId(data[0]?.id);
-                console.log("id", setDesafioId)
+                console.log("data", data)
+                if (data?.[0]?.desafios?.length > 0) {
+                    setDesafioId(data[0].desafios[0].id)
+                }
                 setLoading(false);
             }
 
@@ -111,7 +110,7 @@ export default function DSF1() {
                     timeSeconds,
                     hintsUsed: 0,
                     xpGained: finalResult?.xpGanho?.total ?? correct * 80,
-                    coinsGained: finalResult?.coinsGanhos?.total ?? correct * 10,
+                    coinsGained: finalResult?.coinsGanho?.total ?? correct * 10,
                     score: Math.round((correct / totalQuestions) * 100),
                     streak: streakAtual,
                     quizTitle: dsf.titulo,
@@ -127,7 +126,7 @@ export default function DSF1() {
         )
     }
 
-    if (loading) {
+    if (loading | !desafioId) {
         return (
             <div className="relative min-h-screen bg-[#000000] flex flex-col items-center justify-center overflow-hidden select-none">
                 <div className="flex flex-col items-center gap-6 z-10">
@@ -183,7 +182,7 @@ export default function DSF1() {
                 <ModalFalha
                     isOpen={true}
                     onRepetir={resetQuiz}
-                    onVoltar={() => navigate("/FlorestaDosAlgoritmos")}
+                    onVoltar={() => navigate("/VilaDaLogica")}
                     correct={correct}
                     wrong={wrong}
                     time={timeSeconds}

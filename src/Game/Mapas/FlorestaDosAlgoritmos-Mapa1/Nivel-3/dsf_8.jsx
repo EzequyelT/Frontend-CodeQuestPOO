@@ -163,7 +163,7 @@ export default function DSF8() {
                         xpGained: finalResult?.xpGanho?.total ?? correct * 80,
                         xpNextLevel: finalResult?.xpProximoNivel ?? 0,
                         nivelAtual: finalResult?.nivel_atual ?? 1,
-                        coinsGained: finalResult?.coinsGanhos?.total ?? correct * 10,
+                        coinsGained: finalResult?.coinsGanho?.total ?? correct * 10,
                         score: score,
                         desafioCompleto: finalResult?.desafioCompleto ?? false,
                         primeiraVez: finalResult?.primeiraVez ?? true,
@@ -181,7 +181,7 @@ export default function DSF8() {
                             setModalNivelConcluido(null);
 
                             if (modalNivelConcluido?.nivelMaximo) {
-                                navigate("/mapa-final");
+                                navigate("/Maps");
                             } else if (modalNivelConcluido.proximoNivel) {
                                 navigate("/Maps");
                             } else {
