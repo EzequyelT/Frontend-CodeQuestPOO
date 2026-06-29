@@ -21,7 +21,7 @@ const dsf = dsf_8
 
 const challenge = {
     nome: "Serpente do Bug",
-    descricao: "Enfrenta a Serpente do Bug usando loops e condições. Resolve cada fase para avançar e derrota o boss final com lógica e precisão.",
+    descricao: "Boas! Depois de atravessares toda a Floresta dos Algoritmos, finalmente encontras o teu último desafio: a Serpente do Bug. Este boss não será derrotado com força, mas sim com lógica, atenção e precisão. Usa tudo o que aprendeste sobre loops e condições para resolver cada fase e avançar até à vitória. Dica: loops ajudam quando algo se repete, e condições ajudam quando precisas escolher entre diferentes caminhos.",
     xp: 20,
     nivel: 3,
     dificuldade: "Médio"
@@ -82,7 +82,8 @@ export default function DSF8() {
         showFailModal,
         attempts,
         transitioning,
-        aiFeedback
+        aiFeedback,
+        streakAtual
     } = useCode(dsf, {
         token,
         aluno_id: userId,
@@ -237,15 +238,24 @@ export default function DSF8() {
         );
     }
 
+    const openChallengeModal = () => {
+        setShowModal(true);
+    };
 
     return (
         <>
+
             <ModalService
                 isOpen={showModal}
                 setIsOpen={setShowModal}
                 challenge={challenge}
             />
-            <LeftSideBar />
+
+            <LeftSideBar
+                streak={streakAtual}
+                onOpenChallengeInfo={openChallengeModal}
+            />
+
             <RightSideBarBoss
                 attempts={attempts}
                 time={timeSeconds}

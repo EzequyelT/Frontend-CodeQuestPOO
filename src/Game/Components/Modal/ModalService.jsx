@@ -1,12 +1,17 @@
 import { useNavigate } from "react-router-dom";
-import ModalChallenge from "./ChallengeBegins"
+import ModalChallenge from "./ChallengeBegins";
 
-export default function ModalService({ challenge, isOpen, setIsOpen }) {
+export default function ModalService({ challenge, isOpen, setIsOpen, mapaId = 1 }) {
   const navigate = useNavigate();
+
+  const mapRoutes = {
+    1: "/FlorestaDosAlgoritmos",
+    2: "/VilaDaLogica",
+  };
 
   const handleClose = () => {
     setIsOpen(false);
-    navigate("/FlorestaDosAlgoritmos");
+    navigate(mapRoutes[mapaId] || "/FlorestaDosAlgoritmos");
   };
 
   const handlePlay = () => {
@@ -23,4 +28,3 @@ export default function ModalService({ challenge, isOpen, setIsOpen }) {
     />
   );
 }
-

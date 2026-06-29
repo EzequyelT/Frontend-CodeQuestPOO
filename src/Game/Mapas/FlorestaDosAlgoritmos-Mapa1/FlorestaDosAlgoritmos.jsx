@@ -1,14 +1,14 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { 
-  DollarSign, 
-  Flame, 
-  Trophy, 
-  Users, 
-  ChevronLeft, 
-  Settings, 
-  Volume2, 
-  Loader2 
+import {
+  DollarSign,
+  Flame,
+  Trophy,
+  Users,
+  ChevronLeft,
+  Settings,
+  Volume2,
+  Loader2
 } from "lucide-react";
 import { getLevelsByMap } from "../../../Services/maps/levelService";
 import { getProgresso } from "../../../Services/users/userStatsService";
@@ -563,113 +563,109 @@ function LevelBanner({ level }) {
 }
 
 
-function XPBar({ xp, xpMax, level }) {
+function XPBar({ xp, xpMax, level, titulo }) {
   const xpValido = xp ?? 0;
   const nivelValido = level ?? 1;
-
   const isMax = !xpMax || xpMax <= 0;
-  const xpMaxValido = isMax ? xpValido : xpMax;          // nunca null na divisão
+  const xpMaxValido = isMax ? xpValido : xpMax;
   const pct = isMax ? 100 : Math.min((xpValido / xpMaxValido) * 100, 100);
+  const faltam = isMax ? 0 : xpMaxValido - xpValido;
+
+  const CIRCUM = 2 * Math.PI * 23;
+  const arcFilled = isMax ? CIRCUM : (pct / 100) * CIRCUM;
 
   return (
-    <div style={{
-      display: "flex",
-      alignItems: "center",
-      gap: 10,
-      flex: 1
-    }}>
-      {/* Círculo do Nível */}
-      <div style={{
-        width: 35,
-        height: 35,
-        borderRadius: "50%",
-        border: "2px solid #7ab8ff",
-        background: `radial-gradient(circle at 35% 35%, ${Color.primary.light}, ${Color.primary.dark})`,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        fontFamily: "cinzel",
-        fontWeight: "bold",
-        fontSize: 16,
-        color: "#7ab8ff",
-        flexShrink: 0,
-        boxShadow: `0 0 16px ${Color.glow.blue}, inset 0 0 8px rgba(122, 184, 255, 0.2)`,
-      }}>
-        {nivelValido}
+    <div style={{ display: "flex", alignItems: "center", gap: 14, flex: 1 }}>
+
+      <div style={{ position: "relative", flexShrink: 0 }}>
+        <svg width="54" height="54" viewBox="0 0 54 54">
+          <circle cx="27" cy="27" r="23" fill="none" stroke="#1a1008" strokeWidth="3.5" />
+          <circle cx="27" cy="27" r="23" fill="none" stroke="#3a2010" strokeWidth="3.5"
+            strokeDasharray={`${CIRCUM} 0`} />
+          <circle
+            cx="27" cy="27" r="23"
+            fill="none"
+            stroke="#FFD700"
+            strokeWidth="3.5"
+            strokeLinecap="round"
+            strokeDasharray={`${arcFilled} ${CIRCUM}`}
+            transform="rotate(-90 27 27)"
+            style={{ opacity: 0.9, transition: "stroke-dasharray 0.8s cubic-bezier(0.34,1.56,0.64,1)" }}
+          />
+          <circle cx="27" cy="27" r="19" fill="#0a0a0a" />
+          <text x="27" y="23" textAnchor="middle" fontSize="9" fill="#6b4010"
+            fontFamily="Georgia,serif" letterSpacing="0.05em">NÍV</text>
+          <text x="27" y="36" textAnchor="middle" fontSize="15" fontWeight="bold"
+            fill="#FFD700" fontFamily="Georgia,serif">{nivelValido}</text>
+        </svg>
       </div>
 
-      <div style={{ flex: 1 }}>
-        <div style={{
-          display: "flex",
-          justifyContent: "space-between",
-          marginBottom: 6
-        }}>
-          <span style={{
-            fontSize: 11,
-            color: "#7ab8ff",
-            fontFamily: "sans-serif",
-            fontWeight: "600",
-            letterSpacing: "0.05em",
-          }}>
-            Nível {nivelValido}
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 6 }}>
+
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+          <span style={{ fontSize: 11, color: "#a08060", fontFamily: "Georgia,serif", letterSpacing: "0.06em" }}>
+            EXPERIÊNCIA
           </span>
-          <span style={{
-            fontSize: 11,
-            color: "#5a96d8",
-            fontWeight: "600",
-            letterSpacing: "0.02em",
-          }}>
-            {isMax ? "👑 MAX" : `${xpValido} / ${xpMaxValido} XP`}
+          <span style={{ fontSize: 11, fontFamily: "Georgia,serif", letterSpacing: "0.03em" }}>
+            <span style={{ color: "#FFD700", fontWeight: 700 }}>{xpValido.toLocaleString()}</span>
+            {!isMax && (
+              <span style={{ color: "#6b4010" }}> / {xpMaxValido.toLocaleString()} XP</span>
+            )}
+            {isMax && <span style={{ color: "#FFD700" }}> 👑 MAX</span>}
           </span>
         </div>
 
         <div style={{
-          height: 12,
-          borderRadius: 6,
-          background: Color.neutral.card,
-          border: `1.5px solid ${Color.primary.main}`,
-          overflow: "hidden",
-          boxShadow: `inset 0 0 8px rgba(10, 42, 74, 0.8)`,
+          height: 10, borderRadius: 5,
+          background: "#1a1008",
+          border: "1px solid #3a2010",
+          position: "relative", overflow: "hidden",
         }}>
-          <div
-            style={{
-              height: "100%",
-              width: `${pct}%`,
-              borderRadius: 5,
-              background: `linear-gradient(90deg,
-                ${Color.primary.dark} 0%,
-                ${Color.primary.main} 30%,
-                ${Color.primary.light} 50%,
-                ${Color.primary.lighter} 70%,
-                ${Color.primary.brightest} 100%)`,
-              boxShadow: `0 0 14px ${Color.glow.blue}, inset 0 1px 3px rgba(255,255,255,0.2)`,
-              transition: "width 0.7s cubic-bezier(0.34, 1.56, 0.64, 1)",
-              position: "relative",
-              overflow: "hidden",
-            }}
-          >
-            <div
-              style={{
-                position: "absolute",
-                inset: 0,
-                background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.35) 50%, transparent)",
-                animation: "shimmer 2.5s infinite",
-              }}
-            />
-
-            <div
-              style={{
-                position: "absolute",
-                inset: 0,
-                background: "radial-gradient(ellipse at center, rgba(255,255,255,0.15), transparent 70%)",
-                animation: "pulse 2s ease-in-out infinite",
-              }}
-            />
+          <div style={{
+            position: "absolute", inset: 0,
+            width: `${pct}%`,
+            borderRadius: 5,
+            background: "linear-gradient(90deg, #3a1a00, #8b4500 40%, #c87800 75%, #FFD700 100%)",
+            boxShadow: "0 0 10px rgba(255,215,0,0.35)",
+            transition: "width 0.8s cubic-bezier(0.34,1.56,0.64,1)",
+            overflow: "hidden",
+          }}>
+            <div style={{
+              position: "absolute", inset: 0,
+              background: "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.18) 50%, transparent 100%)",
+              animation: "shimmer 2.4s infinite",
+            }} />
+          </div>
+          <div style={{ position: "absolute", inset: 0, display: "flex", pointerEvents: "none" }}>
+            {[0, 1, 2].map(i => (
+              <div key={i} style={{ flex: 1, borderRight: "1px solid rgba(0,0,0,0.4)" }} />
+            ))}
+            <div style={{ flex: 1 }} />
           </div>
         </div>
+
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <span style={{ fontSize: 10, color: "#4a3010", fontFamily: "Georgia,serif" }}>
+            {isMax ? "Nível máximo atingido!" : `Faltam ${faltam.toLocaleString()} XP para Nível ${nivelValido + 1}`}
+          </span>
+          {titulo && (
+            <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+              {[1, 2, 3].map(i => (
+                <svg key={i} width="10" height="10" viewBox="0 0 24 24">
+                  <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"
+                    fill="#FFD700" />
+                </svg>
+              ))}
+              <span style={{ fontSize: 10, color: "#6b4010", marginLeft: 2, fontFamily: "Georgia,serif" }}>
+                {titulo}
+              </span>
+            </div>
+          )}
+        </div>
+
       </div>
     </div>
-  )
+  );
 }
 
 function ProgressBar({ levels }) {
@@ -711,6 +707,7 @@ export default function FlorestaDosAlgoritmos() {
     xpTotal: 0,
     xpProximoNivel: 320,
     nivel: 1,
+    titulo: "Aprendiz",
   });
   const [loading, setLoading] = useState(true);
   const [hoveredId, setHoveredId] = useState(null);
@@ -750,20 +747,21 @@ export default function FlorestaDosAlgoritmos() {
           const progressaoDados = resultado.progressao || resultado;
 
           setProgressaoXp({
-            xpTotal: progressaoDados?.xpTotal || 0,
-            xpProximoNivel: progressaoDados?.xpProximoNivel || null,
-            nivel: progressaoDados?.nivel || 1,
+            xpTotal: progressaoDados?.xpTotal ?? progressaoDados?.xpAtualNivel ?? 0,
+            xpProximoNivel: progressaoDados?.xpProximoNivel ?? null,
+            nivel: progressaoDados?.nivel ?? 1,
+            titulo: progressaoDados?.titulo ?? "Aprendiz",
           });
 
         }
       } catch (err) {
         console.error("Erro ao carregar progressão", err);
-        // Define valores padrão em caso de erro
         setProgressaoXp({
           xp: 0,
           xpProximoNivel: 320,
           nivel: 1,
           coins: 0,
+          titulo: "Aprendiz",
         });
       }
     }
@@ -1131,12 +1129,12 @@ export default function FlorestaDosAlgoritmos() {
             </button>
           ))}
 
-          {/* XP Bar */}
           <div style={{ flex: 1, paddingLeft: 20 }}>
             <XPBar
               xp={progressaoXp.xpTotal}
               xpMax={progressaoXp.xpProximoNivel}
               level={progressaoXp.nivel}
+              titulo={progressaoXp.titulo}s
             />
           </div>
         </footer>

@@ -77,13 +77,14 @@ export default function DSF6() {
         timeSeconds,
         correct,
         wrong,
-        totalWrong, 
+        totalWrong,
         finalResult,
         saving,
         showFailModal,
         attempts,
         transitioning,
-        aiFeedback
+        aiFeedback,
+        streakAtual
     } = useCode(dsf, {
         token,
         aluno_id: userId,
@@ -238,6 +239,10 @@ export default function DSF6() {
         );
     }
 
+    const openChallengeModal = () => {
+        setShowModal(true);
+    };
+
     return (
         <>
             <ModalService
@@ -246,7 +251,10 @@ export default function DSF6() {
                 challenge={challenge}
             />
             <RightSideBar time={timeSeconds} attempts={attempts} />
-            <LeftSideBar />
+            <LeftSideBar
+                streak={streakAtual}
+                onOpenChallengeInfo={openChallengeModal}
+            />
 
             {showFailModal && (
                 <ModalFalha

@@ -21,7 +21,7 @@ const dsf = dsf_8
 
 const challenge = {
     nome: "Lobo Guardião ",
-    descricao: "Usa classes, atributos e métodos para derrotar o Lobo Guardião.",
+    descricao: "Boas! Chegaste ao último desafio deste mapa: o Lobo Guardião. Para o derrotar, vais precisar usar tudo o que aprendeste sobre classes, atributos e métodos. Pensa em cada classe como um molde, nos atributos como as características do objeto e nos métodos como as ações que ele pode realizar. Usa a lógica com atenção e prova que dominas a Programação Orientada a Objetos.",
     xp: 20,
     nivel: 3,
     dificuldade: "Médio"
@@ -42,7 +42,7 @@ export default function DSF8() {
     const navigate = useNavigate()
     const bgDim = (0.60)
 
-    const mapaId = 1
+    const mapaId = 2
 
     useEffect(() => {
         try {
@@ -83,7 +83,8 @@ export default function DSF8() {
         showFailModal,
         attempts,
         transitioning,
-        aiFeedback
+        aiFeedback,
+        streakAtual
     } = useCode(dsf, {
         token,
         aluno_id: userId,
@@ -157,6 +158,7 @@ export default function DSF8() {
         return (
             <>
                 <Result
+                    mapaId={mapaId}
                     result={{
                         correct,
                         wrong: totalWrong,
@@ -238,6 +240,9 @@ export default function DSF8() {
         );
     }
 
+    const openChallengeModal = () => {
+        setShowModal(true);
+    };
 
     return (
         <>
@@ -245,8 +250,12 @@ export default function DSF8() {
                 isOpen={showModal}
                 setIsOpen={setShowModal}
                 challenge={challenge}
+                mapaId={mapaId}
             />
-            <LeftSideBar />
+            <LeftSideBar
+                streak={streakAtual}
+                onOpenChallengeInfo={openChallengeModal}
+            />
             <RightSideBarBoss
                 attempts={attempts}
                 time={timeSeconds}

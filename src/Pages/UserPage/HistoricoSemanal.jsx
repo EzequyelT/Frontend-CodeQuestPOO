@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import DashBoardHeader from "../../Components/Header/HeaderDashBoard";
 import SideBar from "../../Components/SideBar/SideBar";
-import mago from "../../assets/DashBoard/mago.png";
 import { getHistoricoSemanal } from "../../Services/users/jogTemService";
 import { getMe } from "../../Services/users/userService";
 import loadingVideo from "../../assets/Loading/loading.webm";
@@ -11,10 +10,10 @@ import {
     CalendarDays,
     Clock,
     Star,
-    TrendingUp,
-    Trophy,
     ArrowLeft,
     Layers,
+    TrendingUp,
+    Flame,
 } from "lucide-react";
 
 function formatTempo(minutos = 0) {
@@ -38,14 +37,22 @@ function formatarInicioSemana(inicio) {
     });
 }
 
-function StatCard({ label, value, sub }) {
+function StatCard({ icon: Icon, label, value, color = "#22c55e" }) {
     return (
-        <div className="bg-[#151414] border border-gray-800 rounded-2xl p-4 flex flex-col gap-1">
-            <p className="text-gray-500 text-[11px]">{label}</p>
-            <p className="text-white font-bold text-2xl">
-                {value}
-                {sub && <span className="text-green-500 text-xs ml-1">{sub}</span>}
-            </p>
+        <div
+            className="bg-neutral-900/60 backdrop-blur-md border border-neutral-800/80 rounded-2xl p-5 flex items-center gap-4 transition-all duration-300 hover:-translate-y-1 group"
+            style={{ color }}
+        >
+            <div
+                className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 transition-transform duration-300 group-hover:scale-110 shadow-lg"
+                style={{ background: color + "15", border: `1px solid ${color}33` }}
+            >
+                <Icon size={22} style={{ color }} />
+            </div>
+            <div>
+                <p className="text-neutral-500 font-medium uppercase tracking-wider text-[10px]">{label}</p>
+                <p className="text-white font-black text-xl tracking-wide mt-0.5">{value}</p>
+            </div>
         </div>
     );
 }
@@ -54,7 +61,6 @@ function BarChart({ semanas }) {
     const max = Math.max(...semanas.map(s => s.tempo_semana), 1);
 
     return (
-        /* altura fixa em px — percentagem de height só funciona se o pai tiver altura definida em px */
         <div className="flex items-end gap-2 mt-2" style={{ height: "192px" }}>
             {semanas.map((s, i) => {
                 const pct = (s.tempo_semana / max) * 100;
@@ -65,18 +71,18 @@ function BarChart({ semanas }) {
                         className="flex flex-col items-center gap-1 flex-1 justify-end group"
                         style={{ height: "100%" }}
                     >
-                        <span className="text-[9px] text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                        <span className="text-[9px] text-neutral-500 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
                             {formatTempo(s.tempo_semana)}
                         </span>
                         <div
                             style={{ height: `${Math.max(pct, 3)}%` }}
                             className={`w-full rounded-t-md transition-all duration-700 ${
                                 isBest
-                                    ? "bg-green-500"
-                                    : "bg-yellow-700/60 hover:bg-yellow-600/80"
+                                    ? "bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.4)]"
+                                    : "bg-yellow-700/50 hover:bg-yellow-600/70"
                             }`}
                         />
-                        <span className="text-[9px] text-gray-600 text-center leading-tight">
+                        <span className="text-[9px] text-neutral-600 text-center leading-tight">
                             {formatarInicioSemana(s.semana_inicio)}
                         </span>
                     </div>
@@ -95,17 +101,17 @@ function WeeksDetail({ semanas }) {
             {recentes.map((s, i) => {
                 const pct = Math.round((s.tempo_semana / max) * 100);
                 return (
-                    <div key={i} className="flex items-center gap-2 py-2 border-b border-gray-900 last:border-0">
-                        <span className="text-gray-500 text-[10px] w-20 flex-shrink-0">
+                    <div key={i} className="flex items-center gap-2 py-2 border-b border-neutral-900 last:border-0">
+                        <span className="text-neutral-500 text-[10px] w-20 flex-shrink-0">
                             {formatarInicioSemana(s.semana_inicio)}
                         </span>
-                        <div className="flex-1 h-1.5 bg-gray-800 rounded-full overflow-hidden">
+                        <div className="flex-1 h-1.5 bg-neutral-800 rounded-full overflow-hidden">
                             <div
                                 style={{ width: `${pct}%` }}
                                 className="h-1.5 rounded-full bg-gradient-to-r from-yellow-500 to-green-400 transition-all duration-700"
                             />
                         </div>
-                        <span className="text-gray-400 text-[10px] w-12 text-right flex-shrink-0">
+                        <span className="text-neutral-400 text-[10px] w-12 text-right flex-shrink-0">
                             {formatTempo(s.tempo_semana)}
                         </span>
                     </div>
@@ -115,31 +121,11 @@ function WeeksDetail({ semanas }) {
     );
 }
 
-function MagoCard({ user }) {
-    return (
-        <div className="bg-[#151414] border border-gray-800 rounded-2xl overflow-hidden relative flex flex-col items-center justify-end min-h-[220px]">
-            <img
-                src={mago}
-                alt="heroi"
-                className="absolute inset-0 w-full h-full object-cover object-top opacity-60"
-                style={{
-                    maskImage: "linear-gradient(to top, black 40%, transparent 100%)",
-                    WebkitMaskImage: "linear-gradient(to top, black 40%, transparent 100%)",
-                }}
-            />
-            <div className="relative z-10 text-center pb-4 px-4">
-                <p className="text-yellow-400 font-bold text-sm">{user?.nome ?? "Jogador"}</p>
-                <p className="text-gray-500 text-[10px] mt-0.5">Ver histórico completo</p>
-            </div>
-        </div>
-    );
-}
-
 function EmptyState() {
     return (
-        <div className="flex flex-col items-center justify-center py-20 text-center">
-            <p className="text-gray-500 text-sm">Ainda sem histórico semanal registado.</p>
-            <p className="text-gray-600 text-xs mt-1">Começa a jogar para ver os teus dados aqui!</p>
+        <div className="text-center py-20 bg-neutral-900/20 border border-dashed border-neutral-800 rounded-3xl mt-4">
+            <p className="text-neutral-600 font-bold uppercase tracking-widest text-sm">Ainda sem histórico semanal registado.</p>
+            <p className="text-neutral-500 text-xs mt-1">Começa a jogar para ver os teus dados aqui!</p>
         </div>
     );
 }
@@ -189,9 +175,9 @@ export default function HistoricoSemanal() {
 
     if (loading) {
         return (
-            <div className="relative min-h-screen bg-[#000000] flex flex-col items-center justify-center overflow-hidden select-none">
+            <div className="relative min-h-screen bg-black flex flex-col items-center justify-center overflow-hidden select-none">
                 <div className="flex flex-col items-center gap-6 z-10">
-                    <div className="relative w-40 h-40 flex items-center justify-center p-2 bg-[#080808]/50 rounded-xl">
+                    <div className="relative w-40 h-40 flex items-center justify-center p-2 bg-neutral-950/50 rounded-xl">
                         <video
                             src={loadingVideo}
                             autoPlay
@@ -224,115 +210,124 @@ export default function HistoricoSemanal() {
     }
 
     return (
-        <div className="relative min-h-screen bg-black animate-fadeIn">
+        <div className="relative min-h-screen bg-neutral-950 text-neutral-100 antialiased">
             <DashBoardHeader user={user} />
             <SideBar user={user} />
 
-            <main className="ml-20 p-6 pt-24">
+            <main className="ml-20 pt-24 px-8 pb-16">
+                <div className="w-full max-w-5xl mx-auto">
 
-                <div className="flex items-center justify-between mb-6">
-                    <div>
-                        <h1 className="text-white font-bold text-2xl">Histórico Semanal</h1>
-                        <p className="text-gray-500 text-xs mt-1">
-                            Acompanha a tua evolução ao longo das semanas, {user?.nome ?? ""}
-                        </p>
+                    {/* Header */}
+                    <div className="flex items-center gap-4 mb-8">
+                        <button
+                            onClick={() => navigate(-1)}
+                            className="w-10 h-10 font-bold rounded-2xl flex items-center justify-center text-neutral-400 bg-neutral-900 border border-neutral-800 hover:border-neutral-600 hover:text-white hover:scale-105 active:scale-95 transition-all shadow-md"
+                        >
+                            <ArrowLeft size={18} />
+                        </button>
+                        <div>
+                            <h1 className="text-white font-black text-3xl tracking-tight uppercase">
+                                Histórico Semanal
+                            </h1>
+                            <p className="text-neutral-500 text-xs mt-0.5">
+                                Jogador: <span className="text-neutral-300 font-bold">{user?.nome}</span> · Evolução ao longo das semanas
+                            </p>
+                        </div>
                     </div>
-                    <button
-                        onClick={() => navigate(-1)}
-                        className="flex items-center gap-2 text-xs text-gray-400 border border-gray-700 rounded-lg px-4 py-2 hover:border-yellow-600 hover:text-yellow-500 transition-colors"
-                    >
-                        <ArrowLeft size={13} />
-                        Voltar ao dashboard
-                    </button>
-                </div>
 
-                <div className="grid grid-cols-4 gap-3 mb-6">
-                    <StatCard label="Total de semanas" value={`${totalSemanas}`} sub="semanas" />
-                    <StatCard label="Melhor semana" value={formatTempo(melhorSemana)} />
-                    <StatCard label="Média semanal" value={formatTempo(mediaSemanal)} />
-                    <StatCard label="Tempo total" value={formatTempo(totalMinutos)} />
-                </div>
+                    {/* Stat Cards */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                        <StatCard icon={CalendarDays} label="Total de semanas" value={`${totalSemanas} semanas`} color="#3b82f6" />
+                        <StatCard icon={Star}         label="Melhor semana"    value={formatTempo(melhorSemana)}  color="#22c55e" />
+                        <StatCard icon={TrendingUp}   label="Média semanal"    value={formatTempo(mediaSemanal)}  color="#f59e0b" />
+                        <StatCard icon={Flame}        label="Tempo total"      value={formatTempo(totalMinutos)}  color="#a855f7" />
+                    </div>
 
-                {historico.length === 0 ? (
-                    <EmptyState />
-                ) : (
-                    <div className="flex gap-4">
+                    {historico.length === 0 ? (
+                        <EmptyState />
+                    ) : (
+                        <div className="flex gap-4">
 
-                        <div className="flex flex-col gap-4 flex-1">
-                            <div className="bg-[#151414] border border-gray-800 rounded-2xl p-5">
-                                <div className="flex items-center justify-between mb-1">
-                                    <h3 className="text-white text-sm font-semibold flex items-center gap-2">
-                                        <BarChart2 size={15} className="text-yellow-500" />
-                                        Tempo de estudo por semana
+                            {/* Left column */}
+                            <div className="flex flex-col gap-4 flex-1 min-w-0">
+
+                                {/* Bar chart */}
+                                <div className="bg-neutral-900/40 border border-neutral-800 rounded-2xl p-5">
+                                    <div className="flex items-center justify-between mb-1">
+                                        <h3 className="text-white text-sm font-bold flex items-center gap-2">
+                                            <BarChart2 size={15} className="text-yellow-500" />
+                                            Tempo de estudo por semana
+                                        </h3>
+                                        <span className="text-neutral-600 text-[10px] border border-neutral-800 rounded px-2 py-0.5 flex items-center gap-1">
+                                            <Clock size={10} />
+                                            minutos
+                                        </span>
+                                    </div>
+                                    <p className="text-neutral-600 text-[10px] mb-4">
+                                        A barra verde destaca a tua melhor semana
+                                    </p>
+                                    <BarChart semanas={historico} />
+                                </div>
+
+                                {/* Table */}
+                                <div className="bg-neutral-900/40 border border-neutral-800 rounded-2xl p-5">
+                                    <h3 className="text-white text-sm font-bold mb-4 flex items-center gap-2">
+                                        <CalendarDays size={15} className="text-yellow-500" />
+                                        Detalhe por semana
                                     </h3>
-                                    <span className="text-gray-600 text-[10px] border border-gray-800 rounded px-2 py-0.5 flex items-center gap-1">
-                                        <Clock size={10} />
-                                        minutos
-                                    </span>
-                                </div>
-                                <p className="text-gray-600 text-[10px] mb-4">
-                                    A barra verde destaca a tua melhor semana
-                                </p>
-                                <BarChart semanas={historico} />
-                            </div>
-
-                            <div className="bg-[#151414] border border-gray-800 rounded-2xl p-5">
-                                <h3 className="text-white text-sm font-semibold mb-4 flex items-center gap-2">
-                                    <CalendarDays size={15} className="text-yellow-500" />
-                                    Detalhe por semana
-                                </h3>
-                                <div className="overflow-x-auto">
-                                    <table className="w-full text-xs">
-                                        <thead>
-                                            <tr className="border-b border-gray-800">
-                                                <th className="text-gray-500 font-normal text-left pb-2">Período</th>
-                                                <th className="text-gray-500 font-normal text-right pb-2">Tempo</th>
-                                                <th className="text-gray-500 font-normal text-right pb-2">vs. média</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {[...historico].reverse().map((s, i) => {
-                                                const diff = s.tempo_semana - mediaSemanal;
-                                                const isBest = s.tempo_semana === melhorSemana;
-                                                return (
-                                                    <tr key={i} className="border-b border-gray-900 hover:bg-gray-800/20 transition-colors">
-                                                        <td className="py-2.5 text-gray-300">
-                                                            {formatarPeriodo(s.semana_inicio, s.semana_fim)}
-                                                            {isBest && (
-                                                                <span className="ml-2 text-[9px] bg-green-500/20 text-green-400 rounded px-1.5 py-0.5 inline-flex items-center gap-0.5">
-                                                                    <Star size={8} />
-                                                                    melhor
-                                                                </span>
-                                                            )}
-                                                        </td>
-                                                        <td className="py-2.5 text-white font-bold text-right">
-                                                            {formatTempo(s.tempo_semana)}
-                                                        </td>
-                                                        <td className={`py-2.5 text-right font-bold ${diff >= 0 ? "text-green-500" : "text-red-400"}`}>
-                                                            {diff >= 0 ? "+" : ""}{formatTempo(Math.abs(diff))}
-                                                        </td>
-                                                    </tr>
-                                                );
-                                            })}
-                                        </tbody>
-                                    </table>
+                                    <div className="overflow-x-auto">
+                                        <table className="w-full text-xs">
+                                            <thead>
+                                                <tr className="border-b border-neutral-800">
+                                                    <th className="text-neutral-500 font-semibold uppercase tracking-wider text-[10px] text-left pb-2">Período</th>
+                                                    <th className="text-neutral-500 font-semibold uppercase tracking-wider text-[10px] text-right pb-2">Tempo</th>
+                                                    <th className="text-neutral-500 font-semibold uppercase tracking-wider text-[10px] text-right pb-2">vs. média</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {[...historico].reverse().map((s, i) => {
+                                                    const diff = s.tempo_semana - mediaSemanal;
+                                                    const isBest = s.tempo_semana === melhorSemana;
+                                                    return (
+                                                        <tr key={i} className="border-b border-neutral-900 hover:bg-neutral-800/20 transition-colors">
+                                                            <td className="py-3 text-neutral-300">
+                                                                {formatarPeriodo(s.semana_inicio, s.semana_fim)}
+                                                                {isBest && (
+                                                                    <span className="ml-2 text-[9px] bg-green-500/10 text-green-400 border border-green-500/20 rounded px-1.5 py-0.5 inline-flex items-center gap-0.5">
+                                                                        <Star size={8} />
+                                                                        melhor
+                                                                    </span>
+                                                                )}
+                                                            </td>
+                                                            <td className="py-3 text-white font-black text-right">
+                                                                {formatTempo(s.tempo_semana)}
+                                                            </td>
+                                                            <td className={`py-3 text-right font-bold ${diff >= 0 ? "text-green-500" : "text-red-400"}`}>
+                                                                {diff >= 0 ? "+" : ""}{formatTempo(Math.abs(diff))}
+                                                            </td>
+                                                        </tr>
+                                                    );
+                                                })}
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div className="flex flex-col gap-4 w-64 flex-shrink-0">
-                            <MagoCard user={user} />
-
-                            <div className="bg-[#151414] border border-gray-800 rounded-2xl p-4">
-                                <h3 className="text-white text-sm font-semibold mb-3 flex items-center gap-2">
-                                    <Layers size={14} className="text-yellow-500" />
-                                    Últimas semanas
-                                </h3>
-                                <WeeksDetail semanas={[...historico].reverse()} />
+                            {/* Right sidebar */}
+                            <div className="flex flex-col gap-4 w-64 flex-shrink-0">
+                                <div className="bg-neutral-900/40 border border-neutral-800 rounded-2xl p-4">
+                                    <h3 className="text-white text-sm font-bold mb-3 flex items-center gap-2">
+                                        <Layers size={14} className="text-yellow-500" />
+                                        Últimas semanas
+                                    </h3>
+                                    <WeeksDetail semanas={[...historico].reverse()} />
+                                </div>
                             </div>
+
                         </div>
-                    </div>
-                )}
+                    )}
+                </div>
             </main>
         </div>
     );

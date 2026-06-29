@@ -161,8 +161,11 @@ export default function DSF4() {
     );
   }
 
-  return (
+  const openChallengeModal = () => {
+    setShowModal(true);
+  };
 
+  return (
     <>
       <ModalService
         isOpen={showModal}
@@ -182,7 +185,10 @@ export default function DSF4() {
       )}
 
       <RightSideBar time={timeSeconds} wrong={wrong} />
-      <LeftSideBar streak={streakAtual} />
+      <LeftSideBar
+        streak={streakAtual}
+        onOpenChallengeInfo={openChallengeModal}
+      />
 
       <div className="flex flex-col"
         style={{
@@ -199,7 +205,7 @@ export default function DSF4() {
           transitioning={transitioning}
           headerProps={{
             children: dsf.titulo,
-            currentQuestion: currentIndex + 1,   
+            currentQuestion: currentIndex + 1,
             totalQuestions: totalQuestions,
             streak: dsf.streak,
           }}

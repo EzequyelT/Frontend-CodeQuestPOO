@@ -58,7 +58,6 @@ export default function classifyError(rawError) {
         return 2
     }
 
-    // --- Fallback → Lógica ---
     return 2
 
 }

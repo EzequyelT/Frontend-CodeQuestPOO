@@ -2,21 +2,8 @@ import { useState, useEffect, useRef } from "react";
 import BossBannerImgMap1 from "../../../assets/Maps/BannerBoss-Map1.png";
 import BossBannerImgMap2 from "../../../assets/Maps/BannerBoss-Map2.png";
 
-import { getLevelsByMap } from "../../../Services/maps/levelService";
 import { obterXPAluno } from "../../../Services/Gameplay/xpProgressService";
-
-import { getProgresso } from "../../../Services/users/userStatsService";
-import { Lock, Trophy, CheckSquare } from "lucide-react";
-import Button1 from "../../../assets/Buttons/1.png"
-
-import Button2 from "../../../assets/Buttons/2.png"
-import Button3 from "../../../assets/Buttons/3.png"
-import Button4 from "../../../assets/Buttons/4.png"
-import Button5 from "../../../assets/Buttons/5.png"
-
-import Button6 from "../../../assets/Buttons/6.png"
-import Button7 from "../../../assets/Buttons/7.png"
-import Button8 from "../../../assets/Buttons/8.png"
+import { Trophy, CheckSquare } from "lucide-react";
 
 import loadingVideo from "../../../assets/Loading/loading.webm";
 
@@ -49,6 +36,23 @@ const Color = {
     },
 };
 
+const GAP_FROM_CENTER_RIGHT = 350;
+
+const BOSS_HP_CONFIG = {
+    maxHp: 1000,
+    barBottom: "78",
+    barLeft: "25",
+    barWidth: "160",
+    barHeightClass: "h-4",
+};
+
+const OBJETIVO = {
+    texto: "Complete 3 desafios sem usar dicas",
+    atual: 1,
+    total: 3,
+    recompensa: "+100 XP",
+};
+
 const bossBarStyles = `
   @keyframes bossShimmer {
     0% { transform: translateX(-120%); }
@@ -75,42 +79,6 @@ const bossBarStyles = `
   .boss-bar-track.shaking { animation: bossShake 0.4s ease-out; }
   .boss-flash.active { animation: bossFlash 0.45s ease-out forwards; }
 `;
-
-
-const CHALLENGEPOSITIONS = {
-    1: { x: 34, y: 88 },
-    2: { x: 48, y: 78 },
-    3: { x: 62, y: 68 },
-    4: { x: 30, y: 52 },
-    5: { x: 65, y: 42 },
-    6: { x: 90, y: 30 },
-    7: { x: 10, y: 35 },
-    8: { x: 46, y: 18 },
-};
-
-const BUTTON_IMAGES = {
-    1: Button1,
-    2: Button2,
-    3: Button3,
-    4: Button4,
-    5: Button5,
-    6: Button6,
-    7: Button7,
-    8: Button8,
-};
-
-const OBJETIVO = {
-    texto: "Complete 3 desafios sem usar dicas",
-    atual: 1,
-    total: 3,
-    recompensa: "+100 XP",
-};
-
-const FEEDBACK_IA = {
-    dica: "Lembra-te de usar self como primeiro parâmetro em métodos de instância.",
-    tipo: "💡 Feedback Inteligente",
-};
-
 
 function XPBar({ xpAtual, xpProximo, percentagem }) {
 
@@ -224,58 +192,6 @@ function ObjetivoBox({ objetivo }) {
     );
 }
 
-function FeedbackIA({ feedback }) {
-    const [visivel, setVisivel] = useState(true);
-
-    if (!visivel) return (
-        <button
-            onClick={() => setVisivel(true)}
-            className="w-full text-10px rounded-xl py-2 font-bold transition-all"
-            style={{
-                color: Color.primary.brightest,
-                background: Color.neutral.card,
-                border: `1px solid ${Color.primary.dark}`,
-                boxShadow: `0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(122, 184, 255, 0.1)`,
-            }}
-        >
-            💡 Ver Feedback da IA
-        </button>
-    );
-
-    return (
-        <div
-            className="rounded-4xl p-2.5 flex flex-col gap-1"
-            style={{
-                background: Color.neutral.card,
-                border: `1px solid ${Color.neutral.border}`,
-                boxShadow: `0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(122, 184, 255, 0.1)`,
-            }}
-        >
-            <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1.5">
-                    <div
-                        className="w-5 h-5 rounded-full border flex items-center justify-center"
-                        style={{
-                            background: `rgba(122, 184, 255, 0.15)`,
-                            borderColor: `${Color.primary.light}`,
-                        }}
-                    >
-                        <span className="text-[10px]" style={{ color: Color.primary.brightest }}>✓</span>
-                    </div>
-                    <span style={{ color: Color.primary.lighter }} className="text-[10px] font-semibold">{feedback.tipo}</span>
-                </div>
-                <button
-                    onClick={() => setVisivel(false)}
-                    className="text-gray-600 hover:text-gray-400 text-xs transition-colors"
-                >✕</button>
-            </div>
-            <p className="text-gray-300 text-[10px] leading-relaxed">
-                Dica: {feedback.dica}
-            </p>
-        </div>
-    );
-}
-
 function PedirDica({ onPedir }) {
     const [usado, setUsado] = useState(false);
 
@@ -331,7 +247,7 @@ function BossBanner({ correct = 0, totalFases = 5, mapaId = 1 }) {
     };
     const bossImg = BOSS_BANNERS[mapaId] ?? BossBannerImgMap1;
 
-    const maxHp = 1000;
+    const maxHp = BOSS_HP_CONFIG.maxHp;
     const hpAtual = Math.max(0, Math.round(maxHp - (correct / totalFases) * maxHp));
     const pct = (hpAtual / maxHp) * 100;
 
@@ -360,9 +276,9 @@ function BossBanner({ correct = 0, totalFases = 5, mapaId = 1 }) {
 
     return (
         <div
-            className="rounded-4xl w-82 overflow-hidden"
+            className="rounded-4xl w-full overflow-hidden"
             style={{
-                height: "300px",
+                height: "420px",
                 border: `2px solid ${Color.neutral.border}`,
                 boxShadow: `0 8px 32px rgba(0,0,0,0.4)`,
                 position: "relative",
@@ -373,12 +289,34 @@ function BossBanner({ correct = 0, totalFases = 5, mapaId = 1 }) {
             <img
                 src={bossImg}
                 alt="Boss Banner"
-                style={{ width: "200%", height: "100%", objectPosition: "60% center", display: "block" }}
+                style={{
+                    width: "100%",
+                    height: "100%",
+                    objectPosition: "center 30%",
+                    display: "block",
+                }}
             />
 
-            <div className="absolute bottom-23 left-6 right-40">
+            <div
+                style={{
+                    position: "absolute",
+                    inset: 0,
+                    background: "linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0) 45%)",
+                    pointerEvents: "none",
+                }}
+            />
+
+            <div
+                style={{
+                    position: "absolute",
+                    bottom: `${BOSS_HP_CONFIG.barBottom}px`,
+                    left: `${BOSS_HP_CONFIG.barLeft}px`,
+                    width: `${BOSS_HP_CONFIG.barWidth}px`,
+                    zIndex: 10,
+                }}
+            >
                 <div
-                    className={`boss-bar-track h-5 rounded-full overflow-hidden border relative ${shaking ? "shaking" : ""}`}
+                    className={`boss-bar-track ${BOSS_HP_CONFIG.barHeightClass} rounded-full overflow-hidden border relative ${shaking ? "shaking" : ""}`}
                     style={{
                         background: Color.neutral.card,
                         borderColor: "rgba(224, 90, 90, 0.3)",
@@ -430,13 +368,22 @@ function BossBanner({ correct = 0, totalFases = 5, mapaId = 1 }) {
     );
 }
 
+function getWrongStyle(wrong, limit = 5) {
+    const ratio = wrong / limit
+
+    if (ratio === 0) return { color: "text-white", pulse: "", glow: "" }
+    if (ratio <= 0.4) return { color: "text-yellow-300", pulse: "animate-pulse", glow: "" }
+    if (ratio <= 0.6) return { color: "text-orange-400", pulse: "animate-pulse", glow: "drop-shadow-[0_0_4px_rgba(251,146,60,0.8)]" }
+    if (ratio < 1) return { color: "text-red-400", pulse: "animate-[pulse_0.6s_ease-in-out_infinite]", glow: "drop-shadow-[0_0_6px_rgba(239,68,68,0.9)]" }
+    return { color: "text-red-500", pulse: "animate-[pulse_0.3s_ease-in-out_infinite]", glow: "drop-shadow-[0_0_8px_rgba(239,68,68,1)]" }
+}
+
 export default function RightSideBarBoss({ time, attempts, wrong = 0, correct = 0, totalFases = 8, mapaId = 1 }) {
     const [loading, setLoading] = useState(true);
     const [erro, setErro] = useState(null);
     const [progressaoXp, setProgressaoXp] = useState(null);
 
     const objetivo = OBJETIVO;
-    const feedbackIA = FEEDBACK_IA;
 
     function formatTime(totalSeconds) {
         const horas = Math.floor(totalSeconds / 3600);
@@ -451,50 +398,6 @@ export default function RightSideBarBoss({ time, attempts, wrong = 0, correct = 
         return partes.join(" ");
     }
 
-    async function fetchLevelsData(mapaIdLocal, token) {
-        const [niveisDB, progressoTotal] = await Promise.all([
-            getLevelsByMap(mapaIdLocal),
-            getProgresso(token),
-        ]);
-
-        const progressoMapaData = progressoTotal.find(p => p.mapa === mapaIdLocal) || {};
-        const desafiosCompletosData = progressoMapaData.desafios_completos || 0;
-
-        let posicaoGlobal = 0;
-
-        const levelsData = niveisDB.map((nivel) => ({
-            id: nivel.id,
-            name: nivel.nome,
-            challenges: nivel.desafios.map((desafio) => {
-                const pos = CHALLENGEPOSITIONS[desafio.id] ?? { x: 50, y: 50 };
-                const minhaPosicao = posicaoGlobal++;
-
-                let state;
-                if (minhaPosicao < desafiosCompletosData) state = "completed";
-                else if (minhaPosicao === desafiosCompletosData) state = "available";
-                else state = "locked";
-
-                return {
-                    id: desafio.id,
-                    name: desafio.nome,
-                    description: desafio.descricao,
-                    xpReward: desafio.xp,
-                    route: `/floresta/nivel-${nivel.id}/desafio-${desafio.id}`,
-                    x: pos.x,
-                    y: pos.y,
-                    state,
-                    stars: state === "completed" ? 3 : 0,
-                };
-            }),
-        }));
-
-        return {
-            levels: levelsData,
-            desafiosCompletos: desafiosCompletosData,
-            totalDesafios: niveisDB.reduce((acc, n) => acc + n.desafios.length, 0),
-        };
-    }
-
     useEffect(() => {
         async function loadData() {
             try {
@@ -507,13 +410,7 @@ export default function RightSideBarBoss({ time, attempts, wrong = 0, correct = 
                     return;
                 }
 
-                const [levelsResult, xpResult] = await Promise.all([
-                    fetchLevelsData(mapaId, token),
-                    obterXPAluno()
-                ]);
-
-                console.log("Levels Result:", levelsResult);
-                console.log("XP Result:", xpResult);
+                const xpResult = await obterXPAluno();
 
                 if (xpResult) {
                     setProgressaoXp(xpResult);
@@ -574,8 +471,14 @@ export default function RightSideBarBoss({ time, attempts, wrong = 0, correct = 
     if (erro) {
         return (
             <aside
-                className="fixed right-20 top-1 h-screen flex items-center justify-center"
-                style={{ width: 340, zIndex: 60 }}
+                className="fixed flex items-center justify-center"
+                style={{
+                    top: "30%",
+                    left: "90%",
+                    transform: `translate(${GAP_FROM_CENTER_RIGHT}px, -50%)`,
+                    width: 340,
+                    zIndex: 60,
+                }}
             >
                 <div className="text-red-400 text-sm">{erro}</div>
             </aside>
@@ -595,6 +498,8 @@ export default function RightSideBarBoss({ time, attempts, wrong = 0, correct = 
             ? Math.min((xpAtual / xpProximo) * 100, 100)
             : 100;
 
+    const SIDEBAR_WIDTH = 380;
+
     return (
         <>
             <style>{`
@@ -605,10 +510,17 @@ export default function RightSideBarBoss({ time, attempts, wrong = 0, correct = 
             `}</style>
 
             <aside
-                className="fixed right-4 mt-4 h-screen flex flex-col gap-3 overflow-y-auto py-4 px-2"
+                className="fixed flex flex-col gap-3 overflow-y-auto py-6 px-6"
                 style={{
-                    width: 340,
-                    zIndex: 100,
+                    top: "50%",
+                    left: "50%",
+                    // Centra verticalmente e empurra para a direita do centro do ecrã,
+                    // mantendo sempre a mesma distância ao centro, independente da largura do monitor.
+                    transform: `translate(${GAP_FROM_CENTER_RIGHT}px, -50%)`,
+                    width: `${SIDEBAR_WIDTH}px`,
+                    maxHeight: "900px",
+                    height: "min(900px, 90vh)",
+                    zIndex: 80,
                     scrollbarWidth: "none",
                     background: "transparent",
                 }}
@@ -662,7 +574,6 @@ export default function RightSideBarBoss({ time, attempts, wrong = 0, correct = 
                 </div>
 
                 <ObjetivoBox objetivo={objetivo} />
-                <FeedbackIA feedback={feedbackIA} />
                 <PedirDica onPedir={() => console.log("TODO: chamar API de dica")} />
 
                 <BossBanner correct={correct} totalFases={totalFases} mapaId={mapaId} />
@@ -686,12 +597,17 @@ export default function RightSideBarBoss({ time, attempts, wrong = 0, correct = 
                                 <span className="text-gray-500 text-[10px]">🎯 Tentativas</span>
                                 <span className="text-white text-[10px] font-bold">{attempts}</span>
                             </>
-                        ) : (
-                            <>
-                                <span className="text-gray-500 text-[10px]">❌ Erradas</span>
-                                <span className="text-[#e05a5a] text-[10px] font-bold">{wrong ?? 0}</span>
-                            </>
-                        )}
+                        ) : (() => {
+                            const { color, pulse, glow } = getWrongStyle(wrong)
+                            return (
+                                <>
+                                    <span className="text-gray-500 text-[10px]">❌ Erradas</span>
+                                    <span className={`text-[10px] font-bold transition-colors duration-500 ${color} ${pulse} ${glow}`}>
+                                        {wrong ?? 0}
+                                    </span>
+                                </>
+                            )
+                        })()}
                     </div>
 
                 </div>

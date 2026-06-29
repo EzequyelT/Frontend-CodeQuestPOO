@@ -48,7 +48,6 @@ export default function DSF1() {
 
         try {
 
-
             async function loadLevels() {
                 const data = await getLevelsByMap(mapaId);
                 setLevels(data);
@@ -73,7 +72,6 @@ export default function DSF1() {
             console.error(err)
             throw (err)
         }
-
 
     }, [token]);
 
@@ -104,6 +102,7 @@ export default function DSF1() {
     if (finished) {
         return (
             <Result
+                mapaId={mapaId}
                 result={{
                     correct,
                     wrong,
@@ -166,17 +165,24 @@ export default function DSF1() {
         );
     }
 
+    const openChallengeModal = () => {
+        setShowModal(true);
+    };
+
     return (
         <>
-
             <ModalService
                 isOpen={showModal}
                 setIsOpen={setShowModal}
                 challenge={challenge}
+                mapaId={mapaId}
             />
 
             <RightSideBar time={timeSeconds} wrong={wrong} mapaId={2} />
-            <LeftSideBar streak={streakAtual} />
+            <LeftSideBar
+                streak={streakAtual}
+                onOpenChallengeInfo={openChallengeModal}
+            />
 
             {showFailModal && (
                 <ModalFalha

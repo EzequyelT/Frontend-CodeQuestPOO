@@ -9,12 +9,10 @@ import { Lock, Trophy, CheckSquare } from "lucide-react";
 import loadingVideo from "../../../assets/Loading/loading.webm";
 
 import Button1 from "../../../assets/Buttons/1.png"
-
 import Button2 from "../../../assets/Buttons/2.png"
 import Button3 from "../../../assets/Buttons/3.png"
 import Button4 from "../../../assets/Buttons/4.png"
 import Button5 from "../../../assets/Buttons/5.png"
-
 import Button6 from "../../../assets/Buttons/6.png"
 import Button7 from "../../../assets/Buttons/7.png"
 import Button8 from "../../../assets/Buttons/8.png"
@@ -48,7 +46,7 @@ const Color = {
     },
 };
 
-// ─── DADOS LOCAIS ────────────────────────────────────────────────────────────
+// ─── Mapa posições ────────────────────────────────────────────────────────────
 
 const CHALLENGE_POSITIONS_MAP_1 = {
     1: { x: 34, y: 88 },
@@ -90,18 +88,15 @@ const OBJETIVO = {
     recompensa: "+100 XP",
 };
 
-const FEEDBACK_IA = {
-    dica: "Em desenvolvimento.",
-    tipo: "💡 Feedback Inteligente",
-};
-
+// ─── DISTÂNCIA AO CENTRO DO ECRÃ ────────────────────────────────────────────
+// Mesma lógica do LeftSideBar: distância entre o centro do ecrã e a borda
+// interna desta sidebar. Ajusta se quiseres mais/menos espaço para o main.
+const GAP_FROM_CENTER_RIGHT = 480; // px
 
 // ────────────────────────────────────────────────────────────────────────────
 
 function XPBar({ xpAtual, xpProximo, percentagem }) {
-
     const safeCurrent = Number(xpAtual ?? 0);
-
     const parsedTotal = Number(xpProximo);
     const safeTotal = Number.isFinite(parsedTotal) ? parsedTotal : null;
 
@@ -114,7 +109,6 @@ function XPBar({ xpAtual, xpProximo, percentagem }) {
         <div className="flex flex-col gap-1">
             <div className="flex justify-between text-[10px] rounded-full">
                 <span className="text-gray-400">XP</span>
-
                 <span style={{ color: Color.secondary.lighter }} className="font-bold">
                     {safeCurrent.toLocaleString()} /{" "}
                     {safeTotal ? safeTotal.toLocaleString() : "MAX"} XP
@@ -206,58 +200,6 @@ function ObjetivoBox({ objetivo }) {
                 <span className="text-gray-600 text-[9px]">Recompensa</span>
                 <span style={{ color: Color.secondary.lighter }} className="text-[10px] font-bold">🪙 {objetivo.recompensa}</span>
             </div>
-        </div>
-    );
-}
-
-function FeedbackIA({ feedback }) {
-    const [visivel, setVisivel] = useState(true);
-
-    if (!visivel) return (
-        <button
-            onClick={() => setVisivel(true)}
-            className="w-full text-10px rounded-xl py-2 font-bold transition-all"
-            style={{
-                color: Color.primary.brightest,
-                background: Color.neutral.card,
-                border: `1px solid ${Color.primary.dark}`,
-                boxShadow: `0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(122, 184, 255, 0.1)`,
-            }}
-        >
-            💡 Ver Feedback da IA
-        </button>
-    );
-
-    return (
-        <div
-            className="rounded-4xl p-2.5 flex flex-col gap-1"
-            style={{
-                background: Color.neutral.card,
-                border: `1px solid ${Color.neutral.border}`,
-                boxShadow: `0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(122, 184, 255, 0.1)`,
-            }}
-        >
-            <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1.5">
-                    <div
-                        className="w-5 h-5 rounded-full border flex items-center justify-center"
-                        style={{
-                            background: `rgba(122, 184, 255, 0.15)`,
-                            borderColor: `${Color.primary.light}`,
-                        }}
-                    >
-                        <span className="text-[10px]" style={{ color: Color.primary.brightest }}>✓</span>
-                    </div>
-                    <span style={{ color: Color.primary.lighter }} className="text-[10px] font-semibold">{feedback.tipo}</span>
-                </div>
-                <button
-                    onClick={() => setVisivel(false)}
-                    className="text-gray-600 hover:text-gray-400 text-xs transition-colors"
-                >✕</button>
-            </div>
-            <p className="text-gray-300 text-[10px] leading-relaxed">
-                Dica: {feedback.dica}
-            </p>
         </div>
     );
 }
@@ -398,7 +340,6 @@ function MiniMapa({ levels, desafiosCompletos, progressoMapa, mapImage, mapTitle
                             zIndex: ch.state === "available" ? 40 : 10,
                         }}
                     >
-                        {/* Anéis pulsantes para available */}
                         <div
                             style={{
                                 width: S + 10,
@@ -409,8 +350,6 @@ function MiniMapa({ levels, desafiosCompletos, progressoMapa, mapImage, mapTitle
                                 justifyContent: "center",
                             }}
                         >
-
-                            {/* 🔵 PULSO (só se available) - MELHORADO */}
                             {ch.state === "available" && [0, 50].map(delay => (
                                 <div
                                     key={delay}
@@ -428,8 +367,6 @@ function MiniMapa({ levels, desafiosCompletos, progressoMapa, mapImage, mapTitle
                                 />
                             ))}
 
-
-                            {/* 🎯 BOTÃO (imagem) */}
                             <div
                                 style={{
                                     position: "relative",
@@ -460,7 +397,6 @@ function MiniMapa({ levels, desafiosCompletos, progressoMapa, mapImage, mapTitle
                                 />
                             </div>
 
-                            {/* 🔒 LOCK */}
                             {ch.state === "locked" && (
                                 <div
                                     style={{
@@ -478,7 +414,6 @@ function MiniMapa({ levels, desafiosCompletos, progressoMapa, mapImage, mapTitle
                                 </div>
                             )}
 
-                            {/* ✔ COMPLETED */}
                             {ch.state === "completed" && (
                                 <div
                                     style={{
@@ -541,7 +476,6 @@ function getWrongStyle(wrong, limit = 5) {
     return { color: "text-red-500", pulse: "animate-[pulse_0.3s_ease-in-out_infinite]", glow: "drop-shadow-[0_0_8px_rgba(239,68,68,1)]" }
 }
 
-
 export default function RightSideBar({ time, attempts, wrong = 0, mapaId = 1 }) {
     const [loading, setLoading] = useState(true);
     const [erro, setErro] = useState(null);
@@ -551,7 +485,6 @@ export default function RightSideBar({ time, attempts, wrong = 0, mapaId = 1 }) 
     const [progressaoXp, setProgressaoXp] = useState(null);
 
     const objetivo = OBJETIVO;
-    const feedbackIA = FEEDBACK_IA;
 
     const isMap2 = mapaId === 2;
     const mapTitle = isMap2 ? "Vila da Lógica" : "Floresta dos Algoritmos";
@@ -656,7 +589,6 @@ export default function RightSideBar({ time, attempts, wrong = 0, mapaId = 1 }) 
         return (
             <div className="relative min-h-screen bg-[#000000] flex flex-col items-center justify-center overflow-hidden select-none">
                 <div className="flex flex-col items-center gap-6 z-10">
-
                     <div className="relative w-40 h-40 flex items-center justify-center p-2 bg-[#080808]/50 rounded-xl">
                         <video
                             src={loadingVideo}
@@ -686,7 +618,6 @@ export default function RightSideBar({ time, attempts, wrong = 0, mapaId = 1 }) 
                             ))}
                         </div>
                     </div>
-
                 </div>
             </div>
         );
@@ -695,8 +626,14 @@ export default function RightSideBar({ time, attempts, wrong = 0, mapaId = 1 }) 
     if (erro) {
         return (
             <aside
-                className="fixed right-20 top-1 h-screen flex items-center justify-center"
-                style={{ width: 340, zIndex: 60 }}
+                className="fixed flex items-center justify-center"
+                style={{
+                    top: "50%",
+                    left: "50%",
+                    transform: `translate(${GAP_FROM_CENTER_RIGHT}px, -50%)`,
+                    width: 340,
+                    zIndex: 60,
+                }}
             >
                 <div className="text-red-400 text-sm">{erro}</div>
             </aside>
@@ -716,6 +653,8 @@ export default function RightSideBar({ time, attempts, wrong = 0, mapaId = 1 }) 
             ? Math.min((xpAtual / xpProximo) * 100, 100)
             : 100;
 
+    const SIDEBAR_WIDTH = 380;
+
     return (
         <>
             <style>{`
@@ -726,9 +665,14 @@ export default function RightSideBar({ time, attempts, wrong = 0, mapaId = 1 }) 
             `}</style>
 
             <aside
-                className="fixed right-10 h-screen flex flex-col gap-3 overflow-y-auto py-6 px-6"
+                className="fixed flex flex-col gap-3 overflow-y-auto py-8 px-8"
                 style={{
-                    width: 350,
+                    top: "50%",
+                    left: "40%",
+                    transform: `translate(${GAP_FROM_CENTER_RIGHT}px, -50%)`,
+                    width: `${SIDEBAR_WIDTH}px`,
+                    maxHeight: "900px",
+                    height: "min(800px, 90vh)",
                     zIndex: 80,
                     scrollbarWidth: "none",
                     background: "transparent",
@@ -774,17 +718,14 @@ export default function RightSideBar({ time, attempts, wrong = 0, mapaId = 1 }) 
                         </span>
                     </div>
 
-
                     <XPBar
                         xpAtual={progressaoXp?.progressao?.xpAtualNivel ?? 0}
                         xpProximo={progressaoXp?.progressao?.xpProximoNivel ?? "👑 Nível Máximo Atingido!"}
                         percentagem={percentagem}
                     />
-
                 </div>
 
                 <ObjetivoBox objetivo={objetivo} />
-                <FeedbackIA feedback={feedbackIA} />
                 <PedirDica onPedir={() => console.log("TODO: chamar API de dica")} />
 
                 <MiniMapa
@@ -826,7 +767,6 @@ export default function RightSideBar({ time, attempts, wrong = 0, mapaId = 1 }) 
                             )
                         })()}
                     </div>
-
                 </div>
             </aside>
         </>

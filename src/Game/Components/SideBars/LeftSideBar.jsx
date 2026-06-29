@@ -6,7 +6,6 @@ import { Flame, DollarSign } from "lucide-react";
 import ButtonImgBack from "../../../assets/Buttons/Back.png"
 import ButtonImgHouse from "../../../assets/Buttons/House.png"
 import ButtonImgInfo from "../../../assets/Buttons/Info.png"
-import ButtonImgConfig from "../../../assets/Buttons/Config.png"
 
 const Color = {
     primary: {
@@ -35,7 +34,9 @@ const Color = {
     },
 };
 
-export default function LeftSideBar({ streak }) {
+const GAP_FROM_CENTER_LEFT = 480; // px
+
+export default function LeftSideBar({ streak, onOpenChallengeInfo }) {
     const navigate = useNavigate();
     const [stats, setStats] = useState({
         coins: 0,
@@ -61,13 +62,18 @@ export default function LeftSideBar({ streak }) {
         fetchStats();
     }, []);
 
+    const SIDEBAR_WIDTH = 70;
 
     return (
         <aside
-            className="fixed top-0 mt-5 flex flex-col items-center gap-3 left-38 py-5 px-2"
+            className="fixed flex flex-col items-center gap-3 py-5 px-1"
             style={{
-                width: "70px",
-                height: "700px",
+                top: "52%",
+                left: "50%",
+                transform: `translate(calc(-100% - ${GAP_FROM_CENTER_LEFT}px), -50%)`,
+                width: `${SIDEBAR_WIDTH}px`,
+                maxHeight: "700px",
+                height: "min(700px, 90vh)",
                 zIndex: 50,
                 borderRadius: "30px",
                 background: Color.neutral.card,
@@ -119,11 +125,7 @@ export default function LeftSideBar({ streak }) {
                 }}
             />
 
-            <SidebarButton onClick={() => { }}>
-                <img src={ButtonImgConfig} size={18} />
-            </SidebarButton>
-
-            <SidebarButton onClick={() => { }}>
+            <SidebarButton onClick={onOpenChallengeInfo}>
                 <img src={ButtonImgInfo} size={18} />
             </SidebarButton>
 
@@ -144,7 +146,10 @@ function SidebarButton({ onClick, children }) {
     return (
         <button
             type="button"
-            onClick={onClick}
+            onClick={(e) => {
+                e.stopPropagation();
+                onClick?.();
+            }}
             className="w-11 h-12 rounded-full flex items-center justify-center shrink-0 transition-all duration-200 hover:scale-110 active:scale-95"
             style={{
                 backdropFilter: "blur(10px)",

@@ -64,13 +64,6 @@ export default function DSF7() {
         loadLevels()
     }, [])
 
-    // ─────────────────────────────────────────────
-    // ✅ REGRA DOS HOOKS: ambos são sempre chamados,
-    //    independentemente da fase atual.
-    //    A fase apenas controla O QUE É RENDERIZADO.
-    // ─────────────────────────────────────────────
-
-    // Hook do Quiz
     const quiz = useQuiz(quizSteps, {
         token,
         aluno_id: userId,
@@ -78,7 +71,6 @@ export default function DSF7() {
         level_Id: levels,
     })
 
-    //  Hook do Code
     const code = useCode(codeSteps, {
         token,
         aluno_id: userId,
@@ -171,6 +163,10 @@ export default function DSF7() {
         );
     }
 
+    const openChallengeModal = () => {
+        setShowModal(true);
+    };
+
     return (
         <>
             <ModalService
@@ -190,13 +186,15 @@ export default function DSF7() {
                 />
             )}
 
-
             <RightSideBar
                 time={phase === "quiz" ? quiz.timeSeconds : code.timeSeconds}
                 attempts={phase === "quiz" ? quiz.attempts : code.attempts}
                 wrong={phase === "quiz" ? quiz.wrong : code.wrong}
             />
-            <LeftSideBar />
+            <LeftSideBar
+                streak={phase === "quiz" ? quiz.streakAtual : code.streakAtual}
+                onOpenChallengeInfo={openChallengeModal}
+            />
 
             <div
                 className="scrollbar"

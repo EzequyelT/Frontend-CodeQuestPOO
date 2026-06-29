@@ -1,19 +1,20 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { 
-  CheckCircle2, 
-  XCircle, 
-  Timer, 
-  Lightbulb, 
-  Coins, 
-  Sparkles, 
-  Flame, 
-  Rocket 
+import {
+  CheckCircle2,
+  XCircle,
+  Timer,
+  Lightbulb,
+  Coins,
+  Sparkles,
+  Flame,
+  Rocket
 } from "lucide-react";
 
 import buttonMap from "../../assets/Buttons/Mapa.png";
 import buttonRemake from "../../assets/Buttons/Refazer.png";
 import Bg from "../../assets/Maps/Bg-Map1.png";
+import Bg2 from "../../assets/Maps/Bg-Map2-Nivel3.png"
 
 function formatTime(s) {
   const m = Math.floor(s / 60);
@@ -50,17 +51,17 @@ function ScoreRing({ score }) {
     <div className="flex flex-col items-center gap-1">
       <div className="relative w-32 h-32">
         <div className="absolute inset-[-4px] rounded-full pointer-events-none shadow-[0_0_24px_6px_rgba(255,185,0,0.18),0_0_48px_12px_rgba(79,180,255,0.25)]" />
-        
+
         <svg width={128} height={128} className="-rotate-90 block">
           <circle cx={64} cy={64} r={radius} fill="none" className="stroke-white/5" strokeWidth={10} />
-          <circle 
-            cx={64} cy={64} r={radius} fill="none" 
+          <circle
+            cx={64} cy={64} r={radius} fill="none"
             className={`${color} transition-[stroke-dashoffset] duration-75 ease-linear`}
             strokeWidth={10} strokeLinecap="round"
-            strokeDasharray={circ} strokeDashoffset={offset} 
+            strokeDasharray={circ} strokeDashoffset={offset}
           />
         </svg>
-        
+
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-1.5">
           <span className="text-3xl font-extrabold text-white leading-none">
             {displayed}
@@ -102,7 +103,7 @@ function ProgressBar({ label, amount, suffix, colorClass, barGradient, shadowCla
         <span className={`font-bold ${colorClass}`}>+{amount} {suffix}</span>
       </div>
       <div className="bg-white/5 border border-[#1e5a8e]/30 rounded-full h-2 overflow-hidden">
-        <div 
+        <div
           className={`h-full rounded-full bg-gradient-to-r ${barGradient} ${shadowClass} transition-all duration-[900ms] cubic-bezier(0.34,1.56,0.64,1)`}
           style={{ width: `${width}%` }}
         />
@@ -115,18 +116,23 @@ function ActionBtn({ onClick, children, primary = false }) {
   return (
     <button
       onClick={onClick}
-      className={`w-full py-3 rounded-full text-sm font-bold text-white tracking-wide cursor-pointer backdrop-blur-sm transition-all duration-150 hover:brightness-125 hover:-translate-y-0.5 ${
-        primary 
-          ? "bg-gradient-to-br from-[#3b7ab8] to-[#1e5a8e] border border-[#5a96d8] shadow-[0_4px_20px_rgba(79,180,255,0.25)]" 
-          : "bg-[#0a1e32]/45 border border-[#1e5a8e]/30"
-      }`}
+      className={`w-full py-3 rounded-full text-sm font-bold text-white tracking-wide cursor-pointer backdrop-blur-sm transition-all duration-150 hover:brightness-125 hover:-translate-y-0.5 ${primary
+        ? "bg-gradient-to-br from-[#3b7ab8] to-[#1e5a8e] border border-[#5a96d8] shadow-[0_4px_20px_rgba(79,180,255,0.25)]"
+        : "bg-[#0a1e32]/45 border border-[#1e5a8e]/30"
+        }`}
     >
       {children}
     </button>
   );
 }
 
-export default function QuizResult({ result, onRepeat, onNextChallenge }) {
+export default function QuizResult({
+  result,
+  onRepeat,
+  onNextChallenge,
+  onBackToMap,
+  mapaId = 1
+}) {
   const {
     correct,
     wrong,
@@ -142,13 +148,28 @@ export default function QuizResult({ result, onRepeat, onNextChallenge }) {
   const isPerfect = wrong === 0;
   const navigate = useNavigate();
 
+  const mapBackgrounds = {
+    1: Bg,
+    2: Bg2,
+  };
+
+  const mapRoutes = {
+    1: "/FlorestaDosAlgoritmos",
+    2: "/VilaDaLogica",
+  };
+
+  const selectedBg = mapBackgrounds[mapaId] || Bg;
+  const selectedRoute = mapRoutes[mapaId] || "/FlorestaDosAlgoritmos";
+
   return (
-    <div 
+    <div
       className="min-h-screen w-full bg-cover bg-center bg-no-repeat relative"
-      style={{ backgroundImage: `linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.65)), url(${Bg})` }}
+      style={{
+        backgroundImage: `linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.65)), url(${selectedBg})`
+      }}
     >
       <div className="max-w-[500px] mx-auto px-5 py-7 flex flex-col items-center gap-6 font-sans">
-        
+
         <div className="text-center w-full">
           <p className="text-[10px] text-white/30 tracking-widest mb-1 uppercase">
             Resultado Final
@@ -156,7 +177,7 @@ export default function QuizResult({ result, onRepeat, onNextChallenge }) {
           <h2 className="text-white text-lg font-bold m-0">
             {quizTitle}
           </h2>
-          
+
           {isPerfect && (
             <div className="w-full mt-4 bg-gradient-to-br from-yellow-500/10 to-blue-500/10 border border-yellow-500/30 rounded-2xl p-4 text-center">
               <p className="text-[#ffe08a] text-base font-bold mb-1 flex items-center justify-center gap-1.5">
@@ -188,20 +209,20 @@ export default function QuizResult({ result, onRepeat, onNextChallenge }) {
         </div>
 
         <div className="w-full flex flex-col gap-4">
-          <ProgressBar 
-            label="⭐ XP ganho" 
-            amount={xpGained} 
-            suffix="XP" 
-            colorClass="text-[#c4a878]" 
-            barGradient="from-[#8b5e1a] to-[#c4a878]" 
+          <ProgressBar
+            label="⭐ XP ganho"
+            amount={xpGained}
+            suffix="XP"
+            colorClass="text-[#c4a878]"
+            barGradient="from-[#8b5e1a] to-[#c4a878]"
             shadowClass="shadow-[0_0_8px_rgba(255,215,0,0.55)]"
           />
-          <ProgressBar 
-            label="💰 Moedas ganhas" 
-            amount={coinsGained} 
-            suffix="Coins" 
-            colorClass="text-[#fde047]" 
-            barGradient="from-[#ca8a04] to-[#fde047]" 
+          <ProgressBar
+            label="💰 Moedas ganhas"
+            amount={coinsGained}
+            suffix="Coins"
+            colorClass="text-[#fde047]"
+            barGradient="from-[#ca8a04] to-[#fde047]"
             shadowClass="shadow-[0_0_8px_rgba(255,215,0,0.5)]"
           />
         </div>
@@ -224,7 +245,7 @@ export default function QuizResult({ result, onRepeat, onNextChallenge }) {
             </button>
 
             <button
-              onClick={() => navigate("/FlorestaDosAlgoritmos")}
+              onClick={onBackToMap || (() => navigate(selectedRoute))}
               className="bg-none border-none cursor-pointer p-2 transition-all duration-150 hover:brightness-125 hover:-translate-y-0.5 active:scale-95"
             >
               <img src={buttonMap} alt="Mapa" className="h-16 w-16" />

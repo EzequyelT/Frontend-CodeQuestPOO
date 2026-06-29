@@ -59,7 +59,7 @@ export default function DSF1() {
                 if (!token) return;
                 const stats = await getProgressoDashboard(token);
                 setInitialStreak(stats.streak || 0);
-                setLoading(false);                
+                setLoading(false);
             }
 
             loadLevels();
@@ -122,7 +122,7 @@ export default function DSF1() {
         )
     }
 
-    
+
     if (loading) {
         return (
             <div className="relative min-h-screen bg-[#000000] flex flex-col items-center justify-center overflow-hidden select-none">
@@ -163,18 +163,24 @@ export default function DSF1() {
         );
     }
 
+    const openChallengeModal = () => {
+        setShowModal(true);
+    };
+
     return (
-        <> 
-            
+        <>
             <ModalService
                 isOpen={showModal}
                 setIsOpen={setShowModal}
                 challenge={challenge}
+                mapaId={mapaId}
             />
 
             <RightSideBar time={timeSeconds} wrong={wrong} />
-            <LeftSideBar streak={streakAtual} />
-
+            <LeftSideBar
+                streak={streakAtual}
+                onOpenChallengeInfo={openChallengeModal}
+            />
             {showFailModal && (
                 <ModalFalha
                     isOpen={true}

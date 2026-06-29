@@ -51,7 +51,7 @@ export default function DSF3() {
             const data = await getLevelsByMap(mapaId);
             setLevels(data);
             setLoadingState(false)
-            const nivelAtual = data?.[0]; 
+            const nivelAtual = data?.[0];
 
             const desafioAtual = nivelAtual?.desafios?.find(d => d.ordem === 3);
 
@@ -80,7 +80,8 @@ export default function DSF3() {
         showFailModal,
         attempts,
         transitioning
-        , aiFeedback
+        , aiFeedback,
+        streakAtual
     } = useCode(dsf, {
         token,
         aluno_id: userId,
@@ -157,6 +158,7 @@ export default function DSF3() {
         return (
             <>
                 <Result
+                    mapaId={mapaId}
                     result={{
                         correct,
                         wrong: totalWrong,
@@ -248,16 +250,27 @@ export default function DSF3() {
         );
     }
 
+    const openChallengeModal = () => {
+        setShowModal(true);
+    };
+
     return (
         <>
             <ModalService
                 isOpen={showModal}
                 setIsOpen={setShowModal}
                 challenge={challenge}
+                mapaId={mapaId}
             />
-            <RightSideBar time={timeSeconds} attempts={attempts} mapaId={2} />
-            <LeftSideBar />
-
+            <RightSideBar
+                time={timeSeconds}
+                attempts={attempts}
+                mapaId={2}
+            />
+            <LeftSideBar
+                streak={streakAtual}
+                onOpenChallengeInfo={openChallengeModal}
+            />
 
             {showFailModal && (
                 <ModalFalha

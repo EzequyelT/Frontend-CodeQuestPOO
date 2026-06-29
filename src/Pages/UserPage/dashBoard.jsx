@@ -649,7 +649,7 @@ function mapProgressToPlayer(userData, data, tempo) {
         ultimaAtualizado: tempo?.ultimaAtualizado || null,
 
         currentDay: 5,
-        diasSeguidos: data.streak ?? 0,
+        diasSeguidos: data.streak_dias ?? 0,
         dicasUsadas: data.dicas_usadas ?? 0,
         desafios: data.desafios_completos ?? 0,
         accuracy: data.acertos ?? 80,

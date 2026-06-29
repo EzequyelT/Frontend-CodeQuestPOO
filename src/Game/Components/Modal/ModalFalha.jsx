@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react"
 import { createPortal } from "react-dom";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { RefreshCw, Map, Swords, X } from "lucide-react";
 
-export default function ModalModalFalha({
+export default function ModalFalha({
     isOpen,
     onRepetir,
     onVoltar,
@@ -10,18 +11,14 @@ export default function ModalModalFalha({
     wrong = 0,
     time = 0,
 }) {
+    const [visible, setVisible] = useState(false);
+    const [animatingOut, setAnimatingOut] = useState(false);
+    const navigate = useNavigate();
 
-    const [visible, setVisible] = useState(false)
-    const [animatingOut, setAnimatingOut] = useState(false)
+    const mins = Math.floor(time / 60);
+    const secs = time % 60;
+    const fmt = (n) => n.toString().padStart(2, "0");
 
-    const navigate = useNavigate()
-
-    const mins = Math.floor(time / 60)
-    const secs = time % 60
-
-    const formatTime = (n) => n.toString().padStart(2, "0")
-
-    
     useEffect(() => {
         if (isOpen) {
             setVisible(true);
@@ -32,84 +29,98 @@ export default function ModalModalFalha({
     }, [isOpen]);
 
     const handleClose = () => {
-        setAnimatingOut(false)
+        setAnimatingOut(true);
         setTimeout(() => {
-            setVisible(false),
-                setAnimatingOut(false),
-                onclose?.()
-        }, 380)
-        navigate("/FlorestaDosAlgoritmos")
-    }
+            setVisible(false);
+            setAnimatingOut(false);
+        }, 320);
+        navigate("/FlorestaDosAlgoritmos");
+    };
 
-    if (!visible) return null
+    if (!visible) return null;
 
     return createPortal(
         <div
-            className={`fixed inset-0 z-100 flex items-center justify-center
-                     backdrop-blur-md bg-black/80
-                     ${animatingOut ? "nc-backdrop-out" : "nc-backdrop-in"}`}
+            className={`fixed inset-0 z-[100] flex items-center justify-center backdrop-blur-sm bg-black/75 transition-opacity duration-300 ${animatingOut ? "opacity-0" : "opacity-100"}`}
             onClick={handleClose}
         >
-            <div onClick={(e) => e.stopPropagation()} className="bg-[#0a0a0a] border border-[#1e5a8e]/40 rounded-4xl px-12 py-10 w-[340px]  text-center">
+            <div
+                onClick={(e) => e.stopPropagation()}
+                className="relative bg-neutral-950 border border-neutral-800 rounded-3xl px-8 py-8 w-[360px] text-center shadow-2xl"
+                style={{
+                    boxShadow: "0 0 60px -20px rgba(239,68,68,0.2)",
+                    transform: animatingOut ? "scale(0.95) translateY(8px)" : "scale(1) translateY(0)",
+                    transition: "transform 0.32s cubic-bezier(0.34,1.56,0.64,1), opacity 0.32s ease",
+                    opacity: animatingOut ? 0 : 1,
+                }}
+            >
+                <button
+                    onClick={handleClose}
+                    className="absolute top-4 right-4 w-7 h-7 rounded-xl flex items-center justify-center text-neutral-600 hover:text-neutral-300 hover:bg-neutral-800 transition-all"
+                >
+                    <X size={14} />
+                </button>
 
-                {/* Ícone */}
-                <div className="w-16 h-16 rounded-full bg-[#0a1e32]/80 border animate-pulse border-[#1e5a8e]/50 flex items-center justify-center mx-auto mb-5">
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
-                        <circle cx="12" cy="12" r="10" stroke="#3b7ab8" strokeWidth="1.5" />
-                        <path d="M12 7v6" stroke="#7ab8ff" strokeWidth="2" strokeLinecap="round" />
-                        <circle cx="12" cy="16.5" r="1" fill="#7ab8ff" />
-                    </svg>
+                <div className="w-16 h-16 rounded-2xl bg-red-500/10 border border-red-500/25 flex items-center justify-center mx-auto mb-5">
+                    <Swords size={28} className="text-red-400" />
                 </div>
 
-                {/* Título */}
-                <p className="text-[11px] tracking-widest text-[#3b7ab8] font-medium mb-1">
-                    DESAFIO FALHADO
+                <p className="text-[10px] tracking-widest text-red-500/70 font-extrabold uppercase mb-1">
+                    Desafio Falhado
                 </p>
-                <h2 className="text-xl font-medium text-[#7ab8ff] mb-2">
+                <h2 className="text-2xl font-black text-white uppercase tracking-tight mb-2">
                     Não desistas!
                 </h2>
-                <p className="text-sm text-[#7ab8ff]/55 mb-7 leading-relaxed">
-                    Cometeste {wrong} erros consecutivos. Revê os conceitos e tenta novamente.
+
+                <div className="w-10 h-0.5 mx-auto mb-4 rounded-full bg-gradient-to-r from-red-500 to-transparent" />
+
+                <p className="text-sm text-neutral-500 mb-6 leading-relaxed">
+                    Cometeste <span className="text-red-400 font-bold">{wrong}</span> erros consecutivos. Revê os conceitos e tenta novamente.
                 </p>
 
-                {/* Stats */}
-                <div className="bg-[#0a1e32]/40 border border-[#1e5a8e]/25 rounded-xl px-4 py-3 flex justify-around mb-7">
-                    <div>
-                        <p className="text-[11px] tracking-widest text-[#7ab8ff]/45 mb-0.5">ERROS</p>
-                        <p className="text-xl font-medium text-[#e05a5a]">{wrong}</p>
+                <div className="bg-neutral-900/60 border border-neutral-800 rounded-2xl px-4 py-4 flex justify-around mb-6">
+                    <div className="flex flex-col items-center gap-1">
+                        <p className="text-[9px] tracking-widest text-neutral-600 uppercase font-bold">Erros</p>
+                        <p className="text-2xl font-black text-red-400 tabular-nums">{wrong}</p>
                     </div>
-                    <div className="w-px bg-[#1e5a8e]/25" />
-                    <div>
-                        <p className="text-[11px] tracking-widest text-[#7ab8ff]/45 mb-0.5">ACERTOS</p>
-                        <p className="text-xl font-medium text-[#5a96d8]">{correct}</p>
+                    <div className="w-px bg-neutral-800" />
+                    <div className="flex flex-col items-center gap-1">
+                        <p className="text-[9px] tracking-widest text-neutral-600 uppercase font-bold">Acertos</p>
+                        <p className="text-2xl font-black text-green-400 tabular-nums">{correct}</p>
                     </div>
-                    <div className="w-px bg-[#1e5a8e]/25" />
-                    <div>
-                        <p className="text-[11px] tracking-widest text-[#7ab8ff]/45 mb-0.5">TEMPO</p>
-                        <p className="text-xl font-medium text-[#7ab8ff]">
-                            {formatTime(mins)}:{formatTime(secs)}
+                    <div className="w-px bg-neutral-800" />
+                    <div className="flex flex-col items-center gap-1">
+                        <p className="text-[9px] tracking-widest text-neutral-600 uppercase font-bold">Tempo</p>
+                        <p className="text-2xl font-black text-neutral-300 tabular-nums">
+                            {fmt(mins)}:{fmt(secs)}
                         </p>
                     </div>
                 </div>
 
-                {/* Botões */}
                 <button
                     onClick={onRepetir}
-                    className="w-full py-3 bg-[#1e5a8e] hover:bg-[#3b7ab8] transition-colors animate-bounce rounded-xl text-[#e8f4ff] text-[15px] font-medium tracking-wide cursor-pointer"
+                    className="w-full py-3.5 rounded-2xl font-black text-sm uppercase tracking-widest flex items-center justify-center gap-2 transition-all duration-200 hover:scale-[1.02] active:scale-95 mb-2"
+                    style={{
+                        background: "linear-gradient(135deg, #ef4444 0%, #b91c1c 100%)",
+                        color: "#fff",
+                        boxShadow: "0 0 20px -4px rgba(239,68,68,0.5)",
+                    }}
                 >
+                    <RefreshCw size={15} />
                     Tentar novamente
                 </button>
 
                 {onVoltar && (
                     <button
                         onClick={onVoltar}
-                        className="w-full py-2.5 mt-2 bg-transparent border border-[#1e5a8e]/30 hover:border-[#1e5a8e]/60 transition-colors rounded-xl text-[#7ab8ff]/50 text-sm cursor-pointer"
+                        className="w-full py-3 rounded-2xl text-sm font-bold uppercase tracking-widest flex items-center justify-center gap-2 text-neutral-500 border border-neutral-800 hover:border-neutral-600 hover:text-neutral-300 transition-all duration-200"
                     >
+                        <Map size={14} />
                         Voltar ao mapa
                     </button>
                 )}
             </div>
         </div>,
         document.body
-    )
+    );
 }

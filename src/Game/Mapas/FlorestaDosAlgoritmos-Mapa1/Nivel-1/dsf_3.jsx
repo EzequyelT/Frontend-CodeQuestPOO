@@ -76,7 +76,8 @@ export default function DSF3() {
         showFailModal,
         attempts,
         transitioning
-        ,aiFeedback
+        , aiFeedback,
+        streakAtual
     } = useCode(dsf, {
         token,
         aluno_id: userId,
@@ -244,6 +245,10 @@ export default function DSF3() {
         );
     }
 
+    const openChallengeModal = () => {
+        setShowModal(true);
+    };
+
     return (
         <>
             <ModalService
@@ -252,8 +257,10 @@ export default function DSF3() {
                 challenge={challenge}
             />
             <RightSideBar time={timeSeconds} attempts={attempts} />
-            <LeftSideBar />
-
+            <LeftSideBar
+                streak={streakAtual}
+                onOpenChallengeInfo={openChallengeModal}
+            />
 
             {showFailModal && (
                 <ModalFalha
@@ -290,7 +297,7 @@ export default function DSF3() {
                     runCode={runCode}
                     addLog={addLog}
                     hints={currentQuestion?.hints}
-                    aiFeedback={aiFeedback} 
+                    aiFeedback={aiFeedback}
                 />
             </div>
         </>
